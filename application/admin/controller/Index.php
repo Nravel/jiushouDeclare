@@ -15,18 +15,10 @@ use think\Loader;
 class Index extends Common
 {
     public function index() {
-        return $this->fetch("order/order-list");
-        $excel = new Excel();
-        $excel->setFilePath(ROOT_PATH."demo.xls");
-        $datas = $excel->getSameOrder($excel->getSheetsContent(),0);
-        $data_arr = $excel->getSheetsContent();
-//        return $this->fetch("order-show",['data_arr'=>$data_arr]);
-//        dump($datas);
-//        $orderHead = Loader::model('OrderHead');
-//        $orderHead->saveDatas($datas);
+        return $this->fetch("index");
     }
     public function welcome() {
-        return $this->fetch('welcome');
+        return $this->fetch('order/order-list');
     }
     public function setFields() {
         $excel = new Excel();

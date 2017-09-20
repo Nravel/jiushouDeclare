@@ -17,7 +17,8 @@ use think\Loader;
 class Order extends Common
 {
     public function index() {
-        return $this->fetch("order-list");
+        $type = $this->request->param("type");
+        return $this->fetch("order-".$type);
     }
 
     public function getDatas() {

@@ -9,15 +9,15 @@
 <link rel="Bookmark" href="/favicon.ico" >
 <link rel="Shortcut Icon" href="/favicon.ico" />
 {include file='export-head' /}
-<title>H-ui.admin v3.1</title>
+<title>就手报关</title>
 <meta name="keywords" content="H-ui.admin v3.1,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
 <meta name="description" content="H-ui.admin v3.1，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
 </head>
 <body>
 <header class="navbar-wrapper">
 	<div class="navbar navbar-fixed-top">
-		<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="/aboutHui.shtml">H-ui.admin</a> <a class="logo navbar-logo-m f-l mr-10 visible-xs" href="/aboutHui.shtml">H-ui</a> 
-			<span class="logo navbar-slogan f-l mr-10 hidden-xs">v3.1</span> 
+		<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="/aboutHui.shtml">就手报关</a> <a class="logo navbar-logo-m f-l mr-10 visible-xs" href="/aboutHui.shtml">就手</a>
+			<span class="logo navbar-slogan f-l mr-10 hidden-xs">v1.0</span>
 			<a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
 			<nav class="nav navbar-nav">
 				<ul class="cl">
@@ -90,7 +90,8 @@
 			<dt><i class="Hui-iconfont">&#xe616;</i> 订单管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="{:url('admin/Order/index')}" data-title="订单查询" href="javascript:void(0)">订单查询</a></li>
+					<li><a data-href="{:url('admin/Order/index','type=list')}" data-title="订单列表" href="javascript:void(0)">订单列表</a></li>
+					<li><a data-href="{:url('admin/Order/index','type=export')}" data-title="订单导出" href="javascript:void(0)">订单导出</a></li>
 				</ul>
 			</dd>
 		</dl>
