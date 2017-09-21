@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-09-20 15:08:52
+Date: 2017-09-21 14:36:12
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,11 +20,10 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `ceb_order_batch`;
 CREATE TABLE `ceb_order_batch` (
-  `id` int(11) NOT NULL,
-  `batch_time` datetime NOT NULL COMMENT '导入的批次号',
-  `batch_note` varchar(1000) DEFAULT NULL COMMENT '导入批次的备注',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `batch_time` (`batch_time`)
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `batch_time` datetime NOT NULL COMMENT '批次时间',
+  `batch_note` varchar(1000) DEFAULT NULL COMMENT '批次注释',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -52,7 +51,7 @@ CREATE TABLE `ceb_order_goods` (
   `country` char(3) NOT NULL COMMENT '填写海关标准的参数代码，参照《JGS-20 海关业务代码集》-国家（地区）代码表。',
   `hscode` varchar(60) NOT NULL COMMENT '海关商品编码(Hscode)',
   `gjcode` varchar(60) NOT NULL COMMENT '国检商品编号',
-  `gtype_num` varchar(100) NOT NULL COMMENT '商品规格型号',
+  `gtype` varchar(100) NOT NULL COMMENT '商品规格型号',
   `price` decimal(19,2) NOT NULL COMMENT '商品单价。赠品单价填写为“0”。',
   `total_price` decimal(19,2) NOT NULL COMMENT '商品总价，等于单价乘以数量。',
   `currency` char(3) NOT NULL COMMENT '限定为人民币，填写“142”。',

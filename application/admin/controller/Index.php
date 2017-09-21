@@ -26,7 +26,7 @@ class Index extends Common
         $datas = $excel->getSheetsContent();
         $orderHead = Loader::model('OrderHead');
         $headFields = $orderHead->getTableFields();
-        $orderList = Loader::model('OrderList');
+        $orderList = Loader::model('OrderGoods');
         $listFields = $orderList->getTableFields();
         return $this->fetch('excel-design',['data_arr'=>$datas,'headFields'=>$headFields,'listFields'=>$listFields]);
     }
@@ -50,7 +50,7 @@ class Index extends Common
     public function exportDatas() {
         $excel = new Excel();
         $orderHead = Loader::model("OrderHead");
-        $orderList = Loader::model("OrderList");
+        $orderList = Loader::model("OrderGoods");
         $datas = $orderHead->alias('a')->join("{$orderList->getTable()} b","a.order_no = b.order_no")->field('*,b.note as listnote')->select();
         $excel->exportExcel($datas);
     }

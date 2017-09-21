@@ -149,7 +149,7 @@
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
 			<a href="javascript:;" onclick="searchAdv()" class="btn btn-primary radius"><i class="layui-icon">&#xe615;</i> 高级查询</a>
-			<a id="upload_excel" class="btn  btn-danger radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入Excel文件</a>
+			<a id="upload_excel" class="btn  btn-danger radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入订单</a>
 			<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>
 			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>
 		</span>
@@ -171,11 +171,11 @@
 <script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>
 <script type="text/html" id="exportTools">
-	<a class="layui-btn layui-btn-normal layui-btn-mini" lay-event="jiushou_ex">导出就手订单</a>
-	<a class="layui-btn layui-btn-mini" lay-event="list_ex">导出清单</a>
-	<a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="entry_ex">导出入库单</a>
-	<a class="layui-btn layui-btn-warm layui-btn-mini" lay-event="transprot_ex">导出运单</a>
-	<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">一次性导出</a>
+	<a title="详情" class="layui-btn layui-btn-normal layui-btn-mini" lay-event="details"><i class="Hui-iconfont">&#xe627;</i></a>
+	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<!--<a class="layui-btn layui-btn-warm layui-btn-mini" lay-event="transprot_ex">导出运单</a>-->
+	<!--<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">一次性导出</a>-->
 </script>
 <script type="text/javascript">
     layui.config({
@@ -213,17 +213,30 @@
 //        }
 //		,height: 'full-600'
             ,cols: [[ //标题栏
-                {checkbox: true}, //默认全选
-                {field: 'autonum', title: 'No.',filter: 'autonum', width: 80, sort: true}
-                ,{field: 'batch', title: '批次时间', width: 230, sort: true}
-                ,{field: 'note', title: '备注', width: 230}
-//                ,{field: 'ctrl', title: '导出操作', width: 460, toolbar: "#exportTools"}
+                {checkbox: true} //默认全选
+                ,{field: 'autonum', title: 'No.',filter: 'autonum', width: 70, sort: true}
+                ,{field: 'batch_time', title: '批次时间', width: 180, sort: true}
+                ,{field: 'order_no', title: '订单编号', width: 150, sort: true}
+                ,{field: 'goods_value', title: '商品价格', width: 120, sort: true}
+                ,{field: 'freight', title: '运杂费', width: 120, sort: true}
+                ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true}
+                ,{field: 'tax_total', title: '代扣税款', width: 120, sort: true}
+                ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true}
+                ,{field: 'currency', title: '币制', width: 100}
+                ,{field: 'buyer_name', title: '订购人姓名', width: 100}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 130}
+                ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130}
+                ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180}
+                ,{field: 'consignee', title: '收货人姓名', width: 100}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 130}
+                ,{field: 'consignee_address', title: '收货地址', width: 300}
+                ,{field: 'ctrl', title: '操作', width: 160, toolbar: "#exportTools", fixed: "right"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
             ,page: true //是否显示分页
             ,limits: [5,10,15,20]
-            ,limit: 10 //每页默认显示的数量
+            ,limit: 5 //每页默认显示的数量
             ,done: function(res, curr, count){
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
@@ -269,7 +282,7 @@
                         end: function () {
                             table.reload('main', {
                                 url: '{:url(\'order/getDatas\')}'
-                                ,where: {} //设定异步数据接口的额外参数
+                                ,where: {batch:res.data.batch} //设定异步数据接口的额外参数
                             });
                         }
                     });
@@ -311,15 +324,18 @@
         //监听导出操作工具条
         table.on("tool(olist)",function (obj) {
             var data = obj.data;
-            if (obj.event == "jiushou_ex") {
-                $("input[name='ex_info']").val(data.batch+"|"+1);
-                $("#postData").submit();
-            }else if(obj.event == "list_ex") {
-                $("input[name='ex_info']").val(data.batch+"|"+2);
-                $("#postData").submit();
-            }else if(obj.event == "entry_ex") {
-                $("input[name='ex_info']").val(data.batch+"|"+3);
-                $("#postData").submit();
+            console.log(data);
+            if (obj.event == "details") {
+                layer.open({
+					type: 2,
+					title: "订单详情",
+					content: "{:url('admin/Order/index','type=details')}",
+					area: ['100%','100%']
+				})
+            }else if(obj.event == "edit") {
+
+            }else if(obj.event == "del") {
+
             }else if(obj.event == "transprot_ex") {
                 $("input[name='ex_info']").val(data.batch+"|"+4);
                 $("#postData").submit();

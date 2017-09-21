@@ -39,6 +39,7 @@ class Excel extends Controller
      */
     public function getSheetsContent() {
         $titleCol = 1;
+        $columnOrder = "A";
         $readerObj = $this->index();
         $excelObj = $readerObj->load($this->filePath);
         //获取工作表个数
@@ -62,8 +63,10 @@ class Excel extends Controller
                     if ($key == $titleCol && empty($columnValue)) {
                         $maxKey = $k;
                     }
-                    if ($k == $maxKey) break;
+                    //当指定列的值为空时也不遍历
+                    if ($k==$columnOrder&&empty($columnValue)) break;
                     $data_arr[$key-1][] = $columnValue;
+                    if ($k == $maxKey) break;
                 }
             }
             $datas[$i] = $data_arr;
@@ -98,17 +101,18 @@ class Excel extends Controller
     /**
      * 整理excel记录订单数据，把相同订单中相同的信息和不同的信息区分开来
      * @param $data_arr 订单数据集
-     * @param $order_index 订单所在下标
+     * @param $order_index 订单编号所在下标
      * @param $mode 为假时返回按订单相同来分组的数据集，为真则返回详细区分后的结果
      */
     public function getSameOrder($data_arr, $order_index,$mode=true) {
         foreach ($data_arr as $k => $row) {
             //判断该行记录是否是订单
-            if (strlen($row[$order_index])>18) {
+            if (strlen($row[$order_index])>10) {
                 $orderID = $row[$order_index];
                 //获取相同订单的下标
                 $data_arr_rev[$orderID][] = $k;
             }
+            $data_arr_rev ? "" : die("数据非法");
         }
 
         //分别组装相同订单记录到新的数组

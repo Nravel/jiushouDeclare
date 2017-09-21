@@ -16,56 +16,47 @@ use think\Model;
 class OrderHead extends Model
 {
     //新增订单头记录
-    public function saveDatas($datas,$harr,$larr) {
+    public function saveDatas($datas,$harr,$garr,$batch) {
         $orderHead = new OrderHead();
-        $orderList = Loader::model('OrderList');
+        $ordergoods = Loader::model('OrderGoods');
         //excel表中不存在，数据库中不能为空的字段
-        $datas_fill = [
-            'app_time' => 'YYYYMMDDhhmmss',
-            'order_type' => 'I',
-            'guid' => '11111111111111',
-            'ebp_code' => '11111111111111',
-            'ebp_name' => '11111111111111',
-            'ebc_code' => '11111111111111',
-            'ebc_name' => '11111111111111',
-            'goods_value' => '11111111111111',
-            'freight' => '11111111111111',
-            'discount' => '11111111111111',
-            'tax_total' => '11111111111111',
-            'actural_paid' => '11111111111111',
-            'currency' => '142',
-            'buyer_reg_no' => '142',
-            'buyer_id_type' => '1',
-            'buyer_name' => '1232323232332',
-            'pay_code' => '1232323232332',
-            'pay_name' => '1232323232332',
-            'batch_numbers' => '1232323232332',
-            'pay_transaction_id' => '1232323232332',
-            'consignee_ditrict' => '12323'
-        ];
-//        $tel_index = array_keys($harr,'consignee_telephone')[0];
+        $datas_fill = ["batch_time"=>$batch];
+        //相同订单中的订单编号$records['diff']的数组下标
+        $orderIndex = 0;
         foreach ($datas as $records) {
+            //处理相同订单的数据
             if (array_key_exists('same',$records)) {
                 $datas = null;
                 foreach ($harr as $k => $val) {
                     if (array_key_exists($k,$records['same'])&&$val) {
                         $datas[$val] = $records['same'][$k];
                     }
+                    if (array_key_exists($k,$records['diff'][0])&&$val&&$k!=$orderIndex) {
+                        //将该字段相加
+                        $sum = 0;
+                        foreach ($records['diff'] as $diff_row) {
+                            $sum+= $diff_row[$k];
+                        }
+                        $datas[$val] = $sum;
+                    }
                 }
                 $datas = array_merge($datas,$datas_fill);
-                Db::startTrans();
                 try {
+                    $orderHead->startTrans();
                     $orderHead->data($datas);
                     $orderHead->isUpdate(false)->save();
+                    $res = $ordergoods->saveMoreDatas($records['same'], $records['diff'], $garr,$orderIndex);
+                    if ($res['code']!="0000") {
+                        return $res;
+                    }
+                    $orderHead->commit();
                 }catch (\Exception $e) {
-//                    dump($e->getMessage());
-                    Db::rollback();
+                    $orderHead->rollback();
                     return [
-                        "code" => "0002",
+                        "code" => "0001",
                         "error" => $e->getMessage(),
                     ];
                 }
-                $orderList->saveMoreDatas($records['same'], $records['diff'], $larr);
             }else{
                 $datas = null;
                 foreach ($harr as $k => $val) {
@@ -73,20 +64,23 @@ class OrderHead extends Model
                         $datas[$val] = $records[$k];
                     }
                 }
-                Db::startTrans();
                 try {
+                    $orderHead->startTrans();
                     $datas = array_merge($datas, $datas_fill);
                     $orderHead->data($datas);
                     $orderHead->isUpdate(false)->save($datas);
+                    $res = $ordergoods->saveSingleData($records, $garr,$orderIndex);
+                    if ($res['code']!="0000") {
+                        return $res;
+                    }
+                    $orderHead->commit();
                 }catch (\Exception $e) {
-//                    dump($e->getMessage());
-                    Db::rollback();
+                    $orderHead->rollback();
                     return [
-                        "code" => "0002",
+                        "code" => "0001",
                         "error" => $e->getMessage(),
                     ];
                 }
-                $orderList->saveSingleData($records, $larr);
             }
         }
         return [

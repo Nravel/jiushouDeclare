@@ -12,11 +12,10 @@ namespace app\admin\model;
 use app\common\controller\Excel;
 use think\Db;
 use think\Model;
+use think\Loader;
 
-class OrderHeShan extends Model
+class OrderBatch extends Model
 {
-    protected $table = "heshan_order_batch";
-
     /**
      * 添加批次和备注
      * @param $datas
@@ -24,17 +23,20 @@ class OrderHeShan extends Model
      * @return array
      */
     public function saveBatch($datas, $note) {
-        $data = ["batch"=>date("Y-m-d H:i:s"),"note"=>$note];
-        OrderHeShan::startTrans();
+        $data = ["batch_time"=>date("Y-m-d H:i:s"),"batch_note"=>$note];
+        OrderBatch::startTrans();
         try{
-            $res = $this->saveOrders($datas,$data['batch']);
-            if ($res['code']!="0000") return $res;
-            OrderHeShan::isUpdate(false)->save($data);
-            OrderHeShan::commit();
-            return ["code"=>"0000","msg"=>"success"];
+            $res = $this->saveOrders($datas,$data['batch_time']);
+            if ($res['code']!="0000") {
+                return $res;
+            }
+            OrderBatch::isUpdate(false)->save($data);
+            OrderBatch::commit();
+            $res['data'] = ["batch" => $data['batch_time']];
+            return $res;
         }catch (\Exception $e) {
-            OrderHeShan::rollback();
-            return ["code"=>"0001","error"=>$e->getMessage()];
+            OrderBatch::rollback();
+            return ["code"=>"0011","error"=>$e->getMessage()];
         }
     }
 
@@ -44,28 +46,22 @@ class OrderHeShan extends Model
      * @param $batch
      */
     public function saveOrders($datas, $batch) {
-        $orderList = Db::name("order_list");
-        //获取表字段
-        $fields = $orderList->getTableFields();
-        //取出与数据相对应的字段并赋值
-        $fields = array_slice($fields,2,count($fields)-2);
-        $data_arr = null;
-        try{
-            foreach ($datas as $k => $record) {
-                foreach ($fields as $key => $val) {
-                    if (array_key_exists($key,$record))
-                    $data_arr[$k][$val] = $record[$key];
-                }
-                $data_arr[$k]["batch"] = $batch;
-            }
-            $orderList->startTrans();
-            $orderList->insertAll($data_arr);
-            $orderList->commit();
-            return ["code"=>"0000","msg"=>"success"];
-        }catch (\Exception $e) {
-            $orderList->rollback();
-            return ["code"=>"0002","error"=>$e->getMessage()];
+        //定义订单头的字段
+        $head_fields = Loader::model("OrderHead")->getTableFields();
+        //移除不需要的字段
+        $hfields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_time"];
+        $head_fields = array_merge(array_diff($head_fields,$hfields_no));
+        //定义商品信息的字段
+        $goods_fields = Loader::model("OrderGoods")->getTableFields();
+        //移除不需要的字段
+        $gfields_no = ["id","order_no","item_no","item_describe","bar_code","qty2","unit2"];
+        //由于数据位置已在数组中固定，故要保持商品字段与数据位置对应，适当进行偏移
+        foreach ($head_fields as $k => $val) {
+            $temp[$k] = "";
         }
+        $goods_fields = array_merge($temp,array_diff($goods_fields,$gfields_no));
+        $result = Loader::model("OrderHead")->saveDatas($datas,$head_fields,$goods_fields,$batch);
+        return $result;
     }
 
     /**
