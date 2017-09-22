@@ -18,10 +18,19 @@ class Order extends Common
 {
     public function index() {
         $type = $this->request->param("type");
-        return $this->fetch("order-".$type);
+        $orderNo =  $this->request->param("orderNo");
+        if (isset($orderNo)) {
+            return $this->fetch("order-details",['orderNo'=>$orderNo]);
+        }else{
+            return $this->fetch("order-".$type);
+        }
     }
 
-    public function getDatas() {
+    /**
+     * 订单列表页获取数据
+     * @return array
+     */
+    public function getOrderDatas() {
         $limit = $this->request->get('limit');
         $page = $this->request->get('page');
         $orderModel = Loader::model("OrderBatch");
@@ -35,7 +44,7 @@ class Order extends Common
         $alias = "a";
         $join = [
             ["OrderHead b","a.batch_time = b.batch_time"],
-            ["OrderGoods c","b.order_no = c.order_no"],
+//            ["OrderGoods c","b.order_no = c.order_no"],
         ];
         $field = "*,@i:=@i+1 as autonum";
 //        $orderBy = [$orderField => $orderType];
@@ -58,6 +67,18 @@ class Order extends Common
         return $data_format;
     }
 
+    public function getOrderDetails() {
+        $order_no = $this->request->post("orderNo");
+        $join = [["order_goods b","a.order_no = b.order_no"]];
+        $where = ['a.order_no'=> $order_no];
+        $orderHead = Loader::model("OrderHead");
+        $res = $orderHead->alias('a')->join($join)->where($where)->select();
+        return $res;
+    }
+
+    /**
+     *导出excel数据
+     */
     public function exportData() {
         //获取要导出的类型和批次
                 $ex_info = explode("|",$this->request->post("ex_info"));

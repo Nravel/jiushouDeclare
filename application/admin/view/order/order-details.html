@@ -8,117 +8,171 @@
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 	{include file='export-head' /}
 <title>新增图片</title>
-<link href="__PUBLIC__/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css" />
+	<style>
+		#order-details .panel-body {
+			height: 280px;
+			padding: 15px 20px;
+		}
+		.ohead-ul {
+			/*min-width: 1320px;*/
+			/*padding-left: 90px;*/
+			width: 80%;
+			margin: auto;
+		}
+		.ohead-ul li {
+			min-width: 370px;
+		}
+		.oh-content {
+			width: 100%;
+			margin: 0 auto;
+		}
+		.oh-content span:first-child {
+			display: inline-block;
+			width: 35%;
+			text-align: right;
+			vertical-align: top;
+		}
+		.oh-content span:last-child {
+			margin-left: 10px;
+			display: inline-block;
+			width: 50%;
+			line-height: 20px;
+			vertical-align: top;
+		}
+	</style>
 </head>
 <body>
 <div class="page-container">
-	<form class="form form-horizontal" id="form-article-add">
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>图片标题：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="" name="">
-			</div>
+	<div id="order-details" class="panel mt-20">
+		<div class="panel-heading">
+			<span>订单基本信息</span>
+			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
 		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">简略标题：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="" placeholder="" id="" name="">
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>分类栏目：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<span class="select-box">
-				<select name="" class="select">
-					<option value="0">全部栏目</option>
-					<option value="1">新闻资讯</option>
-					<option value="11">├行业动态</option>
-					<option value="12">├行业资讯</option>
-					<option value="13">├行业新闻</option>
-				</select>
-				</span>
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">排序值：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="0" placeholder="" id="" name="">
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">允许评论：</label>
-			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
-				<div class="check-box">
-					<input type="checkbox" id="checkbox-1">
-					<label for="checkbox-1">&nbsp;</label>
-				</div>
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>发布日期：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				{literal}
-				<input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}' })" id="datemin" class="input-text Wdate">
-				{/literal}
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>结束日期：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				{literal}
-				<input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'datemin\')}' })" id="datemax" class="input-text Wdate">
-				{/literal}
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">图片作者：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="0" placeholder="" id="" name="">
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">图片来源：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="0" placeholder="" id="" name="">
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">关键词：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<input type="text" class="input-text" value="0" placeholder="" id="" name="">
-			</div>
-		</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-2">图片摘要：</label>
-			<div class="formControls col-xs-8 col-sm-9">
-				<textarea name="" cols="" rows="" class="textarea"  placeholder="说点什么...最少输入10个字符" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" onKeyUp="$.Huitextarealength(this,200)"></textarea>
-				<p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
-			</div>
-		</div>
-	</form>
-</div>
+		<div class="panel-body container-fluid">
 
+		</div>
+	</div>
+</div>
 {include file='export-footer' /}
 
 <!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
-<script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
-<script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
-<script type="text/javascript" src="__PUBLIC__/lib/webuploader/0.1.5/webuploader.min.js"></script>
+<script id="ohead-show" type="text/html">
+	<div class="ohead">
+		<ul class="ohead-ul row">
+			{{# layui.each(d.hlists,function(index,item) { }}
+				<li class="col-xs-4 mb-15">
+					<div class="oh-content">
+						<span>{{ item.field }}：</span>
+						<span>{{ item.content }}</span>
+					</div>
+				</li>
+			{{# }); }}
+		</ul>
+	</div>
+</script>
 <script type="text/javascript">
-function article_save(){
-	alert("刷新父级的时候会自动关闭弹层。")
-	window.parent.location.reload();
-}
+    layui.config({
+        debug : true,
+        version : true	 //清除缓存
+    });
+    layui.use(['laytpl','jquery'],function () {
+		var laytpl = layui.laytpl;
+		var $ = layui.jquery;
 
-$(function(){
-	$('.skin-minimal input').iCheck({
-		checkboxClass: 'icheckbox-blue',
-		radioClass: 'iradio-blue',
-		increaseArea: '20%'
-	});
-});
-
+		var headtpl = $("#ohead-show").html();
+		var order_no = "{$orderNo='V8152620205'}";
+		var res = "";
+		//请求对应订单数据
+        $.ajax({
+			url:"{:url('admin/Order/getOrderDetails')}",
+			data: {"orderNo":order_no},
+            async : false,
+			type: "post",
+			success: function (data) {
+				res = data;
+    		}
+		});
+        var headdata = res[0]; //取第一条数据的信息，因为头信息都一样
+		var data = {
+            hlists: [
+				{
+				    "field": "订单编号",
+				    "content": headdata.order_no,
+				},
+                {
+                    "field": "电商平台代码",
+                    "content": headdata.ebp_code,
+                },
+                {
+                    "field": "电商平台名称",
+                    "content": headdata.ebp_name,
+                },
+                {
+                    "field": "电商企业代码",
+                    "content": headdata.ebc_code,
+                },
+                {
+                    "field": "电商企业名称",
+                    "content": headdata.ebc_name,
+                },
+                {
+                    "field": "商品价格",
+                    "content": headdata.goods_value,
+                },
+                {
+                    "field": "运杂费",
+                    "content": headdata.freight,
+                },
+                {
+                    "field": "非现金抵扣金额",
+                    "content": headdata.discount,
+                },
+                {
+                    "field": "代扣税款",
+                    "content": headdata.tax_total,
+                },
+                {
+                    "field": "实际支付金额",
+                    "content": headdata.actural_paid,
+                },
+                {
+                    "field": "币制",
+                    "content": headdata.currency,
+                },
+                {
+                    "field": "订购人姓名",
+                    "content": headdata.buyer_name,
+                },
+                {
+                    "field": "订购人电话",
+                    "content": headdata.buyer_telephone,
+                },
+                {
+                    "field": "订购人证件类型",
+                    "content": headdata.buyer_id_type,
+                },
+                {
+                    "field": "订购人证件号码",
+                    "content": headdata.buyer_id_number,
+                },
+                {
+                    "field": "收货人姓名",
+                    "content": headdata.consignee,
+                },
+                {
+                    "field": "收货人电话",
+                    "content": headdata.consignee_telephone,
+                },
+                {
+                    "field": "收货地址",
+                    "content": headdata.consignee_address,
+                }
+            ]
+		}
+		laytpl(headtpl).render(data,function (html) {
+			$(".panel-body").append(html);
+        })
+    })
 </script>
 </body>
 </html>

@@ -206,7 +206,7 @@
             ,id: 'main'
             ,height: 288 //容器高度
 //        ,data: res.data
-            ,url: '{:url(\'order/getDatas\')}'
+            ,url: '{:url(\'order/getOrderDatas\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
@@ -281,7 +281,7 @@
                         content: "导入数据成功！",
                         end: function () {
                             table.reload('main', {
-                                url: '{:url(\'order/getDatas\')}'
+                                url: '{:url(\'order/getOrderDatas\')}'
                                 ,where: {batch:res.data.batch} //设定异步数据接口的额外参数
                             });
                         }
@@ -324,12 +324,13 @@
         //监听导出操作工具条
         table.on("tool(olist)",function (obj) {
             var data = obj.data;
-            console.log(data);
+//            console.log(data);
             if (obj.event == "details") {
+                var url = "{:url('admin/Order/index')}";
                 layer.open({
 					type: 2,
 					title: "订单详情",
-					content: "{:url('admin/Order/index','type=details')}",
+					content:url+'?orderNo='+data.order_no,
 					area: ['100%','100%']
 				})
             }else if(obj.event == "edit") {

@@ -60,11 +60,11 @@ class Excel extends Controller
                 foreach ($cellIterator as $k => $cell) {
                     $columnValue = (string)$cell->getValue();//获取数据
                     //当表头某列为空时，该列后边的单元格都不再遍历
-                    if ($key == $titleCol && empty($columnValue)) {
+                    if ($key == $titleCol && !isset($columnValue)) {
                         $maxKey = $k;
                     }
                     //当指定列的值为空时也不遍历
-                    if ($k==$columnOrder&&empty($columnValue)) break;
+                    if ($k==$columnOrder && !isset($columnValue)) break;
                     $data_arr[$key-1][] = $columnValue;
                     if ($k == $maxKey) break;
                 }
@@ -135,12 +135,14 @@ class Excel extends Controller
                 if ($k<count($records)-1){
                     for ($i=$k+1;$i<count($records);$i++) {
                         //获取相同订单的交集
-                        $arr_same[] = array_intersect($records[$k],$records[$i]);
+                        $arr_same[] = array_intersect_assoc($records[$k],$records[$i]);
                         if (count($arr_same)>1) {
                             //只取交集最小的项，保证订单信息的准确性
                             count($arr_same[0])<count($arr_same[1]) ? array_pop($arr_same) : array_shift($arr_same);
                         }
                     }
+                }else{
+                    break;
                 }
             }
             if (!empty($arr_same)) {
