@@ -84,3 +84,42 @@ padding: 0;
  .datas .layui-table-tool {
      background: #f5fafe;
  }
+
+/*订单详情订单头部分*/
+#order-details .panel-body {
+    height: auto;
+    padding: 15px 20px;
+    padding-bottom: 0;
+}
+.ohead-ul {
+    /*min-width: 1320px;*/
+    /*padding-left: 90px;*/
+    width: 80%;
+    margin: auto;
+}
+.ohead-ul li {
+    min-width: 370px;
+}
+.oh-content {
+    width: 100%;
+    margin: 0 auto;
+}
+.oh-content span:first-child {
+    display: inline-block;
+    width: 35%;
+    text-align: right;
+    vertical-align: top;
+    color: #999;
+}
+.oh-content span:last-child {
+    margin-left: 10px;
+    display: inline-block;
+    width: 60%;
+    line-height: 20px;
+    vertical-align: top;
+    color: #333;
+}
+
+.oh-content span:last-child .textarea {
+    height: 60px;
+}

@@ -60,6 +60,11 @@ class OrderBatch extends Model
             $temp[$k] = "";
         }
         $goods_fields = array_merge($temp,array_diff($goods_fields,$gfields_no));
+        //交互一些字段顺序，保正与数据对应
+        $field_index1 = array_search('qty1',$goods_fields);
+        $field_index2 = array_search('unit',$goods_fields);
+        $goods_fields[$field_index1] = 'unit';
+        $goods_fields[$field_index2] = 'qty1';
         $result = Loader::model("OrderHead")->saveDatas($datas,$head_fields,$goods_fields,$batch);
         return $result;
     }

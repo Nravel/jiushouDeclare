@@ -83,10 +83,17 @@ class OrderHead extends Model
                 }
             }
         }
-        return [
-            "code" => "0000",
-            "msg" => "success"
-        ];
+        if (empty($datas)) {
+            return [
+                "code" => "0100",
+                "error" => "表非法"
+            ];
+        }else{
+            return [
+                "code" => "0000",
+                "msg" => "success"
+            ];
+        }
     }
 
 }

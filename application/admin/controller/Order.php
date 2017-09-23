@@ -19,11 +19,11 @@ class Order extends Common
     public function index() {
         $type = $this->request->param("type");
         $orderNo =  $this->request->param("orderNo");
-        if (isset($orderNo)) {
-            return $this->fetch("order-details",['orderNo'=>$orderNo]);
-        }else{
-            return $this->fetch("order-".$type);
-        }
+//        if (isset($orderNo)) {
+//            return $this->fetch("order-details");
+//        }else{
+            return $this->fetch("order-".$type,['orderNo'=>$orderNo]);
+//        }
     }
 
     /**
@@ -68,12 +68,21 @@ class Order extends Common
     }
 
     public function getOrderDetails() {
-        $order_no = $this->request->post("orderNo");
+        $order_no = $this->request->param("orderNo");
+        $limit = $this->request->param("limit ");
+        $page = $this->request->param("page");
         $join = [["order_goods b","a.order_no = b.order_no"]];
         $where = ['a.order_no'=> $order_no];
         $orderHead = Loader::model("OrderHead");
-        $res = $orderHead->alias('a')->join($join)->where($where)->select();
-        return $res;
+        $data = $orderHead->alias('a')->join($join)->where($where)->page($page,$limit)->select();
+        $dataCount = $orderHead->alias('a')->join($join)->where($where)->count();
+        $data_format = [
+            "code" => 0,
+            "msg" => "success",
+            "count" => $dataCount,
+            "data" => $data,
+        ];
+        return $data_format;
     }
 
     /**
