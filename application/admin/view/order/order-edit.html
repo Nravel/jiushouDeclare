@@ -14,11 +14,11 @@
 			padding-right: 15px;
 		}
 		#order-details .panel-heading {
-			height: 30px;
+			height: 40px;
 			padding: 0 15px;
 		}
 		#order-details .panel-heading span {
-			line-height: 30px;
+			line-height: 40px;
 		}
 		#order-details .panel-heading a {
 			margin-left: 5px;
@@ -33,6 +33,10 @@
 		.panel-body {
 			overflow-x: hidden;
 		}
+		.og-tip {
+			color: #DD514C;
+			line-height: 30px;
+		}
 	</style>
 </head>
 <body>
@@ -40,20 +44,22 @@
 	<div id="order-details" class="panel mt-20">
 		<div class="panel-heading">
 			<span>订单基本信息</span>
+			<a class="btn btn-success radius r" style="line-height:1.6em;margin:0;margin-top: 4px;" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont"></i></a>
 			<!--<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>-->
 			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
 		</div>
 		<div class="panel-body container-fluid">
 		</div>
 		<div id="ohead-submit" class="text-c">
-			<a class="btn  btn-primary radius mt-10 mb-10" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
+			<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius mt-10 mb-10" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
 		</div>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-40">
+	<div class="cl pd-5 bg-1 bk-gray mt-40 text-c">
 		<span class="l">
 			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
-			<a id="upload_excel" class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<a class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
+		<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
 	</div>
 	<div id="og-details" class="datas">
@@ -71,7 +77,7 @@
 				<div class="oh-content">
 					<span>{{ item.field }}：</span>
 					{{# if (item.fieldname!="") { }}
-						{{# var re = /^[\u4E00-\u9FA5]+$/ }}
+						<!--{{# var re = /^[\u4E00-\u9FA5]+$/ }}-->
 						{{# if (escape(item.content).indexOf( "%u" )==0&&item.content.length>17) { }}
 							<span><textarea name={{ item.fieldname }} cols="" rows="" class="textarea">{{ item.content }}</textarea></span>
 						{{# }else{ }}
@@ -90,9 +96,6 @@
 	<a title="确认" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
-<script type="text/html" id="og-input">
-	<input name={{ d.item_name }} class="input-text size-MINI" type="text" value={{# d.item_name }}>
-</script>
 <script type="text/javascript">
     layui.config({
         debug : true,
@@ -100,13 +103,13 @@
     });
     $(document).ready(function () {
 		html = "";
-		var og_fields = ["item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","currency"];
+		var og_fields = ["item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","item_currency"];
 		$.each(og_fields,function (index,field) {
 			html+= '<script type="text/html\" id="og-input'+(index+1)+'">'+
 						'<input name='+field+' class="input-text size-MINI" type="text" value={{ d.'+field+' }}>'+
 					'<\/script>';
 			$(document.body).append(html);
-        })
+        });
     });
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
@@ -114,7 +117,7 @@
         var table = layui.table;
 
         var headtpl = $("#ohead-show").html();
-        var order_no = "{$orderNo='V8152620205'}";
+        var order_no = "{$orderNo}";
         var res = "";
         //请求对应订单数据
         $.ajax({
@@ -235,18 +238,18 @@
             cols: [[
                 {checkbox: true},
                 {field: "gnum",title: "商品序号", width: 100, sort: true},
-                {field: "item_name",title: "企业商品名称",width: 200,templet: "#og-input1"},
-                {field: "qty",title: "数量",width: 100,templet: "#og-input2", sort: true},
-                {field: "unit",title: "计量单位",width: 100,templet: "#og-input3", sort: true},
-                {field: "qty1",title: "法定数量",width: 100,templet: "#og-input4", sort: true},
-                {field: "unit1",title: "法定计量单位",width: 125,templet: "#og-input5", sort: true},
-                {field: "country",title: "原产国",width: 80,templet: "#og-input6"},
-                {field: "hscode",title: "海关商品编码(Hscode)",width: 185,templet: "#og-input7", sort: true},
-                {field: "gjcode",title: "国检商品编号",width: 150,templet: "#og-input8", sort: true},
-                {field: "gtype",title: "商品规格型号",width: 120,templet: "#og-input9"},
-                {field: "price",title: "单价",width: 100,templet: "#og-input10", sort: true},
-                {field: "total_price",title: "总价",width: 100,templet: "#og-input11", sort: true},
-                {field: "currency",title: "币制",width: 70,templet: "#og-input12"},
+                {field: "item_name",title: "企业商品名称",width: 200,templet: "#og-input1",edit: 'text'},
+                {field: "qty",title: "数量",width: 100,templet: "#og-input2", sort: true,edit: 'text'},
+                {field: "unit",title: "计量单位",width: 100,templet: "#og-input3", sort: true,edit: 'text'},
+                {field: "qty1",title: "法定数量",width: 100,templet: "#og-input4", sort: true,edit: 'text'},
+                {field: "unit1",title: "法定计量单位",width: 125,templet: "#og-input5", sort: true,edit: 'text'},
+                {field: "country",title: "原产国",width: 80,templet: "#og-input6",edit: 'text'},
+                {field: "hscode",title: "海关商品编码(Hscode)",width: 185,templet: "#og-input7", sort: true,edit: 'text'},
+                {field: "gjcode",title: "国检商品编号",width: 150,templet: "#og-input8", sort: true,edit: 'text'},
+                {field: "gtype",title: "商品规格型号",width: 120,templet: "#og-input9",edit: 'text'},
+                {field: "price",title: "单价",width: 100,templet: "#og-input10", sort: true,edit: 'text'},
+                {field: "total_price",title: "总价",width: 100,templet: "#og-input11", sort: true,edit: 'text'},
+                {field: "item_currency",title: "币制",width: 70,templet: "#og-input12",edit: 'text'},
                 {field: 'ctrl', title: '操作', width: 160, toolbar: "#tools", fixed: "right"}
             ]],
 //            skin: "row",
@@ -262,20 +265,45 @@
         //监听操作工具条
         table.on("tool(ogoods)",function (obj) {
             var data = obj.data;
-            console.log(data);
             if (obj.event == "commit") {
-//                var url = "{:url('admin/Order/index')}";
-//                layer.open({
-//                    type: 2,
-//                    title: "订单详情",
-//                    content:url+'?orderNo='+data.order_no,
-//                    area: ['100%','100%']
-//                })
+                var url = "{:url('admin/Order/editOrder')}";
+                data = {
+                    etype: "goods",
+					orderNo : data.order_no,
+					data: data
+				};
+                $.post(url,data,function (res) {
+					if (res.code == "0000") {
+                        layer.msg(res.msg,{time: 2000});
+//                        table.reload('ogoods-main');
+					}else{
+					    layer.open({
+							content: res.msg
+						});
+					}
+                });
             }else if(obj.event == "del") {
 
             }
         });
-    })
+    });
+    function commitHead() {
+		$.post('{:url("admin/Order/editOrder")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
+            if (res.code == "0000") {
+                layer.msg(res.msg,{time: 2000});
+//                        table.reload('ogoods-main');
+            }else if(res.code == "0001") {
+                layer.open({
+                    content: res.msg
+                });
+            }else{
+                layer.open({
+                    content: "存在非法数据！"
+                });
+                console.log(res.msg);
+            }
+        })
+    }
 </script>
 </body>
 </html>

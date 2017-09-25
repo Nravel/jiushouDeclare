@@ -67,14 +67,19 @@ class Order extends Common
         return $data_format;
     }
 
+    /**
+     * 获取订单详细信息
+     * @return array
+     */
     public function getOrderDetails() {
         $order_no = $this->request->param("orderNo");
         $limit = $this->request->param("limit ");
         $page = $this->request->param("page");
         $join = [["order_goods b","a.order_no = b.order_no"]];
         $where = ['a.order_no'=> $order_no];
+        $field = ["*","a.currency"=>"currency","b.currency"=>"item_currency"];
         $orderHead = Loader::model("OrderHead");
-        $data = $orderHead->alias('a')->join($join)->where($where)->page($page,$limit)->select();
+        $data = $orderHead->alias('a')->join($join)->field($field)->where($where)->page($page,$limit)->select();
         $dataCount = $orderHead->alias('a')->join($join)->where($where)->count();
         $data_format = [
             "code" => 0,
@@ -83,6 +88,50 @@ class Order extends Common
             "data" => $data,
         ];
         return $data_format;
+    }
+
+    /**
+     * 修改订单信息
+     * @return array
+     */
+    public function editOrder() {
+        $etype = $this->request->param("etype");
+        $orderNo = $this->request->param("orderNo");
+        $data = $this->request->param("data/a");
+
+        if ($etype == "head") {
+            $data = $this->request->param();
+            try{
+                $res=Loader::model("OrderHead")->allowField(true)->save($data,"order_no='".$data['order_no']."'");
+            }catch (\Exception $e) {
+                return ['code'=>"0002",'msg'=>$e];
+            }
+        }elseif ($etype == "goods") {
+            $data['currency'] = $data['item_currency'];
+            try{
+                $res=Loader::model("OrderGoods")->allowField(true)->save($data,"order_no=".$data['order_no']);
+            }catch (\Exception $e) {
+                return ['code'=>"0002",'msg'=>$e];
+            }
+        }
+        if ($res) {
+            return ['code'=>"0000",'msg'=>"修改成功！"];
+        }else{
+            return ['code'=>"0001",'msg'=>"数据没有变更！"];
+        }
+    }
+
+    public function delOrder() {
+        $orderNo = $this->request->param('order_no');
+        $orderHead = Loader::model('OrderHead');
+        $orderGoods = Loader::model('OrderGoods');
+        $orderGoods::destroy(['order_no'=>$orderNo]);
+        $orderHead::destroy(['order_no'=>$orderNo]);
+        if ($orderHead) {
+            return ['code'=>'0000','msg'=>'success'];
+        }else{
+            return ['code'=>'0003','msg'=>'删除失败！'];
+        }
     }
 
     /**

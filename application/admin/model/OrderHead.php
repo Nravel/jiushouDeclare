@@ -12,6 +12,7 @@ namespace app\admin\model;
 use think\Db;
 use think\Loader;
 use think\Model;
+use traits\model\SoftDelete;
 
 class OrderHead extends Model
 {

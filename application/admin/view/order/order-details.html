@@ -14,11 +14,11 @@
 			padding-right: 15px;
 		}
 		#order-details .panel-heading {
-			height: 30px;
+			height: 40px;
 			padding: 0 15px;
 		}
 		#order-details .panel-heading span {
-			line-height: 30px;
+			line-height: 40px;
 		}
 		#order-details .panel-heading a {
 			margin-left: 5px;
@@ -31,7 +31,8 @@
 	<div id="order-details" class="panel mt-20">
 		<div class="panel-heading">
 			<span>订单基本信息</span>
-			<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+			<a title="修改" onclick="editHead()" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+			<a class="btn btn-success radius r" style="line-height:1.6em;margin:0;margin-top: 4px;" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont"></i></a>
 			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
 		</div>
 		<div class="panel-body container-fluid">
@@ -41,7 +42,7 @@
 	<div class="cl pd-5 bg-1 bk-gray mt-40">
 		<span class="l">
 			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
-			<a id="upload_excel" class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<a class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
 	</div>
@@ -209,22 +210,37 @@
             }
 		});
         //监听操作工具条
-        table.on("tool(olist)",function (obj) {
+        table.on("tool(ogoods)",function (obj) {
             var data = obj.data;
 //            console.log(data);
             if (obj.event == "edit") {
                 var url = "{:url('admin/Order/index')}";
                 layer.open({
                     type: 2,
-                    title: "订单详情",
-                    content:url+'?orderNo='+data.order_no,
+                    title: "订单修改",
+                    content:url+'?orderNo='+data.order_no+'&type=edit',
                     area: ['100%','100%']
-                })
+                });
+//                layer.open({
+//                    type: 2,
+//                    title: "订单详情",
+//                    content:url+'?orderNo='+data.order_no,
+//                    area: ['100%','100%']
+//                })
             }else if(obj.event == "del") {
 
             }
         });
     })
+	function editHead() {
+        var url = "{:url('admin/Order/index')}";
+        layer.open({
+            type: 2,
+            title: "订单修改",
+            content:url+'?orderNo='+"{$orderNo}"+'&type=edit',
+            area: ['100%','100%']
+        });
+    }
 </script>
 </body>
 </html>
