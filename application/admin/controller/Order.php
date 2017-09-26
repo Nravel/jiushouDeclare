@@ -27,6 +27,32 @@ class Order extends Common
     }
 
     /**
+     * 导出时显示的批次信息
+     * @return array
+     */
+    public function getOrderBatch() {
+        $limit = $this->request->get('limit');
+        $page = $this->request->get('page');
+        $orderModel = Loader::model("OrderBatch");
+        $field = "*,@i:=@i+1 as autonum";
+        //数据集序号设定
+        $i = 0;
+        if ($page>1) {
+            $i = ($page-1)*$limit;
+        }
+        $orderModel->query("set @i=".$i);
+        $data = $orderModel->field($field)->page($page,$limit)->select();
+        $dataCount = $orderModel->field($field)->count();
+        $data_format = [
+            "code" => 0,
+            "msg" => "success",
+            "count" => $dataCount,
+            "data" => $data,
+        ];
+        return $data_format;
+    }
+
+    /**
      * 订单列表页获取数据
      * @return array
      */
@@ -34,10 +60,9 @@ class Order extends Common
         $limit = $this->request->get('limit');
         $page = $this->request->get('page');
         $orderModel = Loader::model("OrderBatch");
-        if (isset($batch)) {
-            $batch = $this->request->get('batch');
-        }else {
-            $batch = $orderModel->field("batch_time")->order("id desc")->find();
+        $batch = $this->request->param('batch');
+        if (!isset($batch)) {
+            $batch = $orderModel->field("batch_time")->order("id desc")->find()['batch_time'];
         }
 //        $orderField = $this->request->get('field');
 //        $orderType = $this->request->get('order');
@@ -46,6 +71,7 @@ class Order extends Common
             ["OrderHead b","a.batch_time = b.batch_time"],
 //            ["OrderGoods c","b.order_no = c.order_no"],
         ];
+        $where = ['a.batch_time'=>$batch];
         $field = "*,@i:=@i+1 as autonum";
 //        $orderBy = [$orderField => $orderType];
         $orderModel = Loader::model("OrderBatch");
@@ -56,8 +82,9 @@ class Order extends Common
         }
         $orderModel->query("set @i=".$i);
 //        $data = $orderHead->alias($alias)->join($join)->field($field)->page($page,$limit)->order($orderBy)->select();
-        $data = $orderModel->alias($alias)->join($join)->field($field)->page($page,$limit)->select();
-        $dataCount = $orderModel->alias($alias)->join($join)->field($field)->count();
+        $data = $orderModel->alias($alias)->join($join)->where($where)->field($field)->page($page,$limit)->select();
+        $dataCount = $orderModel->alias($alias)->where($where)->join($join)->field($field)->count();
+        if (!$dataCount) $orderModel::destroy(['batch_time'=>$batch]);
         $data_format = [
             "code" => 0,
             "msg" => "success",
@@ -121,13 +148,38 @@ class Order extends Common
         }
     }
 
+    /**
+     * 删除订单
+     * @return array
+     */
     public function delOrder() {
         $orderNo = $this->request->param('order_no');
+        $data = $this->request->param('data');
+        $og_data_no = $this->request->param('og_data_no');
+        $gnum = $this->request->param('gnum');
         $orderHead = Loader::model('OrderHead');
         $orderGoods = Loader::model('OrderGoods');
-        $orderGoods::destroy(['order_no'=>$orderNo]);
-        $orderHead::destroy(['order_no'=>$orderNo]);
-        if ($orderHead) {
+        if ($data==null&&$gnum==null) {
+            $orderGoods::destroy(['order_no'=>$orderNo]);
+            $res = $orderHead::destroy(['order_no'=>$orderNo]);
+        }elseif($gnum==null&&isset($data)){
+            foreach (explode('|',$data) as $val) {
+                $orderGoods::destroy(['order_no'=>$val]);
+                $res = $orderHead::destroy(['order_no'=>$val]);
+                if (!$orderHead) break;
+            }
+        }elseif ($gnum!=null&&$data==null&&$og_data_no==null) {
+            $res = $orderGoods::destroy(['order_no'=>$orderNo,'gnum'=>$gnum]);
+        }elseif ($gnum!=null&&$og_data_no!=null) {
+            foreach (explode('|',$gnum) as $val) {
+                $res = $orderGoods::destroy(['order_no'=>$og_data_no,'gnum'=>$val]);
+                if (!$orderGoods) break;
+            }
+            if (!$orderGoods::get(['order_no'=>$og_data_no])) {
+                $orderHead::destroy(['order_no'=>$og_data_no]);
+            }
+        }
+        if ($res) {
             return ['code'=>'0000','msg'=>'success'];
         }else{
             return ['code'=>'0003','msg'=>'删除失败！'];

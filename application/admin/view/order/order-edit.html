@@ -57,7 +57,7 @@
 	<div class="cl pd-5 bg-1 bk-gray mt-40 text-c">
 		<span class="l">
 			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
-			<a class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
@@ -118,7 +118,8 @@
 
         var headtpl = $("#ohead-show").html();
         var order_no = "{$orderNo}";
-        var res = "";
+        var result = "";
+        var nres = "";
         //请求对应订单数据
         $.ajax({
             url:"{:url('admin/Order/getOrderDetails')}",
@@ -126,10 +127,15 @@
             async : false,
             type: "post",
             success: function (data) {
-                res = data.data;
+                result = data.data;
             }
         });
-        var headdata = res[0]; //取第一条数据的信息，因为头信息都一样
+        if (!result.length) {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+            parent.location.reload();
+        }
+        var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
         var data = {
             hlists: [
                 {
@@ -227,7 +233,6 @@
         laytpl(headtpl).render(data,function (html) {
             $(".panel-body").append(html);
         });
-
         //订单商品信息方法式渲染
         table.render({
             elem: "#order-goods",
@@ -253,12 +258,17 @@
                 {field: 'ctrl', title: '操作', width: 160, toolbar: "#tools", fixed: "right"}
             ]],
 //            skin: "row",
-//            even: true,
+            even: true,
             page: true,
             limits: [2,5,10],
             limit: 5,
             done: function (res,curr,count) {
-//				console.log(res);
+                nres = res.data;
+                if (!nres.length) {
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                    parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
+                }
                 $(".total").children("strong").html(count);
             }
         });
@@ -276,22 +286,56 @@
 					if (res.code == "0000") {
                         layer.msg(res.msg,{time: 2000});
 //                        table.reload('ogoods-main');
+//                        parent.layui.table.reload('ogoods-main');
 					}else{
 					    layer.open({
 							content: res.msg
 						});
 					}
                 });
+//                parent.layui.table.reload('ogoods-main');
             }else if(obj.event == "del") {
-
+                if (nres.length>1) {
+                    layer.confirm('确定删除？', function(index){
+                        $.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no,gnum: data.gnum},function (res) {
+                            if (res.code == '0000') {
+                                obj.del();
+                                layer.close(index);
+                                table.reload('ogoods-main');
+//                                parent.layui.table.reload('ogoods-main');
+                            }else{
+                                layer.close(index);
+                                layer.msg(res.msg,{time: 2000})
+                            }
+                        });
+                    });
+				}else {
+                    layer.confirm('确定删除？', function(index){
+						$.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no},function (res) {
+							if (res.code == '0000') {
+								obj.del();
+								layer.close(index);
+								var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+								parent.layer.close(index); //再执行关闭
+                                parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
+							}else{
+								layer.close(index);
+								layer.msg(res.msg,{time: 2000})
+							}
+						});
+                    });
+				}
             }
         });
     });
+
+    //修改订单头信息
     function commitHead() {
 		$.post('{:url("admin/Order/editOrder")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
             if (res.code == "0000") {
                 layer.msg(res.msg,{time: 2000});
 //                        table.reload('ogoods-main');
+                parent.layui.table.reload('main');
             }else if(res.code == "0001") {
                 layer.open({
                     content: res.msg
@@ -303,6 +347,39 @@
                 console.log(res.msg);
             }
         })
+    }
+
+    //批量删除
+    function delBatch() {
+        layui.use(['table','layer'],function (table,layer) {
+            var $ = layui.jquery;
+            var checkStatus = table.checkStatus('ogoods-main');
+            var data = checkStatus.data;
+
+            if (data.length>0) {
+                //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
+                var str = "";
+                $(data).each(function (index,obj) {
+                    str+= obj.gnum+"|";
+                });
+                layer.confirm('确定删除？', function(index){
+                    var res = {};
+                    res.code = '0000';
+                    $.post('{:url("admin/Order/delOrder")}',{og_data_no: data[0].order_no,gnum: str.slice(0,-1)},function (res) {
+                        if (res.code == '0000') {
+                            layer.close(index);
+                            table.reload('ogoods-main');
+//                            parent.layui.table.reload('ogoods-main');
+                        }else{
+                            layer.close(index);
+                            layer.msg(res.msg,{time: 2000})
+                        }
+                    });
+                });
+            }else{
+                layer.msg("没选择数据呀",{'time':"1000"});
+            }
+        });
     }
 </script>
 </body>

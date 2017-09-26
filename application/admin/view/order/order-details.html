@@ -42,7 +42,7 @@
 	<div class="cl pd-5 bg-1 bk-gray mt-40">
 		<span class="l">
 			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
-			<a class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<!--<a class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>-->
 		</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
 	</div>
@@ -69,7 +69,7 @@
 </script>
 <script type="text/html" id="tools">
 	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<!--<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>-->
 </script>
 <script type="text/javascript">
     layui.config({
@@ -80,10 +80,9 @@
 		var laytpl = layui.laytpl;
 		var $ = layui.jquery;
 		var table = layui.table;
-
 		var headtpl = $("#ohead-show").html();
 		var order_no = "{$orderNo}";
-		var res = "";
+		var result = "";
 		//请求对应订单数据
         $.ajax({
 			url:"{:url('admin/Order/getOrderDetails')}",
@@ -91,10 +90,17 @@
             async : false,
 			type: "post",
 			success: function (data) {
-				res = data.data;
+                result = data.data;
     		}
 		});
-        var headdata = res[0]; //取第一条数据的信息，因为头信息都一样
+        if (!result.length) {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+            parent.layui.table.reload('main');
+            return;
+//            parent.location.reload();
+        }
+        var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
 		var data = {
             hlists: [
 				{
@@ -183,9 +189,9 @@
 //			height: 200,
 			where: {orderNo: order_no},
 			cols: [[
-                {checkbox: true},
+//                {checkbox: true},
 				{field: "gnum",title: "商品序号", width: 100, sort: true},
-				{field: "item_name",title: "企业商品名称",width: 200},
+				{field: "item_name",title: "企业商品名称",width: 265},
 				{field: "qty",title: "数量",width: 100, sort: true},
 				{field: "unit",title: "计量单位",width: 100, sort: true},
 				{field: "qty1",title: "法定数量",width: 100, sort: true},
@@ -197,7 +203,7 @@
 				{field: "price",title: "单价",width: 100, sort: true},
 				{field: "total_price",title: "总价",width: 100, sort: true},
 				{field: "currency",title: "币制",width: 70},
-                {field: 'ctrl', title: '操作', width: 160, toolbar: "#tools", fixed: "right"}
+                {field: 'ctrl', title: '操作', width: 70, toolbar: "#tools", fixed: "right"}
 			]],
             skin: 'row', //表格风格
 			even: true,
@@ -212,21 +218,8 @@
         //监听操作工具条
         table.on("tool(ogoods)",function (obj) {
             var data = obj.data;
-//            console.log(data);
             if (obj.event == "edit") {
-                var url = "{:url('admin/Order/index')}";
-                layer.open({
-                    type: 2,
-                    title: "订单修改",
-                    content:url+'?orderNo='+data.order_no+'&type=edit',
-                    area: ['100%','100%']
-                });
-//                layer.open({
-//                    type: 2,
-//                    title: "订单详情",
-//                    content:url+'?orderNo='+data.order_no,
-//                    area: ['100%','100%']
-//                })
+                editHead();
             }else if(obj.event == "del") {
 
             }
@@ -238,7 +231,11 @@
             type: 2,
             title: "订单修改",
             content:url+'?orderNo='+"{$orderNo}"+'&type=edit',
-            area: ['100%','100%']
+            area: ['100%','100%'],
+			cancel: function (index, layero) {
+				location.reload();
+				parent.layui.table.reload('main');
+            }
         });
     }
 </script>

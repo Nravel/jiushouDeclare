@@ -223,13 +223,13 @@
                 ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true}
                 ,{field: 'currency', title: '币制', width: 100}
                 ,{field: 'buyer_name', title: '订购人姓名', width: 100}
-                ,{field: 'buyer_telephone', title: '订购人电话', width: 130}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 120}
                 ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130}
                 ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180}
                 ,{field: 'consignee', title: '收货人姓名', width: 100}
-                ,{field: 'consignee_telephone', title: '收货人电话', width: 130}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 120}
                 ,{field: 'consignee_address', title: '收货地址', width: 300}
-                ,{field: 'ctrl', title: '操作', width: 130, toolbar: "#tools", fixed: "right"}
+                ,{field: 'ctrl', title: '操作', width: 140, toolbar: "#tools", fixed: "right"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
@@ -336,7 +336,8 @@
                     type: 2,
                     title: "订单修改",
                     content:url+'?orderNo='+data.order_no+'&type=edit',
-                    area: ['100%','100%']
+                    area: ['100%','100%'],
+
                 });
             }else if(obj.event == "del") {
                 layer.confirm('确定删除？', function(index){
@@ -364,16 +365,25 @@
             var $ = layui.jquery;
             var checkStatus = table.checkStatus('main');
             var data = checkStatus.data;
-            console.log(data[0].order_no);
+
             if (data.length>0) {
                 //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
 				var str = "";
                 $(data).each(function (index,obj) {
                     str+= obj.order_no+"|";
                 });
-                console.log(str.slice(0,-1));
-                $.post('{:url("admin/Order/delOrder")}',{data: str.slice(0,-1)},function (res) {
-					
+                layer.confirm('确定删除？', function(index){
+                    var res = {};
+                    res.code = '0000';
+                    $.post('{:url("admin/Order/delOrder")}',{data: str.slice(0,-1)},function (res) {
+                        if (res.code == '0000') {
+                            table.reload('main');
+                            layer.close(index);
+                        }else{
+                            layer.close(index);
+                            layer.msg(res.msg,{time: 2000})
+                        }
+                    });
                 });
             }else{
                 layer.msg("没选择数据呀",{'time':"1000"});

@@ -79,56 +79,36 @@ class OrderBatch extends Model
         if (!empty($ex_info)&&count($ex_info)==2) {
             $ex_batch = $ex_info[0];
             $ex_type = $ex_info[1];
-            $where = ["batch"=>$ex_batch];
+            $where = ["a.batch_time"=>$ex_batch];
         }
-        $orderList = Db::name("order_list");
+        $join = [["order_goods b","a.order_no = b.order_no"]];
+        $orderHead = Db::name("order_head");
+        //定义订单头的字段
+        $head_fields = $orderHead->getTableFields();
+        //移除不需要的字段
+        $hfields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_time"];
+        $head_fields = array_merge(array_diff($head_fields,$hfields_no));
+        //定义商品信息的字段
+        $goods_fields = Loader::model("OrderGoods")->getTableFields();
+        //移除不需要的字段
+        $gfields_no = ["id","order_no","item_no","item_describe","bar_code","qty2","unit2","goods_note"];
+        //由于数据位置已在数组中固定，故要保持商品字段与数据位置对应，适当进行偏移
+//        foreach ($head_fields as $k => $val) {
+//            $temp[$k] = "";
+//        }
+        $jiushou_fields = array_merge($head_fields,array_diff($goods_fields,$gfields_no));
+        //交换一些字段顺序，保正与数据对应
+        $field_index1 = array_search('qty1',$jiushou_fields);
+        $field_index2 = array_search('unit',$jiushou_fields);
+        $field_index3 = array_search('order_no',$jiushou_fields);
+        $jiushou_fields[count($jiushou_fields)-1] = 'b.currency as item_currency';
+        $field_index4 = array_search('currency',$jiushou_fields);
+        $jiushou_fields[$field_index1] = 'unit';
+        $jiushou_fields[$field_index2] = 'qty1';
+        $jiushou_fields[$field_index3] = 'a.order_no as order_no';
+        $jiushou_fields[$field_index4] = 'a.currency as currency';
         $fields = [
-            [
-              "order_no",
-              "ebp_bno",
-              "ebp_name",
-              "ebc_code",
-              "ebc_name",
-              "ac_price",
-              "freight",
-              "deduction",
-              "tax_deduction",
-              "ac_total",
-              "wb_currency",
-              "sender_reg_no",
-              "sender_name",
-              "sender_telephone",
-              "sender_id_type",
-              "sender_id_num",
-              "paycom_code",
-              "paycom_name",
-              "paydeal_no",
-              "consignee",
-              "consignee_telephone",
-              "consignee_address",
-              "com_wb_no",
-              "trade_way",
-              "book_no",
-              "licence",
-              "start_con",
-              "waybill",
-              "insure_price",
-              "packing_type",
-              "item_gweight",
-              "item_nweight",
-              "item_seria_no",
-              "mainitem_name",
-              "qty",
-              "unit",
-              "law_qty",
-              "law_unit",
-              "origin_con",
-              "item_bak_no",
-              "item_spec_type",
-              "price",
-              "total",
-              "item_currency"
-          ],
+            $jiushou_fields,
             [
               "app_type",
               "app_status",
@@ -243,18 +223,22 @@ class OrderBatch extends Model
         if ($data!=null&&$datatype!=null&&count($data)>0) {      //多批次打包导出
             if ($datatype!=4) {         //多批次纵向单表数据导出
                 foreach ($data as $batch) {
-                    $res = $orderList
-                        ->where(["batch"=>$batch])
+                    $res = $orderHead
+                        ->alias('a')
+                        ->join($join)
                         ->field($fields[$datatype])
+                        ->where(["a.batch_time"=>$batch])
                         ->select();
                     $excelObj->exportExcel($res,$datatype,$batch,true);
                 }
             }else{                      //多批次所有表数据导出
                 foreach ($data as $batch) {
                     for ($i=0;$i<4;$i++) {
-                        $res = $orderList
-                            ->where(["batch"=>$batch])
+                        $res = $orderHead
+                            ->alias('a')
+                            ->join($join)
                             ->field($fields[$i])
+                            ->where(["a.batch_time"=>$batch])
                             ->select();
                         $excelObj->exportExcel($res,$i,$batch,true,$batch);
                     }
@@ -279,16 +263,20 @@ class OrderBatch extends Model
             unlink("excel.zip");
         }else{
             if ($ex_type!=5) {  //导出对应的分表
-                $res = $orderList
-                    ->where($where)
+                $res = $orderHead
+                    ->alias('a')
+                    ->join($join)
                     ->field($fields[$ex_type-1])
+                    ->where($where)
                     ->select();
                 $excelObj->exportExcel($res,$ex_type-1,$ex_batch);
             }else{  //单批次导出四个分表的压缩包
                 for ($i=0;$i<4;$i++) {
-                    $res = $orderList
-                        ->where($where)
+                    $res = $orderHead
+                        ->alias('a')
+                        ->join($join)
                         ->field($fields[$i])
+                        ->where($where)
                         ->select();
                     $excelObj->exportExcel($res,$i,$ex_batch,true);
                 }

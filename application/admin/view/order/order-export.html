@@ -150,13 +150,13 @@
 		<span class="l">
 			<a href="javascript:;" onclick="searchAdv()" class="btn btn-primary radius"><i class="layui-icon">&#xe615;</i> 高级查询</a>
 			<a class="btn  btn-success radius" data-title="批量导出就手订单" onclick="exportTable(0)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出就手订单</a>
-			<a class="btn  btn-success radius" data-title="批量导出清单" onclick="exportTable(1)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出清单</a>
-			<a class="btn  btn-success radius" data-title="批量导出入库单" onclick="exportTable(2)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出入库单</a>
-			<a class="btn  btn-success radius" data-title="批量导出运单" onclick="exportTable(3)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出运单</a>
-			<a class="btn  btn-success radius" data-title="批量一次性导出" onclick="exportTable(4)" href="javascript:;"><i class="Hui-iconfont">&#xe641;</i> 批量一次性导出</a>
-			<a id="upload_excel" class="btn  btn-danger radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入Excel文件</a>
-			<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>
-			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>
+			<!--<a class="btn  btn-success radius" data-title="批量导出清单" onclick="exportTable(1)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出清单</a>-->
+			<!--<a class="btn  btn-success radius" data-title="批量导出入库单" onclick="exportTable(2)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出入库单</a>-->
+			<!--<a class="btn  btn-success radius" data-title="批量导出运单" onclick="exportTable(3)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出运单</a>-->
+			<!--<a class="btn  btn-success radius" data-title="批量一次性导出" onclick="exportTable(4)" href="javascript:;"><i class="Hui-iconfont">&#xe641;</i> 批量一次性导出</a>-->
+			<!--<a id="upload_excel" class="btn  btn-danger radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入Excel文件</a>-->
+			<!--<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>-->
+			<!--<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>-->
 		</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
 	</div>
@@ -177,10 +177,10 @@
 <script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>
 <script type="text/html" id="exportTools">
 	<a class="layui-btn layui-btn-normal layui-btn-mini" lay-event="jiushou_ex">导出就手订单</a>
-	<a class="layui-btn layui-btn-mini" lay-event="list_ex">导出清单</a>
-	<a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="entry_ex">导出入库单</a>
-	<a class="layui-btn layui-btn-warm layui-btn-mini" lay-event="transprot_ex">导出运单</a>
-	<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">一次性导出</a>
+	<!--<a class="layui-btn layui-btn-mini" lay-event="list_ex">导出清单</a>-->
+	<!--<a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="entry_ex">导出入库单</a>-->
+	<!--<a class="layui-btn layui-btn-warm layui-btn-mini" lay-event="transprot_ex">导出运单</a>-->
+	<!--<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">一次性导出</a>-->
 </script>
 <script type="text/javascript">
 layui.config({
@@ -209,9 +209,9 @@ layui.use(['table','layer','upload'],function () {
     table.render({
         elem: '#orderLists' //指定原始表格元素选择器（推荐id选择器）
         ,id: 'main'
-        ,height: 288 //容器高度
+//        ,height: 288 //容器高度
 //        ,data: res.data
-		,url: '{:url(\'order/getDatas\')}'
+		,url: '{:url(\'admin/order/getOrderBatch\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
@@ -220,9 +220,9 @@ layui.use(['table','layer','upload'],function () {
         ,cols: [[ //标题栏
             {checkbox: true}, //默认全选
 			{field: 'autonum', title: 'No.',filter: 'autonum', width: 80, sort: true}
-            ,{field: 'batch', title: '批次时间', width: 230, sort: true}
-            ,{field: 'note', title: '备注', width: 230}
-            ,{field: 'ctrl', title: '导出操作', width: 460, toolbar: "#exportTools"}
+            ,{field: 'batch_time', title: '批次时间', width: 230, sort: true}
+            ,{field: 'batch_note', title: '备注', width: 230}
+            ,{field: 'ctrl', title: '导出操作', width: 120, toolbar: "#exportTools"}
         ]]
         ,skin: 'row' //表格风格
         ,even: true
@@ -317,21 +317,22 @@ layui.use(['table','layer','upload'],function () {
 	table.on("tool(olist)",function (obj) {
 	    var data = obj.data;
 		if (obj.event == "jiushou_ex") {
-		    $("input[name='ex_info']").val(data.batch+"|"+1);
+		    $("input[name='ex_info']").val(data.batch_time+"|"+1);
             $("#postData").submit();
-		}else if(obj.event == "list_ex") {
-            $("input[name='ex_info']").val(data.batch+"|"+2);
-            $("#postData").submit();
-		}else if(obj.event == "entry_ex") {
-            $("input[name='ex_info']").val(data.batch+"|"+3);
-            $("#postData").submit();
-        }else if(obj.event == "transprot_ex") {
-            $("input[name='ex_info']").val(data.batch+"|"+4);
-            $("#postData").submit();
-        }else if(obj.event == "all_ex") {
-            $("input[name='ex_info']").val(data.batch+"|"+5);
-            $("#postData").submit();
-        }
+		}
+//		else if(obj.event == "list_ex") {
+//            $("input[name='ex_info']").val(data.batch+"|"+2);
+//            $("#postData").submit();
+//		}else if(obj.event == "entry_ex") {
+//            $("input[name='ex_info']").val(data.batch+"|"+3);
+//            $("#postData").submit();
+//        }else if(obj.event == "transprot_ex") {
+//            $("input[name='ex_info']").val(data.batch+"|"+4);
+//            $("#postData").submit();
+//        }else if(obj.event == "all_ex") {
+//            $("input[name='ex_info']").val(data.batch+"|"+5);
+//            $("#postData").submit();
+//        }
     })
 });
 
@@ -372,7 +373,7 @@ function exportTable(num) {
             html = '';
             html+= "<input type=\"text\" name=\"datatype\" value='"+num+"'>";
             $(data).each(function (index,obj) {
-                html+= "<input type=\"text\" name=\"data[]\" value='"+obj.batch+"'>";
+                html+= "<input type=\"text\" name=\"data[]\" value='"+obj.batch_time+"'>";
 			});
             $("#batch_ex").append(html);
             $("#batch_ex").submit().empty();
