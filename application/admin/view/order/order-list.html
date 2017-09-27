@@ -153,6 +153,7 @@
 			<a id="upload_excel" class="btn  btn-success radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入订单</a>
 			<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>
 			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>
+			<a id="open-tab" hidden data-href="" data-title="" href="javascript:void(0)"></a>
 		</span>
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
 	</div>
@@ -323,22 +324,15 @@
         //监听操作工具条
         table.on("tool(olist)",function (obj) {
             var data = obj.data;
-            var url = "{:url('admin/Order/index')}";
+            var url = "{:url('admin/Order/index')}".replace(".html","");
             if (obj.event == "details") {
-                layer.open({
-					type: 2,
-					title: "订单详情",
-					content:url+'?orderNo='+data.order_no+'&type=details',
-					area: ['100%','100%']
-				});
+                $('#open-tab').attr("data-href",url+'/orderNo/'+data.order_no+'/type/details');
+                $('#open-tab').attr("data-title",data.buyer_name+"_订单详情");
+                Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "edit") {
-                layer.open({
-                    type: 2,
-                    title: "订单修改",
-                    content:url+'?orderNo='+data.order_no+'&type=edit',
-                    area: ['100%','100%'],
-
-                });
+                $('#open-tab').attr("data-href",url+'/orderNo/'+data.order_no+'/type/edit');
+                $('#open-tab').attr("data-title",data.buyer_name+"_订单修改");
+                Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "del") {
                 layer.confirm('确定删除？', function(index){
                     $.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no},function (res) {

@@ -157,7 +157,7 @@ function removeIframe(){
 		i = showTab.index();
 	tab.eq(i-1).addClass("active");
 	tab.eq(i).remove();
-	iframe.eq(i-1).show();	
+	iframe.eq(i-1).show();
 	iframe.eq(i).remove();
 }
 
@@ -172,6 +172,21 @@ function removeIframeAll(){
 			iframe.eq(i).remove();
 		}
 	}
+}
+
+/*关闭标签页时刷新前一页*/
+function clrefresh(reg,bool) {
+    var topWindow = $(window.parent.document),
+        iframe = topWindow.find('#iframe_box .show_iframe');
+	$(iframe).each(function (i,item) {
+		console.log($(item).html());
+		if (reg.test($(item).html())) {
+         	var riframe = iframe.eq($(item).index()).find('iframe');
+                riframe.attr('src',riframe.attr('src'));
+            bool ? iframe.eq(i).remove() : "";
+        }
+    });
+
 }
 
 /*弹出层*/

@@ -20,10 +20,6 @@
 		#order-details .panel-heading span {
 			line-height: 40px;
 		}
-		#order-details .panel-heading a {
-			margin-left: 5px;
-			margin-bottom: 3px;
-		}
 		.oh-content span:first-child,.oh-content span:last-child {
 			vertical-align: middle;
 		}
@@ -40,11 +36,11 @@
 	</style>
 </head>
 <body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 订单管理 <span class="c-gray en">&gt;</span> 订单修改 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div id="order-details" class="panel mt-20">
 		<div class="panel-heading">
 			<span>订单基本信息</span>
-			<a class="btn btn-success radius r" style="line-height:1.6em;margin:0;margin-top: 4px;" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont"></i></a>
 			<!--<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>-->
 			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
 		</div>
@@ -131,9 +127,9 @@
             }
         });
         if (!result.length) {
-            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-            parent.layer.close(index); //再执行关闭
-            parent.location.reload();
+            var reg = /(type\/list)|(type\/details)/;
+            clrefresh(reg,true);
+            return;
         }
         var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
         var data = {
@@ -265,9 +261,8 @@
             done: function (res,curr,count) {
                 nres = res.data;
                 if (!nres.length) {
-                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                    parent.layer.close(index); //再执行关闭
-                    parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
+                    var reg = /(type\/list)|(type\/details)/;
+                    clrefresh(reg,true);
                 }
                 $(".total").children("strong").html(count);
             }
@@ -285,8 +280,8 @@
                 $.post(url,data,function (res) {
 					if (res.code == "0000") {
                         layer.msg(res.msg,{time: 2000});
-//                        table.reload('ogoods-main');
-//                        parent.layui.table.reload('ogoods-main');
+                        var reg = /(type\/details)/;
+                        clrefresh(reg,false);
 					}else{
 					    layer.open({
 							content: res.msg
@@ -302,10 +297,9 @@
                                 obj.del();
                                 layer.close(index);
                                 table.reload('ogoods-main');
-//                                parent.layui.table.reload('ogoods-main');
                             }else{
                                 layer.close(index);
-                                layer.msg(res.msg,{time: 2000})
+                                layer.msg(res.msg,{time: 2000});
                             }
                         });
                     });
@@ -315,9 +309,11 @@
 							if (res.code == '0000') {
 								obj.del();
 								layer.close(index);
-								var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-								parent.layer.close(index); //再执行关闭
-                                parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
+                                var reg = /(type\/list)|(type\/details)/;
+                                clrefresh(reg,true);
+//								var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+//								parent.layer.close(index); //再执行关闭
+//                                parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
 							}else{
 								layer.close(index);
 								layer.msg(res.msg,{time: 2000})
@@ -334,8 +330,8 @@
 		$.post('{:url("admin/Order/editOrder")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
             if (res.code == "0000") {
                 layer.msg(res.msg,{time: 2000});
-//                        table.reload('ogoods-main');
-                parent.layui.table.reload('main');
+                var reg = /(type\/list)|(type\/details)/;
+                clrefresh(reg,false);
             }else if(res.code == "0001") {
                 layer.open({
                     content: res.msg
