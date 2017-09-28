@@ -177,16 +177,22 @@ function removeIframeAll(){
 /*关闭标签页时刷新前一页*/
 function clrefresh(reg,bool) {
     var topWindow = $(window.parent.document),
-        iframe = topWindow.find('#iframe_box .show_iframe');
+        iframe = topWindow.find('#iframe_box .show_iframe'),
+		sum = 0;
 	$(iframe).each(function (i,item) {
-		console.log($(item).html());
 		if (reg.test($(item).html())) {
-         	var riframe = iframe.eq($(item).index()).find('iframe');
+			sum++;
+         	var riframe = iframe.eq(i).find('iframe');
+            console.log(riframe+sum);
+         	if (riframe[0].contentWindow.layui.table.reload('main')) {
+			}else{
                 riframe.attr('src',riframe.attr('src'));
-            bool ? iframe.eq(i).remove() : "";
+			}
         }
     });
-
+    if (sum>2&&bool) return;
+    console.clear();
+    bool ? removeIframe() : "";
 }
 
 /*弹出层*/

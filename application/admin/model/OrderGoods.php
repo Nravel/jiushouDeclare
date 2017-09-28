@@ -41,6 +41,7 @@ class OrderGoods extends Model
                 "msg" => "success"
             ];
         }catch (\Exception $e) {
+            OrderGoods::rollback();
             return [
                 "code" => "0002",
                 "error" => $e->getMessage()
@@ -66,6 +67,7 @@ class OrderGoods extends Model
                 "msg" => "success"
             ];
         }catch (\Exception $e) {
+            OrderGoods::rollback();
             return [
                 "code" => "0002",
                 "error" => $e->getMessage()

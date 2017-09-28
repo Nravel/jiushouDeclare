@@ -23,9 +23,9 @@ class OrderBatch extends Model
      * @return array
      */
     public function saveBatch($datas, $note) {
-        $data = ["batch_time"=>date("Y-m-d H:i:s"),"batch_note"=>$note];
-        OrderBatch::startTrans();
+        $data = ["batch_time"=>date("YmdHis").random_int(1000,9999),"batch_note"=>$note];
         try{
+            OrderBatch::startTrans();
             $res = $this->saveOrders($datas,$data['batch_time']);
             if ($res['code']!="0000") {
                 return $res;

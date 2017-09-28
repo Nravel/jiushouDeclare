@@ -213,9 +213,16 @@ class Order extends Common
             $filepath =ROOT_PATH.$rootpath.DS.$info->getSaveName();
             $excelObj->setFilePath($filepath);
             //获得excel表中所有记录
-            $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0);
+            $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0, false);
             //去除数据的表头行
             array_shift($datas);
+            $res = Loader::model('OrderPreview')->saveData($datas);
+            return $res;
+            exit;
+
+
+
+            $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0);
             $result = Loader::model("OrderBatch")->saveBatch($datas, $note);
 //            $result = [
 //                "code" => "0000",

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-09-21 14:36:12
+Date: 2017-09-28 09:52:36
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,11 +24,12 @@ CREATE TABLE `ceb_order_batch` (
   `batch_time` datetime NOT NULL COMMENT '批次时间',
   `batch_note` varchar(1000) DEFAULT NULL COMMENT '批次注释',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ceb_order_batch
 -- ----------------------------
+INSERT INTO `ceb_order_batch` VALUES ('4', '2017-09-28 09:00:53', 'pooo');
 
 -- ----------------------------
 -- Table structure for `ceb_order_goods`
@@ -57,11 +58,13 @@ CREATE TABLE `ceb_order_goods` (
   `currency` char(3) NOT NULL COMMENT '限定为人民币，填写“142”。',
   `goods_note` varchar(1000) DEFAULT NULL COMMENT '促销活动，商品单价偏离市场价格的，可以在此说明。',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of ceb_order_goods
 -- ----------------------------
+INSERT INTO `ceb_order_goods` VALUES ('49', 'V8152455738', '1', null, '爱他美婴儿奶粉3段900g', null, null, '6.00', '5.40', null, '122', '035', null, '601', '1901101000', '2015617298', '900克/罐', '91.00', '546.00', '142', null);
+INSERT INTO `ceb_order_goods` VALUES ('56', 'V8152575777', '1', null, 'A2婴儿奶粉2段900g', null, null, '6.00', '5.40', null, '122', '035', null, '601', '1901101000', '2015617298', '900克/罐', '93.00', '558.00', '142', null);
 
 -- ----------------------------
 -- Table structure for `ceb_order_head`
@@ -94,8 +97,10 @@ CREATE TABLE `ceb_order_head` (
   `batch_time` datetime NOT NULL COMMENT '导入批次，用datetime类型表示',
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_no` (`order_no`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ceb_order_head
 -- ----------------------------
+INSERT INTO `ceb_order_head` VALUES ('42', 'V8152455738', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '546.00', '0.00', '0.00', '64.97', '610.97', '142', '耿放', '13965710890', '1', '342123198002050017', '耿放', '13965710890ff', '安徽省阜阳市太和县长征北路晶宫世纪城楼下欧利雅家居', null, null, null, null, '2017-09-28 09:00:53');
+INSERT INTO `ceb_order_head` VALUES ('48', 'V8152575777', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '558.00', '0.00', '0.00', '66.40', '624.40', '142', '丁一', '15856960801', '1', '142333198909251817', '丁一', '15856960801', '安徽省合肥市潜山路国际花都天香苑8号一栋303', null, null, null, null, '2017-09-28 09:00:53');

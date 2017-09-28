@@ -27,7 +27,7 @@
 	</style>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 订单管理 <span class="c-gray en">&gt;</span> 订单详情 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 订单管理 <span class="c-gray en">&gt;</span> <span class="nav-buyer"></span> <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div id="order-details" class="panel mt-20">
 		<div class="panel-heading">
@@ -101,6 +101,7 @@
         }
         var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
         $('a[data]').attr('data',headdata.buyer_name);
+        $('.nav-buyer').html(headdata.buyer_name+"_订单详情");
 		var data = {
             hlists: [
 				{

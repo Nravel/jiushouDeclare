@@ -18,7 +18,7 @@ class Index extends Common
         return $this->fetch("index");
     }
     public function welcome() {
-        return $this->fetch('welcome');
+        return $this->fetch('Order/order-preview');
     }
     public function setFields() {
         $excel = new Excel();
