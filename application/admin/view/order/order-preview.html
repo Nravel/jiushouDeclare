@@ -33,9 +33,15 @@
 			color: #DD514C;
 			line-height: 30px;
 		}
+		.tb-wrap {
+			border: solid 1px #EEEEEE;
+			border-radius: 5px;
+			padding: 5px;
+		}
 	</style>
 </head>
 <body>
+<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
 <div class="page-container">
 	<!--<div id="order-details" class="panel mt-20">-->
 		<!--<div class="panel-heading">-->
@@ -49,56 +55,53 @@
 			<!--<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius mt-10 mb-10" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>-->
 		<!--</div>-->
 	<!--</div>-->
-	<div class="cl pd-5 bg-1 bk-gray mt-20 text-c">
+	<div class="tb-wrap mt-20">
+		<div class="cl pd-5 bg-1 bk-gray text-c">
 		<span class="l">
-			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
+			<span href="javascript:;" class="" style="color: #DD514C"><i class="layui-icon"></i> 异常数据</span>
 			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
-		<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
-		<span class="r total">共有数据：<strong></strong> 条</span>
+			<span class="og-tip">您可以直接单击单元格来修改对应的内容!</span>
+			<span class="r total top-total">共有数据：<strong></strong> 条</span>
+		</div>
+		<div id="oe-details" class="datas">
+			<table id="order-err" lay-filter="oerr"></table>
+		</div>
+		<div class="upbtn-wrap text-c mb-5">
+			<a id="" class="btn  btn-warning radius" onclick="uploading(this)" data-title="更改并检测" href="javascript:;"><i class="Hui-iconfont">&#xe68f;</i> 更改并检测</a>
+		</div>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-40 text-c">
+
+	<div class="tb-wrap mt-40">
+		<div class="cl pd-5 bg-1 bk-gray text-c">
 		<span class="l">
-			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
+			<span href="javascript:;" class="" style="color: #47A8FC"><i class="layui-icon"></i> 即将导入的数据</span>
 			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
-		<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
-		<span class="r total">共有数据：<strong></strong> 条</span>
+			<span class="og-tip">您可以直接单击单元格来修改对应的内容!</span>
+			<span class="r total bot-total">共有数据：<strong></strong> 条</span>
+		</div>
+		<div id="os-details" class="datas">
+			<table id="order-succ" lay-filter="osucc"></table>
+		</div>
+		<div class="upbtn-wrap text-c mb-5">
+			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="确定导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 确定导入</a>
+		</div>
 	</div>
-	<div id="og-details" class="datas">
-		<table id="order-goods" lay-filter="ogoods"></table>
-	</div>
+
 </div>
 {include file='export-footer' /}
 
 <!--请在下方写此页面业务相关的脚本-->
-<script id="ohead-show" type="text/html">
-	<form class="ohead">
-		<ul class="ohead-ul row">
-			{{# layui.each(d.hlists,function(index,item) { }}
-			<li class="col-xs-4 mb-15">
-				<div class="oh-content">
-					<span>{{ item.field }}：</span>
-					{{# if (item.fieldname!="") { }}
-						<!--{{# var re = /^[\u4E00-\u9FA5]+$/ }}-->
-						{{# if (escape(item.content).indexOf( "%u" )==0&&item.content.length>17) { }}
-							<span><textarea name={{ item.fieldname }} cols="" rows="" class="textarea">{{ item.content }}</textarea></span>
-						{{# }else{ }}
-							<span><input name={{ item.fieldname }} class="input-text size-M" type="text" value={{ item.content }}></span>
-						{{# } }}
-					{{# }else{ }}
-						<span>{{ item.content }}</span>
-					{{# } }}
-				</div>
-			</li>
-			{{# }); }}
-		</ul>
-	</form>
-</script>
-<script type="text/html" id="tools">
-	<a title="确认" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
+<script type="text/html" id="etools">
+	<a title="更改并检测" class="layui-btn layui-btn-mini" lay-event="commit" style="background: #F37B1D"><i class="Hui-iconfont">&#xe68f;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
+<script type="text/html" id="tools">
+	<a title="修改" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+</script>
+
 <script type="text/javascript">
     layui.config({
         debug : true,
@@ -124,6 +127,7 @@
         var result = "";
         var nres = "";
         var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
+        var duplic_data = preview_data.duplic_arr;
         //请求对应订单数据
         $.ajax({
             url:"{:url('admin/Order/getOrderDetails')}",
@@ -140,239 +144,194 @@
 //            return;
 //        }
         var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
-        var data = {
-            hlists: [
-                {
-                    "field": "订单编号",
-                    "content": headdata.order_no,
-                    "fieldname": "",
-                },
-                {
-                    "field": "电商平台代码",
-                    "content": headdata.ebp_code,
-                    "fieldname": "ebp_code",
-                },
-                {
-                    "field": "电商平台名称",
-                    "content": headdata.ebp_name,
-                    "fieldname": "ebp_name",
-                },
-                {
-                    "field": "电商企业代码",
-                    "content": headdata.ebc_code,
-                    "fieldname": "ebc_code",
-                },
-                {
-                    "field": "电商企业名称",
-                    "content": headdata.ebc_name,
-                    "fieldname": "ebc_name",
-                },
-                {
-                    "field": "商品价格",
-                    "content": headdata.goods_value,
-                    "fieldname": "goods_value",
-                },
-                {
-                    "field": "运杂费",
-                    "content": headdata.freight,
-                    "fieldname": "freight",
-                },
-                {
-                    "field": "非现金抵扣金额",
-                    "content": headdata.discount,
-                    "fieldname": "discount",
-                },
-                {
-                    "field": "代扣税款",
-                    "content": headdata.tax_total,
-                    "fieldname": "tax_total",
-                },
-                {
-                    "field": "实际支付金额",
-                    "content": headdata.actural_paid,
-                    "fieldname": "actural_paid",
-                },
-                {
-                    "field": "币制",
-                    "content": headdata.currency,
-                    "fieldname": "currency",
-                },
-                {
-                    "field": "订购人姓名",
-                    "content": headdata.buyer_name,
-                    "fieldname": "buyer_name",
-                },
-                {
-                    "field": "订购人电话",
-                    "content": headdata.buyer_telephone,
-                    "fieldname": "buyer_telephone",
-                },
-                {
-                    "field": "订购人证件类型",
-                    "content": headdata.buyer_id_type,
-                    "fieldname": "buyer_id_type",
-                },
-                {
-                    "field": "订购人证件号码",
-                    "content": headdata.buyer_id_number,
-                    "fieldname": "buyer_id_number",
-                },
-                {
-                    "field": "收货人姓名",
-                    "content": headdata.consignee,
-                    "fieldname": "consignee",
-                },
-                {
-                    "field": "收货人电话",
-                    "content": headdata.consignee_telephone,
-                    "fieldname": "consignee_telephone",
-                },
-                {
-                    "field": "收货地址",
-                    "content": headdata.consignee_address,
-                    "fieldname": "consignee_address",
-                }
-            ]
-        }
-        laytpl(headtpl).render(data,function (html) {
-            $(".panel-body").append(html);
-        });
-        //订单商品信息方法式渲染
+        //订单信息方法式渲染
+		//非法信息
         table.render({
-            elem: "#order-goods",
-            id: "ogoods-main",
-            url: "{:url('admin/Order/getOrderDetails')}",
+            elem: "#order-err",
+            id: "oerr-main",
+			data: duplic_data,
+//            url: "{:url('admin/Order/getPreviewData')}",
 //			height: 200,
-            where: {orderNo: order_no},
             cols: [[
-                {checkbox: true},
-                {field: "gnum",title: "商品序号", width: 100, sort: true},
-                {field: "item_name",title: "企业商品名称",width: 200,templet: "#og-input1",edit: 'text'},
-                {field: "qty",title: "数量",width: 100,templet: "#og-input2", sort: true,edit: 'text'},
-                {field: "unit",title: "计量单位",width: 100,templet: "#og-input3", sort: true,edit: 'text'},
-                {field: "qty1",title: "法定数量",width: 100,templet: "#og-input4", sort: true,edit: 'text'},
-                {field: "unit1",title: "法定计量单位",width: 125,templet: "#og-input5", sort: true,edit: 'text'},
-                {field: "country",title: "原产国",width: 80,templet: "#og-input6",edit: 'text'},
-                {field: "hscode",title: "海关商品编码(Hscode)",width: 185,templet: "#og-input7", sort: true,edit: 'text'},
-                {field: "gjcode",title: "国检商品编号",width: 150,templet: "#og-input8", sort: true,edit: 'text'},
-                {field: "gtype",title: "商品规格型号",width: 120,templet: "#og-input9",edit: 'text'},
-                {field: "price",title: "单价",width: 100,templet: "#og-input10", sort: true,edit: 'text'},
-                {field: "total_price",title: "总价",width: 100,templet: "#og-input11", sort: true,edit: 'text'},
-                {field: "item_currency",title: "币制",width: 70,templet: "#og-input12",edit: 'text'},
-                {field: 'ctrl', title: '操作', width: 160, toolbar: "#tools", fixed: "right"}
+                {checkbox: true} //默认全选
+                ,{field: 'autonum', title: 'No.',width: 70, sort: true}
+                ,{field: 'order_no', title: '订单编号', width: 150, sort: true}
+                ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
+                ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
+                ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true, edit: "text"}
+                ,{field: 'tax_total', title: '代扣税款', width: 120, sort: true, edit: "text"}
+                ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true, edit: "text"}
+                ,{field: 'currency', title: '币制', width: 90, edit: "text"}
+                ,{field: 'buyer_name', title: '订购人姓名', width: 100, edit: "text"}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 120, edit: "text"}
+                ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130, edit: "text"}
+                ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180, edit: "text"}
+                ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text"}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 120, edit: "text"}
+                ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text"},
+                {field: "gnum",title: "商品序号", width: 100, sort: true, edit: "text"},
+                {field: "item_name",title: "企业商品名称",width: 200,edit: 'text'},
+                {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
+                {field: "unit",title: "计量单位",width: 100, sort: true,edit: 'text'},
+                {field: "qty1",title: "法定数量",width: 100, sort: true,edit: 'text'},
+                {field: "unit1",title: "法定计量单位",width: 125, sort: true,edit: 'text'},
+                {field: "country",title: "原产国",width: 80,edit: 'text'},
+                {field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true,edit: 'text'},
+                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},
+                {field: "gtype",title: "商品规格型号",width: 120,edit: 'text'},
+                {field: "price",title: "单价",width: 100, sort: true,edit: 'text'},
+                {field: "total_price",title: "总价",width: 100, sort: true,edit: 'text'},
+                {field: "item_currency",title: "币制",width: 70,edit: 'text'},
+                {field: 'ctrl', title: '操作', width: 90, toolbar: "#etools", fixed: "right"}
             ]],
 //            skin: "row",
             even: true,
             page: true,
-            limits: [2,5,10],
+            limits: [5,10,20,40,80],
             limit: 5,
             done: function (res,curr,count) {
-                nres = res.data;
-                if (!nres.length) {
-                    var reg = /(type\/list)|(type\/details)/;
-                    clrefresh(reg,true);
-                }
-                $(".total").children("strong").html(count);
+//                if (!nres.length) {
+//                    var reg = /(type\/list)|(type\/details)/;
+//                    clrefresh(reg,true);
+//                }
+                $(".top-total").children("strong").html(count);
             }
         });
-        //监听操作工具条
-        table.on("tool(ogoods)",function (obj) {
+        //监听非法信息操作工具条
+        table.on("tool(oerr)",function (obj) {
             var data = obj.data;
             if (obj.event == "commit") {
-                var url = "{:url('admin/Order/editOrder')}";
+                var url = "{:url('admin/Order/editPreviewOrder')}";
                 data = {
-                    etype: "goods",
+                    orderNo : data.order_no,
+                    batch_no : data.batch_no,
+                    data: data
+                };
+                $.post(url,data,function (res) {
+                    if (res.code == "0000") {
+                        layer.msg(res.msg,{time: 2000});
+                    }else{
+                        layer.open({
+                            content: res.msg
+                        });
+                    }
+                });
+            }else if(obj.event == "del") {
+                $.each(duplic_data,function (index,item){
+                    if (item.autonum == data.autonum) {
+                        duplic_data.splice(index,1);
+                    }
+                });
+                console.log(duplic_data);
+                layer.confirm('确定删除？', function(index){
+					obj.del();
+					layer.close(index);
+					table.reload('oerr-main');
+                });
+            }
+        });
+
+        //合法信息
+        table.render({
+            elem: "#order-succ",
+            id: "osucc-main",
+            url: "{:url('admin/Order/getPreviewData')}",
+//			height: 200,
+            where: {batch_no: preview_data.batch_no},
+            cols: [[
+                {checkbox: true} //默认全选
+                ,{field: 'autonum', title: 'No.',width: 70, sort: true}
+                ,{field: 'order_no', title: '订单编号', width: 150, sort: true}
+                ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
+                ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
+                ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true, edit: "text"}
+                ,{field: 'tax_total', title: '代扣税款', width: 120, sort: true, edit: "text"}
+                ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true, edit: "text"}
+                ,{field: 'currency', title: '币制', width: 90, edit: "text"}
+                ,{field: 'buyer_name', title: '订购人姓名', width: 100, edit: "text"}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 120, edit: "text"}
+                ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130, edit: "text"}
+                ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180, edit: "text"}
+                ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text"}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 120, edit: "text"}
+                ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text"},
+                {field: "gnum",title: "商品序号", width: 100, sort: true, edit: "text"},
+                {field: "item_name",title: "企业商品名称",width: 200,edit: 'text'},
+                {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
+                {field: "unit",title: "计量单位",width: 100, sort: true,edit: 'text'},
+                {field: "qty1",title: "法定数量",width: 100, sort: true,edit: 'text'},
+                {field: "unit1",title: "法定计量单位",width: 125, sort: true,edit: 'text'},
+                {field: "country",title: "原产国",width: 80,edit: 'text'},
+                {field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true,edit: 'text'},
+                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},
+                {field: "gtype",title: "商品规格型号",width: 120,edit: 'text'},
+                {field: "price",title: "单价",width: 100, sort: true,edit: 'text'},
+                {field: "total_price",title: "总价",width: 100, sort: true,edit: 'text'},
+                {field: "item_currency",title: "币制",width: 70,edit: 'text'},
+                {field: 'ctrl', title: '操作', width: 90, toolbar: "#tools", fixed: "right"}
+            ]],
+//            skin: "row",
+            even: true,
+            page: true,
+            limits: [5,10,20,40,80],
+            limit: 5,
+            done: function (res,curr,count) {
+                $(".bot-total").children("strong").html(count);
+            }
+        });
+        //监听合法信息操作工具条
+        table.on("tool(osucc)",function (obj) {
+            var data = obj.data;
+            if (obj.event == "commit") {
+                var url = "{:url('admin/Order/editPreviewOrder')}";
+                data = {
 					orderNo : data.order_no,
+					batch_no : data.batch_no,
 					data: data
 				};
                 $.post(url,data,function (res) {
 					if (res.code == "0000") {
                         layer.msg(res.msg,{time: 2000});
-                        var reg = /(type\/details)/;
-                        clrefresh(reg,false);
 					}else{
 					    layer.open({
 							content: res.msg
 						});
 					}
                 });
-//                parent.layui.table.reload('ogoods-main');
             }else if(obj.event == "del") {
-                if (nres.length>1) {
-                    layer.confirm('确定删除？', function(index){
-                        $.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no,gnum: data.gnum},function (res) {
-                            if (res.code == '0000') {
-                                obj.del();
-                                layer.close(index);
-                                table.reload('ogoods-main');
-                            }else{
-                                layer.close(index);
-                                layer.msg(res.msg,{time: 2000});
-                            }
-                        });
-                    });
-				}else {
-                    layer.confirm('确定删除？', function(index){
-						$.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no},function (res) {
-							if (res.code == '0000') {
-								obj.del();
-								layer.close(index);
-                                var reg = /(type\/list)|(type\/details)/;
-                                clrefresh(reg,true);
-//								var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-//								parent.layer.close(index); //再执行关闭
-//                                parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
-							}else{
-								layer.close(index);
-								layer.msg(res.msg,{time: 2000})
-							}
-						});
-                    });
-				}
+				layer.confirm('确定删除？', function(index){
+					$.post('{:url("admin/Order/delPreviewOrder")}',{order_no: data.order_no,batch_no: data.batch_no},function (res) {
+						if (res.code == '0000') {
+							obj.del();
+							layer.close(index);
+							table.reload('osucc-main');
+						}else{
+							layer.close(index);
+							layer.msg(res.msg,{time: 2000});
+						}
+					});
+				});
             }
         });
     });
-
-    //修改订单头信息
-    function commitHead() {
-		$.post('{:url("admin/Order/editOrder")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
-            if (res.code == "0000") {
-                layer.msg(res.msg,{time: 2000});
-                var reg = /(type\/list)|(type\/details)/;
-                clrefresh(reg,false);
-            }else if(res.code == "0001") {
-                layer.open({
-                    content: res.msg
-                });
-            }else{
-                layer.open({
-                    content: "存在非法数据！"
-                });
-                console.log(res.msg);
-            }
-        })
-    }
 
     //批量删除
     function delBatch() {
         layui.use(['table','layer'],function (table,layer) {
             var $ = layui.jquery;
-            var checkStatus = table.checkStatus('ogoods-main');
+            var checkStatus = table.checkStatus('osucc-main');
             var data = checkStatus.data;
-
             if (data.length>0) {
                 //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
                 var str = "";
                 $(data).each(function (index,obj) {
-                    str+= obj.gnum+"|";
+                    str+= obj.order_no+"|";
                 });
                 layer.confirm('确定删除？', function(index){
-                    var res = {};
-                    res.code = '0000';
-                    $.post('{:url("admin/Order/delOrder")}',{og_data_no: data[0].order_no,gnum: str.slice(0,-1)},function (res) {
+                    $.post('{:url("admin/Order/delPreviewOrder")}',{batch_no: data[0].batch_no,order_nos: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             layer.close(index);
-                            table.reload('ogoods-main');
+                            table.reload('osucc-main');
 //                            parent.layui.table.reload('ogoods-main');
                         }else{
                             layer.close(index);

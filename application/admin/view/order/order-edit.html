@@ -360,8 +360,6 @@
                     str+= obj.gnum+"|";
                 });
                 layer.confirm('确定删除？', function(index){
-                    var res = {};
-                    res.code = '0000';
                     $.post('{:url("admin/Order/delOrder")}',{og_data_no: data[0].order_no,gnum: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             layer.close(index);

@@ -222,7 +222,7 @@
 //		,height: 'full-600'
             ,cols: [[ //标题栏
                 {checkbox: true} //默认全选
-                ,{field: 'autonum', title: 'No.',width: 70, sort: true}//filter: 'autonum',
+                ,{field: 'autonum', title: 'No.',width: 70, sort: true}
                 ,{field: 'batch_time', title: '批次号', width: 180, sort: true}
                 ,{field: 'order_no', title: '订单编号', width: 150, sort: true, edit: "text"}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true}
@@ -385,8 +385,6 @@
                     str+= obj.order_no+"|";
                 });
                 layer.confirm('确定删除？', function(index){
-                    var res = {};
-                    res.code = '0000';
                     $.post('{:url("admin/Order/delOrder")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');

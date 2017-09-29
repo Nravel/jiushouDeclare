@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 
 use app\admin\model\OrderHead;
+use app\admin\model\OrderPreview;
 use app\common\controller\Excel;
 use think\Exception;
 use think\Loader;
@@ -100,7 +101,7 @@ class Order extends Common
      */
     public function getOrderDetails() {
         $order_no = $this->request->param("orderNo");
-        $limit = $this->request->param("limit ");
+        $limit = $this->request->param("limit");
         $page = $this->request->param("page");
         $join = [["order_goods b","a.order_no = b.order_no"]];
         $where = ['a.order_no'=> $order_no];
@@ -118,6 +119,74 @@ class Order extends Common
     }
 
     /**
+     * 获取预览数据
+     * @return array
+     */
+    public function getPreviewData() {
+        $batch_no = $this->request->param("batch_no");
+        $limit = $this->request->param("limit");
+        $page = $this->request->param("page");
+        $where = ['batch_no'=> $batch_no];
+        $field = "*,@i:=@i+1 as autonum";
+        $orderPreview = Loader::model("OrderPreview");
+        //数据集序号设定
+        $i = 0;
+        if ($page>1) {
+            $i = ($page-1)*$limit;
+        }
+        $orderPreview->query("set @i=".$i);
+        $data = $orderPreview->field($field)->where($where)->page($page,$limit)->select();
+        $dataCount = $orderPreview->where($where)->count();
+        $data_format = [
+            "code" => 0,
+            "msg" => "success",
+            "count" => $dataCount,
+            "data" => $data,
+        ];
+        return $data_format;
+    }
+
+    /**
+     * 修改预览数据
+     * @return array
+     */
+    public function editPreviewOrder() {
+        $batch_no = $this->request->param("batch_no");
+        $orderNo = $this->request->param("orderNo");
+        $data = $this->request->param("data/a");
+        try{
+            $res=Loader::model("OrderPreview")->allowField(true)->save($data,['order_no'=>$orderNo,'batch_no'=>$batch_no]);    //"order_no='".$data['order_no']."'"
+            if ($res) {
+                return ['code'=>"0000",'msg'=>"修改成功！"];
+            }else{
+                return ['code'=>"0001",'msg'=>"数据没有变更！"];
+            }
+        }catch (\Exception $e) {
+            return ['code'=>"0002",'msg'=>$e];
+        }
+    }
+
+    public function delPreviewOrder() {
+        $orderNo = $this->request->param('order_no');
+        $order_nos = $this->request->param('order_nos');
+        $batch_no = $this->request->param('batch_no');
+        $orderPreview = Loader::model('OrderPreview');
+        if ($orderNo!=null&&$batch_no!=null) {
+            $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no]);
+        }elseif ($order_nos!=null&&$batch_no!=null) {
+            foreach (explode('|',$order_nos) as $val) {
+                $res = $orderPreview::destroy(['order_no'=>$val,'batch_no'=>$batch_no]);
+                if (!$orderPreview) break;
+            }
+        }
+        if ($res) {
+            return ['code'=>'0000','msg'=>'success'];
+        }else{
+            return ['code'=>'0003','msg'=>'删除失败！'];
+        }
+    }
+
+    /**
      * 修改订单信息
      * @return array
      */
@@ -125,7 +194,6 @@ class Order extends Common
         $etype = $this->request->param("etype");
         $orderNo = $this->request->param("orderNo");
         $data = $this->request->param("data/a");
-
         if ($etype == "head") {
             $data = $this->request->param();
             try{

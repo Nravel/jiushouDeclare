@@ -35,9 +35,12 @@ class OrderPreview extends Model {
         }
         $duplic_key = $this->checkOrderNo($newdatas);
         if (count($duplic_key)>0) {
+            $i = 0;
             foreach ($duplic_key as $key) {
-                $duplic_arr[] = $newdatas[$key];
+                $duplic_arr[$i] = $newdatas[$key];
+                $duplic_arr[$i]['autonum'] = $i+1;
                 unset($newdatas[$key]);
+                $i++;
             }
         }
         $oPreview->startTrans();
