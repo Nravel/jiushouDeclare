@@ -166,6 +166,10 @@ class Order extends Common
         }
     }
 
+    /**
+     * 删除预览数据
+     * @return array
+     */
     public function delPreviewOrder() {
         $orderNo = $this->request->param('order_no');
         $order_nos = $this->request->param('order_nos');
@@ -284,8 +288,7 @@ class Order extends Common
             $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0, false);
             //去除数据的表头行
             array_shift($datas);
-            $res = Loader::model('OrderPreview')->saveData($datas);
-            return $res;
+            $this->savePreviewData($datas,true);
             exit;
 
 
@@ -311,5 +314,14 @@ class Order extends Common
             // 上传失败获取错误信息
             return json(['error'=>$file->getError()]);
         }
+    }
+
+    public function savePreviewData($datas,$first=false) {
+        if (!$first) {
+            $res = Loader::model('OrderPreview')->saveData($datas,true);
+        }else{
+            $res = Loader::model('OrderPreview')->saveData($datas);
+        }
+        return $res;
     }
 }

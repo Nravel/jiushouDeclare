@@ -59,7 +59,7 @@
 		<div class="cl pd-5 bg-1 bk-gray text-c">
 		<span class="l">
 			<span href="javascript:;" class="" style="color: #DD514C"><i class="layui-icon"></i> 异常数据</span>
-			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delErrBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 			<span class="og-tip">您可以直接单击单元格来修改对应的内容!</span>
 			<span class="r total top-total">共有数据：<strong></strong> 条</span>
@@ -68,7 +68,7 @@
 			<table id="order-err" lay-filter="oerr"></table>
 		</div>
 		<div class="upbtn-wrap text-c mb-5">
-			<a id="" class="btn  btn-warning radius" onclick="uploading(this)" data-title="更改并检测" href="javascript:;"><i class="Hui-iconfont">&#xe68f;</i> 更改并检测</a>
+			<a id="" class="btn  btn-warning radius" onclick="emitAll()" data-title="更改所有并检测" href="javascript:;"><i class="Hui-iconfont">&#xe6f7;</i> 提交所有更改并检测</a>
 		</div>
 	</div>
 
@@ -94,7 +94,7 @@
 
 <!--请在下方写此页面业务相关的脚本-->
 <script type="text/html" id="etools">
-	<a title="更改并检测" class="layui-btn layui-btn-mini" lay-event="commit" style="background: #F37B1D"><i class="Hui-iconfont">&#xe68f;</i></a>
+	<a title="提交更改并检测" class="layui-btn layui-btn-mini" lay-event="commit" style="background: #F37B1D"><i class="Hui-iconfont">&#xe6f7;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="tools">
@@ -117,27 +117,35 @@
 			$(document.body).append(html);
         });
     });
+    function spliceData(obj) {
+        $(duplic_data).each(function (i,item) {
+            if (obj.autonum == item.autonum) {
+                duplic_data.splice(i,1);
+            }
+        });
+    }
+    var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
+    var duplic_data = preview_data.duplic_arr;
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
         var $ = layui.jquery;
         var table = layui.table;
 
         var headtpl = $("#ohead-show").html();
-        var order_no = "{$orderNo='11111'}";
+//        var order_no = "{$orderNo='11111'}";
         var result = "";
         var nres = "";
-        var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
-        var duplic_data = preview_data.duplic_arr;
+//        var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
         //请求对应订单数据
-        $.ajax({
-            url:"{:url('admin/Order/getOrderDetails')}",
-            data: {"orderNo":order_no},
-            async : false,
-            type: "post",
-            success: function (data) {
-                result = data.data;
-            }
-        });
+//        $.ajax({
+//            url:"{:url('admin/Order/getOrderDetails')}",
+//            data: {"orderNo":order_no},
+//            async : false,
+//            type: "post",
+//            success: function (data) {
+//                result = data.data;
+//            }
+//        });
 //        if (!result.length) {
 //            var reg = /(type\/list)|(type\/details)/;
 //            clrefresh(reg,true);
@@ -155,7 +163,7 @@
             cols: [[
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 70, sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 150, sort: true}
+                ,{field: 'order_no', title: '订单编号', width: 150, sort: true, edit: "text"}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true, edit: "text"}
@@ -190,26 +198,29 @@
             limits: [5,10,20,40,80],
             limit: 5,
             done: function (res,curr,count) {
-//                if (!nres.length) {
-//                    var reg = /(type\/list)|(type\/details)/;
-//                    clrefresh(reg,true);
-//                }
                 $(".top-total").children("strong").html(count);
+                if (count == 0) {
+                    layer.msg("恭喜！所有订单信息都正确！");
+                    $('.tb-wrap:first-child').hide();
+				}
             }
         });
         //监听非法信息操作工具条
         table.on("tool(oerr)",function (obj) {
             var data = obj.data;
             if (obj.event == "commit") {
-                var url = "{:url('admin/Order/editPreviewOrder')}";
-                data = {
-                    orderNo : data.order_no,
-                    batch_no : data.batch_no,
-                    data: data
-                };
+                var url = "{:url('admin/Order/savePreviewData')}";
+                data = {datas: data};
                 $.post(url,data,function (res) {
                     if (res.code == "0000") {
-                        layer.msg(res.msg,{time: 2000});
+                        if (res.data.duplic_arr == null) {
+                            layer.msg(res.msg,{time: 2000});
+                            spliceData(obj.data);
+                            table.reload('osucc-main');
+						}else {
+                            layer.msg("数据仍存在错误！",{time: 2000});
+						}
+                        table.reload('oerr-main');
                     }else{
                         layer.open({
                             content: res.msg
@@ -217,13 +228,8 @@
                     }
                 });
             }else if(obj.event == "del") {
-                $.each(duplic_data,function (index,item){
-                    if (item.autonum == data.autonum) {
-                        duplic_data.splice(index,1);
-                    }
-                });
-                console.log(duplic_data);
                 layer.confirm('确定删除？', function(index){
+                    spliceData(obj.data);
 					obj.del();
 					layer.close(index);
 					table.reload('oerr-main');
@@ -277,6 +283,9 @@
             limit: 5,
             done: function (res,curr,count) {
                 $(".bot-total").children("strong").html(count);
+                if (count == 0) {
+
+				}
             }
         });
         //监听合法信息操作工具条
@@ -315,7 +324,62 @@
         });
     });
 
-    //批量删除
+    //提交所有非法信息的更改
+	function emitAll() {
+        var url = "{:url('admin/Order/savePreviewData')}";
+        data = {datas: duplic_data};
+        $.post(url,data,function (res) {
+            if (res.code == "0000") {
+                if (res.data.duplic_arr == null | (res.data.duplic_arr != null&&rlength < duplic_data.length)) {
+                    res.data.duplic_arr == null ? rlength = 0 : rlength = res.data.duplic_arr.length;
+                    layer.open({
+                        content: "成功更改"+(duplic_data.length-rlength)+"条数据！<br><font color='red'>还存在错误数据"+rlength+"条！</font>"
+                    });
+					duplic_data.splice(0,duplic_data.length);
+					duplic_data.push.apply(duplic_data,res.data.duplic_arr);
+                    layui.table.reload('osucc-main');
+                    layui.table.reload('oerr-main');
+                }else {
+                    layer.msg("数据仍存在错误！",{time: 2000});
+                }
+            }else{
+                layer.open({
+                    content: res.msg
+                });
+            }
+        });
+    }
+
+    //批量删除非法信息
+    function delErrBatch() {
+        layui.use(['table','layer'],function (table,layer) {
+            var $ = layui.jquery;
+            var checkStatus = table.checkStatus('oerr-main');
+            var data = checkStatus.data;
+//            var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
+//            var duplic_data = preview_data.duplic_arr;
+//            var ndata = {batch_no: preview_data.batch_no,duplic_arr: duplic_data};
+            if (data.length>0) {
+                layer.confirm('确定删除？', function(index){
+                    $(data).each(function (i,item) {
+						$(duplic_data).each(function (k,d) {
+                            if (item.autonum == d.autonum) {
+                                duplic_data.splice(k,1);
+                            }
+                        });
+                    });
+//                    ndata.duplic_arr = duplic_data;
+//                    $(parent.document).find('#preview-data').html(JSON.stringify(ndata));
+                    layer.close(index);
+                    layui.table.reload('oerr-main');
+                });
+            }else{
+                layer.msg("没选择数据呀",{'time':"1000"});
+            }
+        });
+    }
+
+    //批量删除合法信息
     function delBatch() {
         layui.use(['table','layer'],function (table,layer) {
             var $ = layui.jquery;
@@ -331,7 +395,7 @@
                     $.post('{:url("admin/Order/delPreviewOrder")}',{batch_no: data[0].batch_no,order_nos: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             layer.close(index);
-                            table.reload('osucc-main');
+                            layui.table.reload('osucc-main');
 //                            parent.layui.table.reload('ogoods-main');
                         }else{
                             layer.close(index);
