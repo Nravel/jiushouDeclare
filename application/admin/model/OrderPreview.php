@@ -18,6 +18,10 @@ class OrderPreview extends Model {
         $oPreview = new OrderPreview();
         $fields = OrderPreview::getTableFields();
         $fields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_no","item_no","item_describe","bar_code","qty2","unit2",'goods_note'];
+        $field_index1 = array_search('qty1',$fields);
+        $field_index2 = array_search('unit',$fields);
+        $fields[$field_index1] = 'unit';
+        $fields[$field_index2] = 'qty1';
         $fields = array_merge(array_diff($fields,$fields_no));
         $batch_no = date('YmdHis').random_int(1000,9999);
         $duplic_arr = null;
@@ -45,7 +49,7 @@ class OrderPreview extends Model {
                 }
             }
         }else{
-            if (count($datas)==count($datas,1)) {
+            if (count($datas)==count($datas,1)) {   //判断是否为一维数组
                 $newdatas[] = $datas;
             }else{
                 $newdatas = $datas;
@@ -67,11 +71,7 @@ class OrderPreview extends Model {
                 'msg' => '更改成功！',
                 'data' => ['batch_no'=>$batch_no,'duplic_arr'=>$duplic_arr],
             ];
-            dump($res);
-            exit;
         }catch (\Exception $e) {
-            dump($e);
-            exit;
             return [
                 'code' => '0005',
                 'msg' => $e->getMessage()

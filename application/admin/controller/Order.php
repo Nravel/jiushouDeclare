@@ -174,6 +174,7 @@ class Order extends Common
         $orderNo = $this->request->param('order_no');
         $order_nos = $this->request->param('order_nos');
         $batch_no = $this->request->param('batch_no');
+        $delbatch = $this->request->param('delbatch');
         $orderPreview = Loader::model('OrderPreview');
         if ($orderNo!=null&&$batch_no!=null) {
             $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no]);
@@ -182,6 +183,8 @@ class Order extends Common
                 $res = $orderPreview::destroy(['order_no'=>$val,'batch_no'=>$batch_no]);
                 if (!$orderPreview) break;
             }
+        }elseif ($delbatch != null) {
+            $res = $orderPreview::destroy(['batch_no'=>$delbatch]);
         }
         if ($res) {
             return ['code'=>'0000','msg'=>'success'];
@@ -276,32 +279,19 @@ class Order extends Common
     public function importData() {
         $file = $this->request->file("excelFile");
         $note = $this->request->post("note");
+        $data_batch = $this->request->post('data_batch');
         $rootpath = 'public' . DS . 'uploads';
-        // 移动到框架应用根目录/public/uploads/ 目录下
-        $info = $file->validate(['ext'=>'xls,xlsx'])->move(ROOT_PATH.$rootpath);
-        if($info){
-            $excelObj = new Excel();
-            // 成功上传后 获取文件路径
-            $filepath =ROOT_PATH.$rootpath.DS.$info->getSaveName();
-            $excelObj->setFilePath($filepath);
-            //获得excel表中所有记录
-            $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0, false);
-            //去除数据的表头行
-            array_shift($datas);
-            $this->savePreviewData($datas,true);
-            exit;
-
-
-
-            $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0);
-            $result = Loader::model("OrderBatch")->saveBatch($datas, $note);
-//            $result = [
-//                "code" => "0000",
-//                "error" => "",
-//                "data" => [
-//                    "batch" => date("Y-m-d H:i:s")
-//                ]
-//            ];
+        $excelObj = new Excel();
+        if ($data_batch!=null) {
+            $data = collection(Loader::model('OrderPreview')->all(['batch_no'=>$data_batch]))->toArray();
+            foreach ($data as $record) {
+                $record = array_filter($record,function ($val){if ($val != null) return $val;});
+                array_shift($record);
+                array_pop($record);
+                $ndata[] = array_values($record);
+            }
+            $ndata = $excelObj->getSameOrder($ndata,0);
+            $result = Loader::model("OrderBatch")->saveBatch($ndata, $note);
             if ($result["code"] == "0000") {
                 return json($result);
             }else{
@@ -311,8 +301,24 @@ class Order extends Common
                 ]);
             }
         }else{
-            // 上传失败获取错误信息
-            return json(['error'=>$file->getError()]);
+            // 移动到框架应用根目录/public/uploads/ 目录下
+            $info = $file->validate(['ext'=>'xls,xlsx'])->move(ROOT_PATH.$rootpath);
+            if($info){
+                // 成功上传后 获取文件路径
+                $filepath =ROOT_PATH.$rootpath.DS.$info->getSaveName();
+                $excelObj->setFilePath($filepath);
+                //获得excel表中所有记录
+                $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0, false);
+//            去除数据的表头行
+                array_shift($datas);
+                $res = $this->savePreviewData($datas,true);
+                return $res;
+//                $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0);
+//                array_shift($datas);
+            }else{
+                // 上传失败获取错误信息
+                return json(['error'=>$file->getError()]);
+            }
         }
     }
 

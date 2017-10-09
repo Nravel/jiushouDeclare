@@ -266,19 +266,7 @@
                     $("#filetips").html(file.name);
                     $("#filetips").show();
                 });
-                var that = this;
-//                layer.prompt({
-//                    formType: "2",
-//                    value: '',
-//                    title: '请输入当前数据批次的备注',
-//                    area: ['500px', '250px'] //自定义文本域宽高
-//                }, function(value, index, elem){
-//                    that.data.note = value;
-//                    layer.close(index);
-//                    $("#upcommit").click();
-//                });
-
-                $("#upcommit").show();
+                $("#upcommit").click();
             }
             , done: function (res) {
                 //上传完毕回调
@@ -286,15 +274,6 @@
                 $("#filetips").hide();
                 $("#upcommit").hide();
                 if (res.code == 0000) {
-//                    layer.open({
-//                        content: "导入数据成功！",
-//                        end: function () {
-//                            table.reload('main', {
-//                                url: '{:url(\'order/getOrderDatas\')}'
-//                                ,where: {batch:res.data.batch} //设定异步数据接口的额外参数
-//                            });
-//                        }
-//                    });
                     $('#preview-data').html(JSON.stringify(res.data));
                     layer.open({
                         type: 2,
@@ -302,7 +281,11 @@
                         title: '上传数据预览',
                         skin: 'preview-class',
                         area: ['98%','98%'],
-                        shade: 0
+                        shade: 0,
+                        end: function(){
+                            table.reload('main');
+                            $.post("{:url('admin/Order/delPreviewOrder')}",{delbatch: res.data.batch_no},function (res) {});
+                        }
                     });
                 }else{
                     layer.open({

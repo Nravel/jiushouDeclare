@@ -41,7 +41,8 @@
 	</style>
 </head>
 <body>
-<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+<!--<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:layui.table.reload('oerr-main');layui.table.reload('osucc-main');" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>-->
+<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:location.replace(location.href)" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
 <div class="page-container">
 	<!--<div id="order-details" class="panel mt-20">-->
 		<!--<div class="panel-heading">-->
@@ -75,7 +76,7 @@
 	<div class="tb-wrap mt-40">
 		<div class="cl pd-5 bg-1 bk-gray text-c">
 		<span class="l">
-			<span href="javascript:;" class="" style="color: #47A8FC"><i class="layui-icon"></i> 即将导入的数据</span>
+			<span href="javascript:;" class="" style="color: #47A8FC"><i class="layui-icon"></i> 正确数据</span>
 			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 			<span class="og-tip">您可以直接单击单元格来修改对应的内容!</span>
@@ -85,7 +86,7 @@
 			<table id="order-succ" lay-filter="osucc"></table>
 		</div>
 		<div class="upbtn-wrap text-c mb-5">
-			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="确定导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 确定导入</a>
+			<a id="upcommit" class="btn  btn-secondary radius" onclick="commitAll()" data-title="确定导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 确定导入</a>
 		</div>
 	</div>
 
@@ -126,15 +127,20 @@
     }
     var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
     var duplic_data = preview_data.duplic_arr;
+    var nres = "";
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
         var $ = layui.jquery;
         var table = layui.table;
-
-        var headtpl = $("#ohead-show").html();
+		var flag = false;
+		if (duplic_data == null) {
+            layer.msg("恭喜！所有订单信息都正确！");
+            $('.tb-wrap:first-child').hide();
+            flag = true;
+		}
+//        var headtpl = $("#ohead-show").html();
 //        var order_no = "{$orderNo='11111'}";
-        var result = "";
-        var nres = "";
+//        var result = "";
 //        var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
         //请求对应订单数据
 //        $.ajax({
@@ -151,7 +157,7 @@
 //            clrefresh(reg,true);
 //            return;
 //        }
-        var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
+//        var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
         //订单信息方法式渲染
 		//非法信息
         table.render({
@@ -202,6 +208,10 @@
                 if (count == 0) {
                     layer.msg("恭喜！所有订单信息都正确！");
                     $('.tb-wrap:first-child').hide();
+                    flag = true;
+				}else{
+                    $('.tb-wrap:first-child').show();
+                    flag = false;
 				}
             }
         });
@@ -284,7 +294,13 @@
             done: function (res,curr,count) {
                 $(".bot-total").children("strong").html(count);
                 if (count == 0) {
-
+                    $('.tb-wrap:last-child').hide();
+                    if (flag) {
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+					}
+				}else {
+                    $('.tb-wrap:last-child').show();
 				}
             }
         });
@@ -327,11 +343,11 @@
     //提交所有非法信息的更改
 	function emitAll() {
         var url = "{:url('admin/Order/savePreviewData')}";
-        data = {datas: duplic_data};
+        var data = {datas: duplic_data};
         $.post(url,data,function (res) {
             if (res.code == "0000") {
+                res.data.duplic_arr == null ? rlength = 0 : rlength = res.data.duplic_arr.length;
                 if (res.data.duplic_arr == null | (res.data.duplic_arr != null&&rlength < duplic_data.length)) {
-                    res.data.duplic_arr == null ? rlength = 0 : rlength = res.data.duplic_arr.length;
                     layer.open({
                         content: "成功更改"+(duplic_data.length-rlength)+"条数据！<br><font color='red'>还存在错误数据"+rlength+"条！</font>"
                     });
@@ -376,6 +392,40 @@
             }else{
                 layer.msg("没选择数据呀",{'time':"1000"});
             }
+        });
+    }
+
+    //提交所有合法信息
+    function commitAll() {
+        var url = "{:url('admin/Order/importData')}";
+        var data = {data_batch: preview_data.batch_no};
+        layer.prompt({
+            formType: "2",
+            value: '',
+            title: '请输入当前导入批次的备注',
+            area: ['500px', '250px'] //自定义文本域宽高
+        }, function(value, index, elem){
+            data.note = value;
+            $.ajaxSetup({
+                async : false
+            });
+            $.post(url,data,function (res) {
+                if (res.code == "0000") {
+                    $.post("{:url('admin/Order/delPreviewOrder')}",{delbatch: preview_data.batch_no},function (res) {
+                    });
+                    layer.open({
+                        content: "导入数据成功！",
+                        end: function () {
+                            layui.table.reload('osucc-main');
+                        }
+                    });
+                }else{
+                    layer.open({
+                        content: res.error
+                    });
+                }
+            });
+            layer.close(index);
         });
     }
 
