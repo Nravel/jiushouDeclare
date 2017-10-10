@@ -38,6 +38,9 @@
 			border-radius: 5px;
 			padding: 5px;
 		}
+		.datas .layui-table-view .layui-table th:nth-child(3) {
+			color: red;
+		}
 	</style>
 </head>
 <body>
@@ -102,6 +105,9 @@
 	<a title="修改" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
+<script type="text/html" id="err">
+	<span class="badge badge-danger radius">2</span>
+</script>
 
 <script type="text/javascript">
     layui.config({
@@ -109,31 +115,35 @@
         version : true	 //清除缓存
     });
     $(document).ready(function () {
-		html = "";
-		var og_fields = ["item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","item_currency"];
-		$.each(og_fields,function (index,field) {
-			html+= '<script type="text/html\" id="og-input'+(index+1)+'">'+
-						'<input name='+field+' class="input-text size-MINI" type="text" value={{ d.'+field+' }}>'+
+		var html = "";
+		var oe_fields = ["order_no","goods_value","freight","discount","tax_total","actural_paid","currency","buyer_name","buyer_telephone","buyer_id_type","buyer_id_number","consignee","consignee_telephone","consignee_address","gnum","item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","item_currency"];
+		$.each(oe_fields,function (index,field) {
+			html+= '<script type="text/html\" id="oe-span'+(index+1)+'">'+
+						'{{# if(\''+field+'\' in d.error_info) { }}'+
+            				'<span data-toggle="tooltip" data-placement="top" title="{{ d.error_info.'+field+' }}" style="color: #F581B1;">{{ d.'+field+' }}</span>'+
+						'{{# }else{ }}'+
+            				'<span>{{ d.'+field+' }}</span>'+
+            			'{{# } }}'+
 					'<\/script>';
 			$(document.body).append(html);
         });
     });
     function spliceData(obj) {
-        $(duplic_data).each(function (i,item) {
+        $(error_arr).each(function (i,item) {
             if (obj.autonum == item.autonum) {
-                duplic_data.splice(i,1);
+                error_arr.splice(i,1);
             }
         });
     }
     var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
-    var duplic_data = preview_data.duplic_arr;
+    var error_arr = preview_data.error_arr;
     var nres = "";
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
         var $ = layui.jquery;
         var table = layui.table;
 		var flag = false;
-		if (duplic_data == null) {
+		if (error_arr == null) {
             layer.msg("恭喜！所有订单信息都正确！");
             $('.tb-wrap:first-child').hide();
             flag = true;
@@ -163,40 +173,41 @@
         table.render({
             elem: "#order-err",
             id: "oerr-main",
-			data: duplic_data,
+			data: error_arr,
 //            url: "{:url('admin/Order/getPreviewData')}",
 //			height: 200,
             cols: [[
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 70, sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 150, sort: true, edit: "text"}
-                ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
-                ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
-                ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true, edit: "text"}
-                ,{field: 'tax_total', title: '代扣税款', width: 120, sort: true, edit: "text"}
-                ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true, edit: "text"}
-                ,{field: 'currency', title: '币制', width: 90, edit: "text"}
-                ,{field: 'buyer_name', title: '订购人姓名', width: 100, edit: "text"}
-                ,{field: 'buyer_telephone', title: '订购人电话', width: 120, edit: "text"}
-                ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130, edit: "text"}
-                ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180, edit: "text"}
-                ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text"}
-                ,{field: 'consignee_telephone', title: '收货人电话', width: 120, edit: "text"}
-                ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text"},
-                {field: "gnum",title: "商品序号", width: 100, sort: true, edit: "text"},
-                {field: "item_name",title: "企业商品名称",width: 200,edit: 'text'},
-                {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
-                {field: "unit",title: "计量单位",width: 100, sort: true,edit: 'text'},
-                {field: "qty1",title: "法定数量",width: 100, sort: true,edit: 'text'},
-                {field: "unit1",title: "法定计量单位",width: 125, sort: true,edit: 'text'},
-                {field: "country",title: "原产国",width: 80,edit: 'text'},
-                {field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true,edit: 'text'},
-                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},
-                {field: "gtype",title: "商品规格型号",width: 120,edit: 'text'},
-                {field: "price",title: "单价",width: 100, sort: true,edit: 'text'},
-                {field: "total_price",title: "总价",width: 100, sort: true,edit: 'text'},
-                {field: "item_currency",title: "币制",width: 70,edit: 'text'},
-                {field: 'ctrl', title: '操作', width: 90, toolbar: "#etools", fixed: "right"}
+                ,{field: '', title: '错误数',width: 80,templet: '#err'}
+                ,{field: 'order_no', title: '订单编号', width: 150,templet: '#oe-span1', sort: true, edit: "text"}
+                ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text",templet: '#oe-span2'}
+                ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text",templet: '#oe-span3'}
+                ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true, edit: "text",templet: '#oe-span4'}
+                ,{field: 'tax_total', title: '代扣税款', width: 120, sort: true, edit: "text",templet: '#oe-span5'}
+                ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true, edit: "text",templet: '#oe-span6'}
+                ,{field: 'currency', title: '币制', width: 90, edit: "text",templet: '#oe-span7'}
+                ,{field: 'buyer_name', title: '订购人姓名', width: 100, edit: "text",templet: '#oe-span8'}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 120, edit: "text",templet: '#oe-span9'}
+                ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130, edit: "text",templet: '#oe-span10'}
+                ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180, edit: "text",templet: '#oe-span11'}
+                ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text",templet: '#oe-span12'}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 120, edit: "text",templet: '#oe-span13'}
+                ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text",templet: '#oe-span14'},
+                {field: "gnum",title: "商品序号", width: 100, sort: true, edit: "text",templet: '#oe-span15'},
+                {field: "item_name",title: "企业商品名称",width: 200,edit: 'text',templet: '#oe-span16'},
+                {field: "qty",title: "数量",width: 100, sort: true,edit: 'text',templet: '#oe-span17'},
+                {field: "unit",title: "计量单位",width: 100, sort: true,edit: 'text',templet: '#oe-span18'},
+                {field: "qty1",title: "法定数量",width: 100, sort: true,edit: 'text',templet: '#oe-span19'},
+                {field: "unit1",title: "法定计量单位",width: 125, sort: true,edit: 'text',templet: '#oe-span20'},
+                {field: "country",title: "原产国",width: 80,edit: 'text',templet: '#oe-span21'},
+                {field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true,edit: 'text',templet: '#oe-span22'},
+                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text',templet: '#oe-span23'},
+                {field: "gtype",title: "商品规格型号",width: 120,edit: 'text',templet: '#oe-span24'},
+                {field: "price",title: "单价",width: 100, sort: true,edit: 'text',templet: '#oe-span25'},
+                {field: "total_price",title: "总价",width: 100, sort: true,edit: 'text',templet: '#oe-span26'},
+                {field: "item_currency",title: "币制",width: 70,edit: 'text',templet: '#oe-span27'},
+                {field: 'ctrl', title: '操作', width: 90, toolbar: "#etools", fixed: "right",templet: '#oe-span28'}
             ]],
 //            skin: "row",
             even: true,
@@ -223,11 +234,16 @@
                 data = {datas: data};
                 $.post(url,data,function (res) {
                     if (res.code == "0000") {
-                        if (res.data.duplic_arr == null) {
+                        if (res.data.error_arr == null) {
                             layer.msg(res.msg,{time: 2000});
                             spliceData(obj.data);
                             table.reload('osucc-main');
 						}else {
+                            $(error_arr).each(function (index,obj) {
+								if (obj.autonum == res.data.error_arr[0].autonum) {
+								    obj.error_info = res.data.error_arr[0].error_info;
+								}
+                            });
                             layer.msg("数据仍存在错误！",{time: 2000});
 						}
                         table.reload('oerr-main');
@@ -343,19 +359,22 @@
     //提交所有非法信息的更改
 	function emitAll() {
         var url = "{:url('admin/Order/savePreviewData')}";
-        var data = {datas: duplic_data};
+        var data = {datas: error_arr};
         $.post(url,data,function (res) {
             if (res.code == "0000") {
-                res.data.duplic_arr == null ? rlength = 0 : rlength = res.data.duplic_arr.length;
-                if (res.data.duplic_arr == null | (res.data.duplic_arr != null&&rlength < duplic_data.length)) {
+                res.data.error_arr == null ? rlength = 0 : rlength = res.data.error_arr.length;
+                if (res.data.error_arr == null | (res.data.error_arr != null&&rlength < error_arr.length)) {
                     layer.open({
-                        content: "成功更改"+(duplic_data.length-rlength)+"条数据！<br><font color='red'>还存在错误数据"+rlength+"条！</font>"
+                        content: "成功更改"+(error_arr.length-rlength)+"条数据！<br><font color='red'>还存在错误数据"+rlength+"条！</font>"
                     });
-					duplic_data.splice(0,duplic_data.length);
-					duplic_data.push.apply(duplic_data,res.data.duplic_arr);
+                    error_arr.splice(0,error_arr.length);
+                    error_arr.push.apply(error_arr,res.data.error_arr);
                     layui.table.reload('osucc-main');
                     layui.table.reload('oerr-main');
                 }else {
+                    error_arr.splice(0,error_arr.length);
+                    error_arr.push.apply(error_arr,res.data.error_arr);
+                    layui.table.reload('oerr-main');
                     layer.msg("数据仍存在错误！",{time: 2000});
                 }
             }else{
@@ -373,18 +392,18 @@
             var checkStatus = table.checkStatus('oerr-main');
             var data = checkStatus.data;
 //            var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
-//            var duplic_data = preview_data.duplic_arr;
-//            var ndata = {batch_no: preview_data.batch_no,duplic_arr: duplic_data};
+//            var error_arr = preview_data.error_arr;
+//            var ndata = {batch_no: preview_data.batch_no,error_arr: error_arr};
             if (data.length>0) {
                 layer.confirm('确定删除？', function(index){
                     $(data).each(function (i,item) {
-						$(duplic_data).each(function (k,d) {
+						$(error_arr).each(function (k,d) {
                             if (item.autonum == d.autonum) {
-                                duplic_data.splice(k,1);
+                                error_arr.splice(k,1);
                             }
                         });
                     });
-//                    ndata.duplic_arr = duplic_data;
+//                    ndata.error_arr = error_arr;
 //                    $(parent.document).find('#preview-data').html(JSON.stringify(ndata));
                     layer.close(index);
                     layui.table.reload('oerr-main');

@@ -12,6 +12,7 @@ namespace app\admin\model;
 use think\Db;
 use think\Loader;
 use think\Model;
+use app\admin\validate\Order;
 
 class OrderPreview extends Model {
     public function saveData($datas,$modify=false) {
@@ -24,7 +25,7 @@ class OrderPreview extends Model {
         $fields[$field_index2] = 'qty1';
         $fields = array_merge(array_diff($fields,$fields_no));
         $batch_no = date('YmdHis').random_int(1000,9999);
-        $duplic_arr = null;
+        $error_arr = null;
         if (!$modify) {
             $ndatas = null;
             foreach ($datas as $key => $rows) {
@@ -38,38 +39,42 @@ class OrderPreview extends Model {
                 }
                 $newdatas[$key]['batch_no'] = $batch_no;
             }
-            $duplic_key = $this->checkOrderNo($newdatas);
-            if (count($duplic_key)>0) {
+            $error_info = $this->checkOrder($newdatas);
+            if (count($error_info)>0) {
                 $i = 0;
-                foreach ($duplic_key as $key) {
-                    $duplic_arr[$i] = $newdatas[$key];
-                    $duplic_arr[$i]['autonum'] = $i+1;
+                foreach ($error_info as $key => $row) {
+                    $error_arr[$i] = $newdatas[$key];
+                    $error_arr[$i]['error_info'] = $error_info[$key];
+                    $error_arr[$i]['autonum'] = $i+1;
                     unset($newdatas[$key]);
                     $i++;
                 }
             }
         }else{
-            if (count($datas)==count($datas,1)) {   //判断是否为一维数组
+            if (isset($datas['order_no'])) {   //判断是否为一维数组
                 $newdatas[] = $datas;
             }else{
                 $newdatas = $datas;
             }
-            $duplic_key = $this->checkOrderNo($newdatas);
-            if (count($duplic_key)>0) {
-                foreach ($duplic_key as $key) {
-                    $duplic_arr[] = $newdatas[$key];
+            $error_info = $this->checkOrder($newdatas);
+            if (count($error_info)>0) {
+                $i = 0;
+                foreach ($error_info as $key => $row) {
+                    $error_arr[$i] = $newdatas[$key];
+                    $error_arr[$i]['error_info'] = $error_info[$key];
                     unset($newdatas[$key]);
+                    $i++;
                 }
             }
         }
         $oPreview->startTrans();
         try{
-            $res = $oPreview->allowField(true)->saveAll($newdatas);
+            $oPreview->allowField(true)->saveAll($newdatas);
             $oPreview->commit();
             return [
                 'code' => '0000',
                 'msg' => '更改成功！',
-                'data' => ['batch_no'=>$batch_no,'duplic_arr'=>$duplic_arr],
+                'data' => ['batch_no'=>$batch_no,'error_arr'=>$error_arr],
             ];
         }catch (\Exception $e) {
             return [
@@ -79,17 +84,23 @@ class OrderPreview extends Model {
         }
     }
 
-    public function checkOrderNo($datas) {
-        $res = Loader::model('OrderHead')->field('order_no')->select();
+    public function checkOrder($datas) {
+//        $res = Loader::model('OrderHead')->field('order_no')->select();
         $check_arr = null;
-        $orderNo_arr = null;
-        foreach ($res as $val) {
-            $orderNo_arr[] = $val['order_no'];
+//        $orderNo_arr = null;
+//        foreach ($res as $val) {
+//            $orderNo_arr[] = $val['order_no'];
+//        }
+//        foreach ($datas as $val) {
+//            $check_arr[] = $val['order_no'];
+//        }
+//        $orderNo_arr == null ? $duplicate_key=[] : $duplicate_key = array_keys(array_intersect($check_arr,$orderNo_arr));
+        $validate = Loader::validate('Order');
+        foreach ($datas as $k => $row) {
+            if (!$validate->batch()->check($row)) {
+                $check_arr[$k] = $validate->getError();
+            }
         }
-        foreach ($datas as $val) {
-            $check_arr[] = $val['order_no'];
-        }
-        $orderNo_arr == null ? $duplicate_key=[] : $duplicate_key = array_keys(array_intersect($check_arr,$orderNo_arr));
-        return $duplicate_key;
+        return $check_arr;
     }
 }
