@@ -285,6 +285,7 @@
                         end: function(){
                             table.reload('main');
                             $.post("{:url('admin/Order/delPreviewOrder')}",{delbatch: res.data.batch_no},function (res) {});
+                            $.post("{:url('admin/Order/clearUploads')}",function (res) {});
                         }
                     });
                 }else{

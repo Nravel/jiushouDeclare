@@ -154,15 +154,25 @@ class Order extends Common
         $batch_no = $this->request->param("batch_no");
         $orderNo = $this->request->param("orderNo");
         $data = $this->request->param("data/a");
-        try{
-            $res=Loader::model("OrderPreview")->allowField(true)->save($data,['order_no'=>$orderNo,'batch_no'=>$batch_no]);    //"order_no='".$data['order_no']."'"
-            if ($res) {
-                return ['code'=>"0000",'msg'=>"修改成功！"];
-            }else{
-                return ['code'=>"0001",'msg'=>"数据没有变更！"];
+        $gnum = $data['gnum'];
+        $ndata[] = $data;
+        $orderPreview = new OrderPreview();
+        $err_info = $orderPreview->checkOrder($ndata);
+        if ($err_info!=null) {
+            $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no,'gnum'=>$gnum]);
+            $res = $this->savePreviewData($ndata);
+            return $res;
+        }else{
+            try{
+                $res=Loader::model("OrderPreview")->allowField(true)->save($data,['id'=>$data['id']]);    //"order_no='".$data['order_no']."'"
+                if ($res) {
+                    return ['code'=>"0000",'msg'=>"修改成功！"];
+                }else{
+                    return ['code'=>"0001",'msg'=>"数据没有变更！"];
+                }
+            }catch (\Exception $e) {
+                return ['code'=>"0002",'msg'=>$e];
             }
-        }catch (\Exception $e) {
-            return ['code'=>"0002",'msg'=>$e];
         }
     }
 
@@ -172,20 +182,22 @@ class Order extends Common
      */
     public function delPreviewOrder() {
         $orderNo = $this->request->param('order_no');
+        $gnum = $this->request->param('gnum');
         $order_nos = $this->request->param('order_nos');
         $batch_no = $this->request->param('batch_no');
         $delbatch = $this->request->param('delbatch');
         $orderPreview = Loader::model('OrderPreview');
         if ($orderNo!=null&&$batch_no!=null) {
-            $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no]);
+            $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no,'gnum'=>$gnum]);
         }elseif ($order_nos!=null&&$batch_no!=null) {
             foreach (explode('|',$order_nos) as $val) {
-                $res = $orderPreview::destroy(['order_no'=>$val,'batch_no'=>$batch_no]);
+                $res = $orderPreview::destroy(['order_no'=>explode('@',$val)[0],'gnum'=>explode('@',$val)[1],'batch_no'=>$batch_no]);
                 if (!$orderPreview) break;
             }
         }elseif ($delbatch != null) {
             $res = $orderPreview::destroy(['batch_no'=>$delbatch]);
         }
+
         if ($res) {
             return ['code'=>'0000','msg'=>'success'];
         }else{
@@ -201,8 +213,16 @@ class Order extends Common
         $etype = $this->request->param("etype");
         $orderNo = $this->request->param("orderNo");
         $data = $this->request->param("data/a");
+        $validate = Loader::validate('Order');
         if ($etype == "head") {
             $data = $this->request->param();
+            foreach ($data as $val) {
+            }
+            $result = $validate->scene('edit_head')->batch()->check($data);
+            if (!$result) {
+                $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
+                return ['code'=>"0010",'msg'=>$msg];
+            }
             try{
                 $res=Loader::model("OrderHead")->allowField(true)->save($data,"order_no='".$data['order_no']."'");
             }catch (\Exception $e) {
@@ -210,8 +230,13 @@ class Order extends Common
             }
         }elseif ($etype == "goods") {
             $data['currency'] = $data['item_currency'];
+            $result = $validate->scene('edit_goods')->batch()->check($data);
+            if (!$result) {
+                $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
+                return ['code'=>"0010",'msg'=>$msg];
+            }
             try{
-                $res=Loader::model("OrderGoods")->allowField(true)->save($data,"order_no=".$data['order_no']);
+                $res=Loader::model("OrderGoods")->allowField(true)->save($data,"id=".$data['id']);
             }catch (\Exception $e) {
                 return ['code'=>"0002",'msg'=>$e];
             }
@@ -322,12 +347,23 @@ class Order extends Common
         }
     }
 
-    public function savePreviewData($datas,$first=false) {
+    /**
+     * 保存预览数据
+     * @param $datas
+     * @param bool $first
+     * @return mixed
+     */
+    public function savePreviewData($datas, $first=false) {
         if (!$first) {
             $res = Loader::model('OrderPreview')->saveData($datas,true);
         }else{
             $res = Loader::model('OrderPreview')->saveData($datas);
         }
         return $res;
+    }
+
+    public function clearUploads() {
+        $excelObj = new Excel();
+        is_dir("uploads") ? $excelObj->del_dir("uploads",1) : "" ;
     }
 }

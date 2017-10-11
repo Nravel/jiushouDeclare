@@ -333,13 +333,13 @@
                 layer.msg(res.msg,{time: 2000});
                 var reg = /(type\/list)|(type\/details)/;
                 clrefresh(reg,false);
-            }else if(res.code == "0001") {
+            }else if(res.code == "0010"|res.code == "0001") {
                 layer.open({
                     content: res.msg
                 });
             }else{
                 layer.open({
-                    content: "存在非法数据！"
+                    content: "未知错误！"
                 });
                 console.log(res.msg);
             }

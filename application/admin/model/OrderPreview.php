@@ -66,6 +66,11 @@ class OrderPreview extends Model {
                     $i++;
                 }
             }
+            foreach ($newdatas as $k => $row) {
+                if (array_key_exists('id',$row))
+                unset($newdatas[$k]['id']);
+
+            }
         }
         $oPreview->startTrans();
         try{

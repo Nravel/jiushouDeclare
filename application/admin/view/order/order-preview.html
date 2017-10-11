@@ -38,8 +38,8 @@
 			border-radius: 5px;
 			padding: 5px;
 		}
-		.datas .layui-table-view .layui-table th:nth-child(3) {
-			color: red;
+		#oe-details .layui-table-view .layui-table th:nth-child(3) {
+			color: #DD514C;
 		}
 	</style>
 </head>
@@ -65,7 +65,7 @@
 			<span href="javascript:;" class="" style="color: #DD514C"><i class="layui-icon"></i> 异常数据</span>
 			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delErrBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
-			<span class="og-tip">您可以直接单击单元格来修改对应的内容!</span>
+			<span class="og-tip">通过将鼠标悬停在粉红色字上可以查看错误信息，您可以单击单元格来修改对应的内容！</span>
 			<span class="r total top-total">共有数据：<strong></strong> 条</span>
 		</div>
 		<div id="oe-details" class="datas">
@@ -82,7 +82,7 @@
 			<span href="javascript:;" class="" style="color: #47A8FC"><i class="layui-icon"></i> 正确数据</span>
 			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
-			<span class="og-tip">您可以直接单击单元格来修改对应的内容!</span>
+			<span class="og-tip">您可以单击单元格来修改对应的内容！</span>
 			<span class="r total bot-total">共有数据：<strong></strong> 条</span>
 		</div>
 		<div id="os-details" class="datas">
@@ -106,7 +106,7 @@
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="err">
-	<span class="badge badge-danger radius">2</span>
+	<span class="badge badge-danger radius">{{ Object.keys(d.error_info).length }}</span>
 </script>
 
 <script type="text/javascript">
@@ -331,17 +331,23 @@
 					data: data
 				};
                 $.post(url,data,function (res) {
-					if (res.code == "0000") {
+					if (res.code == "0000" && res.data == undefined) {
                         layer.msg(res.msg,{time: 2000});
+					}else if(res.code == '0000' && res.data != undefined) {
+                        obj.del();
+                        res.data.error_arr[0].autonum = error_arr.length+1;
+                        error_arr.push(res.data.error_arr[0]);
+                        table.reload('oerr-main');
+                        layer.msg("数据存在错误，已移至数据异常区！",{time: 2000});
 					}else{
-					    layer.open({
-							content: res.msg
-						});
-					}
+                        layer.open({
+                            content: res.msg
+                        });
+                    }
                 });
             }else if(obj.event == "del") {
 				layer.confirm('确定删除？', function(index){
-					$.post('{:url("admin/Order/delPreviewOrder")}',{order_no: data.order_no,batch_no: data.batch_no},function (res) {
+					$.post('{:url("admin/Order/delPreviewOrder")}',{order_no: data.order_no,batch_no: data.batch_no,gnum: data.gnum},function (res) {
 						if (res.code == '0000') {
 							obj.del();
 							layer.close(index);
@@ -458,7 +464,7 @@
                 //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
                 var str = "";
                 $(data).each(function (index,obj) {
-                    str+= obj.order_no+"|";
+                    str+= obj.order_no+'@'+obj.gnum+"|";
                 });
                 layer.confirm('确定删除？', function(index){
                     $.post('{:url("admin/Order/delPreviewOrder")}',{batch_no: data[0].batch_no,order_nos: str.slice(0,-1)},function (res) {
