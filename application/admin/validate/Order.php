@@ -28,6 +28,7 @@ class Order extends Validate
         'consignee|收货人姓名' => 'require|chsAlpha',
         'consignee_telephone|收货人电话' => 'require|number|max:20',
         'consignee_address|收货地址' => 'require',
+        'declare_status|报关状态' => 'in:0,1',
         'gnum|商品序号' => 'require|number|max:4',
         'item_name|企业商品名称' => 'require|chsAlphaNum',
         'qty|数量' => 'require|number|/^[0-9]{1,19}(.[0-9]{1,2})?$/',
@@ -56,7 +57,7 @@ class Order extends Validate
     ];
 
     protected $scene = [
-        'edit_head' => ['goods_value','freight','discount','tax_total','actural_paid','currency','buyer_name','buyer_telephone','buyer_id_type','buyer_id_number','consignee','consignee_telephone','consignee_address'],
+        'edit_head' => ['goods_value','freight','discount','tax_total','actural_paid','currency','buyer_name','buyer_telephone','buyer_id_type','buyer_id_number','consignee','consignee_telephone','consignee_address','declare_status'],
         'edit_goods' => ['item_name','qty','qty1','unit','unit1','country','hscode','gjcode','gtype','price','total_price','currency']
     ];
 }

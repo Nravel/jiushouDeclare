@@ -16,6 +16,10 @@ use traits\model\SoftDelete;
 
 class OrderHead extends Model
 {
+    protected $autoWriteTimestamp = 'datetime';
+    // 关闭自动写入update_time字段
+    protected $updateTime = false;
+
     //新增订单头记录
     public function saveDatas($datas,$harr,$garr,$batch) {
         $orderHead = new OrderHead();

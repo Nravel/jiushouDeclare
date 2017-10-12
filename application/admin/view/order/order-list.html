@@ -224,7 +224,10 @@
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 70, sort: true}
                 ,{field: 'batch_time', title: '批次号', width: 180, sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 150, sort: true, edit: "text"}
+                ,{field: 'batch_note', title: '批次备注', width: 180}
+                ,{field: 'create_time', title: '导入时间', width: 170, sort: true}
+                ,{field: 'order_no', title: '订单编号', width: 150, sort: true}
+                ,{field: 'declare_status', title: '报关状态', width: 100}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true}
@@ -244,7 +247,7 @@
             ,even: true
             ,page: true //是否显示分页
             ,limits: [5,10,15,20]
-            ,limit: 5 //每页默认显示的数量
+            ,limit: 10 //每页默认显示的数量
             ,done: function(res, curr, count){
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度

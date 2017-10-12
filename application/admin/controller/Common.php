@@ -15,9 +15,9 @@ use think\Request;
 class Common extends Controller
 {
     protected $request = null;
-    public function __construct(Request $request = null)
-    {
+    public function __construct(Request $request = null) {
         parent::__construct($request);
         $this->request = $request;
     }
+
 }

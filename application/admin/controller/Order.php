@@ -60,32 +60,33 @@ class Order extends Common
     public function getOrderDatas() {
         $limit = $this->request->get('limit');
         $page = $this->request->get('page');
-        $orderModel = Loader::model("OrderBatch");
-        $batch = $this->request->param('batch');
-        if (!isset($batch)) {
-            $batch = $orderModel->field("batch_time")->order("id desc")->find()['batch_time'];
-        }
+        $orderModel = Loader::model("OrderHead");
+        $order = ['a.batch_time'=>'desc'];
+//        $batch = $this->request->param('batch');
 //        $orderField = $this->request->get('field');
 //        $orderType = $this->request->get('order');
         $alias = "a";
         $join = [
-            ["OrderHead b","a.batch_time = b.batch_time"],
+            ["OrderBatch b","a.batch_time = b.batch_time"],
 //            ["OrderGoods c","b.order_no = c.order_no"],
         ];
-        $where = ['a.batch_time'=>$batch];
-        $field = "*,@i:=@i+1 as autonum";
+        $where = [];
+//        $where = ['b.batch_time'=>$batch];
+//        $field = "*,@i:=@i+1 as autonum";
+        $field = "*";
 //        $orderBy = [$orderField => $orderType];
-        $orderModel = Loader::model("OrderBatch");
         //数据集序号设定
-        $i = 0;
+        $i = 1;
         if ($page>1) {
-            $i = ($page-1)*$limit;
+            $i = ($page-1)*$limit+1;
         }
-        $orderModel->query("set @i=".$i);
+//        $orderModel->query("set @i=".$i);
 //        $data = $orderHead->alias($alias)->join($join)->field($field)->page($page,$limit)->order($orderBy)->select();
-        $data = $orderModel->alias($alias)->join($join)->where($where)->field($field)->page($page,$limit)->select();
+        $data = $orderModel->alias($alias)->join($join)->where($where)->order($order)->field($field)->page($page,$limit)->select();
+        foreach ($data as $k => $record) {
+            $data[$k]['autonum'] = $i++;
+        }
         $dataCount = $orderModel->alias($alias)->where($where)->join($join)->field($field)->count();
-        if (!$dataCount) $orderModel::destroy(['batch_time'=>$batch]);
         $data_format = [
             "code" => 0,
             "msg" => "success",
@@ -216,8 +217,6 @@ class Order extends Common
         $validate = Loader::validate('Order');
         if ($etype == "head") {
             $data = $this->request->param();
-            foreach ($data as $val) {
-            }
             $result = $validate->scene('edit_head')->batch()->check($data);
             if (!$result) {
                 $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
@@ -259,6 +258,7 @@ class Order extends Common
         $gnum = $this->request->param('gnum');
         $orderHead = Loader::model('OrderHead');
         $orderGoods = Loader::model('OrderGoods');
+        $orderBatch = Loader::model('OrderBatch');
         if ($data==null&&$gnum==null) {
             $orderGoods::destroy(['order_no'=>$orderNo]);
             $res = $orderHead::destroy(['order_no'=>$orderNo]);
@@ -280,6 +280,13 @@ class Order extends Common
             }
         }
         if ($res) {
+            $batch_results = $orderBatch->field("batch_time")->select();
+            foreach ($batch_results as $row) {
+                $where = ['b.batch_time'=>$row['batch_time']];
+                if ($orderHead->alias('a')->join([["OrderBatch b","a.batch_time = b.batch_time"]])->where($where)->count()==0) {
+                    $orderBatch->destroy(['batch_time'=>$row['batch_time']]);
+                }
+            }
             return ['code'=>'0000','msg'=>'success'];
         }else{
             return ['code'=>'0003','msg'=>'删除失败！'];
