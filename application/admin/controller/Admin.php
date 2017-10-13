@@ -9,6 +9,9 @@
 namespace app\admin\controller;
 
 
+use think\Loader;
+use think\Session;
+
 class Admin extends Common
 {
     public function index() {
@@ -28,5 +31,22 @@ class Admin extends Common
     }
     public function permissionEdit() {
         return $this->fetch('admin-permission-edit');
+    }
+    public function passwordEdit() {
+        $request = $this->request->post();
+        if ($request!=null) {
+            $admin = Loader::model('Admin');
+            $result = $admin->get(['username'=>Session::get('username'),'password'=>md5($request['oldpassword'])]);
+            if ($result) {
+                $admin->save(['password'=>$request['newpassword']]);
+            }else{
+                return [
+                    'code' => '0002',
+                    'msg' => "原密码错误！"
+                ];
+            }
+        }else{
+            return $this->fetch('admin-password-edit');
+        }
     }
 }
