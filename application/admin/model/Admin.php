@@ -10,5 +10,9 @@ use think\Model;
 
 class Admin extends Model {
     protected $autoWriteTimestamp = 'datetime';
+    protected $createTime  = false;
     protected $updateTime = 'login_time';
+    public function noUpdate() {
+        $this->updateTime = false;
+    }
 }

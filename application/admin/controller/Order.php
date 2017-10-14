@@ -187,6 +187,7 @@ class Order extends Common
         $order_nos = $this->request->param('order_nos');
         $batch_no = $this->request->param('batch_no');
         $delbatch = $this->request->param('delbatch');
+//        $remove = $this->request->param('remove');
         $orderPreview = Loader::model('OrderPreview');
         if ($orderNo!=null&&$batch_no!=null) {
             $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no,'gnum'=>$gnum]);

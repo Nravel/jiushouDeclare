@@ -35,10 +35,15 @@ class Admin extends Common
     public function passwordEdit() {
         $request = $this->request->post();
         if ($request!=null) {
-            $admin = Loader::model('Admin');
+            $admin = new \app\admin\model\Admin();
             $result = $admin->get(['username'=>Session::get('username'),'password'=>md5($request['oldpassword'])]);
             if ($result) {
-                $admin->save(['password'=>$request['newpassword']]);
+                $admin->noUpdate();
+                $admin->save(['password'=>md5($request['newpassword'])],['username'=>Session::get('username')]);
+                return [
+                    'code' => '0000',
+                    'msg' => "修改成功！"
+                ];
             }else{
                 return [
                     'code' => '0002',

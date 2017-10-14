@@ -61,7 +61,15 @@
 				<li class="col-xs-4 mb-15">
 					<div class="oh-content">
 						<span>{{ item.field }}：</span>
+						{{# if (item.field === '报关状态') { }}
+							{{# if (item.content === '0') { }}
+								<span style="color: #dd514c">未报关</span>
+							{{# }else{ }}
+								<span style="color: #5EB95E">已报关</span>
+							{{# } }}
+						{{# }else{ }}
 						<span>{{ item.content }}</span>
+						{{# } }}
 					</div>
 				</li>
 			{{# }); }}

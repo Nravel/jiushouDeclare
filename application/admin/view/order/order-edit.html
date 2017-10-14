@@ -76,6 +76,11 @@
 						<!--{{# var re = /^[\u4E00-\u9FA5]+$/ }}-->
 						{{# if (escape(item.content).indexOf( "%u" )==0&&item.content.length>17) { }}
 							<span><textarea name={{ item.fieldname }} cols="" rows="" class="textarea">{{ item.content }}</textarea></span>
+                        {{# }else if(item.fieldname === 'declare_status'){ }}
+                            <div class="radio-box" style="vertical-align: middle;padding-left: 10px">
+                                <input name={{ item.fieldname }} type="radio" value='0' {{# if(!parseInt(item.content)) { }} checked {{# }else{ }}  {{# } }} ><font style="color: #dd514c">未报关</font> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <input name={{ item.fieldname }} type="radio" value='1' {{# if(parseInt(item.content)) { }} checked {{# }else{ }}  {{# } }} ><font style="color: #5EB95E">已报关</font>
+                            </div>
 						{{# }else{ }}
 							<span><input name={{ item.fieldname }} class="input-text size-M" type="text" value={{ item.content }}></span>
 						{{# } }}

@@ -28,7 +28,7 @@
     -moz-width: calc(100% / 3 - 6px);
     -webkit-width: calc(100% / 3 - 6px);
     -o-width: calc(100% / 3 - 6px);
-    margin-bottom: 5px;
+    margin-bottom: 7px;
     min-width: 336px;
 }
 
