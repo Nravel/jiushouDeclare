@@ -13,18 +13,24 @@ use think\Db;
 
 class Search {
     public $where = [];
+    public $alias = null;
     public $join = [];
     public $name = '';
     public $page= '';
     public $limit = '';
 
-    public function searchSingle() {
+    /**
+     * 按条件查询
+     * @return array
+     */
+    public function search() {
         $i = 1;
         if ($this->page>1) {
             $i = ($this->page-1)*$this->limit+1;
         }
         $searchObj = Db::name($this->name);
         $result = $searchObj
+            ->alias($this->alias)
             ->where($this->where)
             ->join($this->join)
             ->page($this->page,$this->limit)
@@ -33,6 +39,7 @@ class Search {
             $result[$k]['autonum'] = $i++;
         }
         $count = $searchObj
+            ->alias($this->alias)
             ->where($this->where)
             ->join($this->join)
             ->count();
@@ -41,6 +48,7 @@ class Search {
             "msg" => "success",
             "count" => $count,
             "data" => $result,
-        ];;
+        ];
     }
+
 }

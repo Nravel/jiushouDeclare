@@ -22,7 +22,7 @@
 	<!--查询-->
 	<div class="search text-c">
 		<input type="text" name="order_no" id="order_search" placeholder=" 订单编号" style="width:250px" class="input-text">
-		<button name="" id="" class="btn btn-success" onclick="searchFun(0)" type="submit"><i class="Hui-iconfont">&#xe665;</i> 订单编号</button>
+		<button name="" id="" class="btn btn-success" onclick="searchFun(false)" type="submit"><i class="Hui-iconfont">&#xe665;</i> 订单编号</button>
 	</div>
 	<form hidden id="search-form" action="" method="post">
 		<div class="panel mt-20">
@@ -36,11 +36,12 @@
 						<li>
 							<button class="btn btn-primary tab">订单编号：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="order_no_eq" class="select">
 								<option value="0">等于</option>
 								<option value="1">大于</option>
 								<option value="2">小于</option>
 								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
 							<input type="text" name="order_no" class="input-text main-input">
@@ -48,76 +49,78 @@
 						<li>
 							<button class="btn btn-primary tab">导入时间的范围：</button>
 							{literal}
-							<input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate">
+							<input type="text" name="create_time_begin" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate">
 							-
-							<input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate">
+							<input type="text" name="create_time_end" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate">
 							{/literal}
 						</li>
 						<li>
 							<button class="btn btn-primary tab">报关类型：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="declare_status_eq" class="select">
 								<option value="0">等于</option>
 							</select>
 						</span>
 							<span class="main-select">
-							<select name="" class="select">
-								<option value="0">全部</option>
-								<option value="1">未报关</option>
-								<option value="2">已报关</option>
+							<select name="declare_status" class="select">
+								<option value="">全部</option>
+								<option value="0">未报关</option>
+								<option value="1">已报关</option>
 							</select>
 						</span>
 						</li>
 						<li>
 							<button class="btn btn-primary tab">批次备注：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="batch_note_eq" class="select">
 								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="order_no" class="input-text main-input">
+							<input type="text" name="batch_note" class="input-text main-input">
 						</li>
 						<li>
 							<button class="btn btn-primary tab">批次号：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="batch_time_eq" class="select">
 								<option value="0">等于</option>
 								<option value="1">大于</option>
 								<option value="2">小于</option>
-								<option value="2">不等于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="order_no" class="input-text main-input">
+							<input type="text" name="batch_time" class="input-text main-input">
 						</li>
 						<li>
 							<button class="btn btn-primary tab">订购人姓名：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="buyer_name_eq" class="select">
 								<option value="0">等于</option>
-								<option value="2">不等于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="order_no" class="input-text main-input">
+							<input type="text" name="buyer_name" class="input-text main-input">
 						</li>
 						<li>
 							<button class="btn btn-primary tab">收货人姓名：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="consignee_eq" class="select">
 								<option value="0">等于</option>
-								<option value="2">不等于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="order_no" class="input-text main-input">
+							<input type="text" name="consignee" class="input-text main-input">
 						</li>
 					</ul>
 				</div>
 			</div>
 		</div>
 		<div class="search-btns text-c mt-20">
-			<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(1)" style="width: 80px;line-height: 1.5!important">
+			<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(true)" style="width: 80px;line-height: 1.5!important">
 			<input class="btn btn-primary radius" type="reset" value="清空" style="width: 80px;line-height: 1.5!important;">
 		</div>
 	</form>
@@ -361,14 +364,25 @@
         });
     }
 
+    //搜索处理函数
     function searchFun(type) {
-
         if (type) {
-			alert(1);
+//            $.post("{:url('admin/Search/searchByMultiple')}",{data:$('#search-form').serializeArray(),type: 'olist_multiple'},function (res) {
+//
+//            });
+            layui.table.reload('main', {
+                url: "{:url('admin/Search/searchByMultiple')}",
+				method: 'post'
+                ,where: {data:$('#search-form').serializeArray(),type: 'olist_multiple'}
+            });
+			$('#search-form').submit(function (e) {
+                return false;
+            });
         }else{
             if (hasString($("#order_search"))>0) {
                 layui.table.reload('main', {
-                    url: "{:url('admin/Search/searchBySingle')}"
+                    url: "{:url('admin/Search/searchBySingle')}",
+                    method: 'get'
                     ,where: {condition: $("#order_search").val(),type: 'olist_single'}
                 });
 //                $.get("{:url('admin/Search/searchBySingle')}",{'a.order_no': $("#order_search").val(),type: 0},function (res) {
