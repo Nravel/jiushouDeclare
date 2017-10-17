@@ -14,7 +14,8 @@
 }
 .panel-body {
     padding: 10px 20px;
-    height: 160px;
+    height: auto;
+    /*height: 160px;*/
     overflow-x: scroll;
 }
 .search-ul ul,.ohead-ul {

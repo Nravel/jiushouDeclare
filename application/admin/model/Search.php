@@ -14,6 +14,8 @@ use think\Db;
 class Search {
     public $where = [];
     public $alias = null;
+    public $field = null;
+    public $group = null;
     public $join = [];
     public $name = '';
     public $page= '';
@@ -32,9 +34,13 @@ class Search {
         $result = $searchObj
             ->alias($this->alias)
             ->where($this->where)
+            ->field($this->field)
             ->join($this->join)
+            ->group($this->group)
             ->page($this->page,$this->limit)
+//            ->fetchSql()
             ->select();
+//        dump($this->group);exit;
         foreach ($result as $k => $record) {
             $result[$k]['autonum'] = $i++;
         }
@@ -42,6 +48,7 @@ class Search {
             ->alias($this->alias)
             ->where($this->where)
             ->join($this->join)
+            ->group($this->group)
             ->count();
         return $data_format = [
             "code" => 0,

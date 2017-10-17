@@ -13,8 +13,10 @@ use think\Loader;
 
 class Search extends Common {
     protected $type = [
-        'olist_single' => ['name'=>'order_head a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.order_no'],
-        'olist_multiple' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.','whereKey2arr'=>['batch_note'],'whereKey2'=>'b.','whereDate'=>'create_time']
+        'olist_single' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.order_no'],
+        'oexport_single' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'b.batch_note','field' => "b.batch_time,b.batch_note,a.create_time",'group' => 'b.batch_time,b.batch_note,a.create_time'],
+        'olist_multiple' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.','whereKey2arr'=>['batch_note'],'whereKey2'=>'b.'],
+        'oexport_multiple' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.','whereKey2arr'=>['batch_note','batch_time'],'whereKey2'=>'b.','field' => "b.batch_time,b.batch_note,a.create_time",'group' => 'b.batch_time,b.batch_note,a.create_time']
     ];
 
     /**
@@ -27,6 +29,13 @@ class Search extends Common {
         $type_index = $request['type'];
         $search->name = $this->type[$type_index]['name'];
         $search->join = $this->type[$type_index]['join'];
+        $search->alias = $this->type[$type_index]['alias'];
+        if (isset($this->type[$type_index]['field'])) {
+            $search->field = $this->type[$type_index]['field'];
+        }
+        if (isset($this->type[$type_index]['group'])) {
+            $search->group = $this->type[$type_index]['group'];
+        }
         $search->page = $request['page'];
         $search->limit = $request['limit'];
         $search->where = [ $this->type[$type_index]['whereKey'] => ['like','%'.$request['condition'].'%']];
@@ -34,6 +43,10 @@ class Search extends Common {
         return $res;
     }
 
+    /**
+     * 多条件查询
+     * @return mixed
+     */
     public function searchByMultiple() {
         $conditions = $this->request->post('data/a');
         $search = Loader::model('Search');
@@ -43,6 +56,12 @@ class Search extends Common {
         $search->alias = $this->type[$type_index]['alias'];
         $search->page = $this->request->post('page');
         $search->limit = $this->request->post('limit');
+        if (isset($this->type[$type_index]['field'])) {
+            $search->field = $this->type[$type_index]['field'];
+        }
+        if (isset($this->type[$type_index]['group'])) {
+            $search->group = $this->type[$type_index]['group'];
+        }
         $where = [];
         foreach ($conditions as $k => $obj) {
             if (preg_match('/_eq$/i',$obj['name'])) {

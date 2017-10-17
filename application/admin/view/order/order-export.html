@@ -15,7 +15,7 @@
 	<!--查询-->
 	<div class="search text-c">
 		<input type="text" name="batch_note" id="note_search" placeholder=" 批次备注" style="width:250px" class="input-text">
-		<button name="" id="" class="btn btn-success" onclick="searchFun(0)" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜备注</button>
+		<button name="" id="" class="btn btn-success" onclick="searchFun(false)" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜备注</button>
 	</div>
 	<form hidden id="search-form" action="" method="post">
 		<div class="panel mt-20">
@@ -27,121 +27,43 @@
 				<div class="search-adv">
 					<ul class="search-ul">
 						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
+							<button class="btn btn-primary tab">批次号：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="batch_time_eq" class="select">
 								<option value="0">等于</option>
 								<option value="1">大于</option>
 								<option value="2">小于</option>
 								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="order_no" class="input-text main-input">
+							<input type="text" name="batch_time" class="input-text main-input">
 						</li>
 						<li>
-							<button class="btn btn-primary tab">日期范围：</button>
+							<button class="btn btn-primary tab">导入时间的范围：</button>
 							{literal}
-							<input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate">
+							<input type="text" name="create_time_begin" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate">
 							-
-							<input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate">
+							<input type="text" name="create_time_end" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate">
 							{/literal}
 						</li>
 						<li>
-							<button class="btn btn-primary tab">企业报送类型：</button>
+							<button class="btn btn-primary tab">批次备注：</button>
 							<span class="select-ctrl">
-							<select name="" class="select">
+							<select name="batch_note_eq" class="select">
 								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
 								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<span class="main-select">
-							<select name="" class="select">
-								<option value="1">新增</option>
-								<option value="2">变更</option>
-								<option value="3">删除</option>
-							</select>
-						</span>
-						</li>
-						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
-							<span class="select-ctrl">
-							<select name="" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
-							</select>
-						</span>
-							<input type="text" name="order_no" class="input-text main-input">
-						</li>
-						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
-							<span class="select-ctrl">
-							<select name="" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
-							</select>
-						</span>
-							<input type="text" name="order_no" class="input-text main-input">
-						</li>
-						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
-							<span class="select-ctrl">
-							<select name="" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
-							</select>
-						</span>
-							<input type="text" name="order_no" class="input-text main-input">
-						</li>
-						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
-							<span class="select-ctrl">
-							<select name="" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
-							</select>
-						</span>
-							<input type="text" name="order_no" class="input-text main-input">
-						</li>
-						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
-							<span class="select-ctrl">
-							<select name="" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
-							</select>
-						</span>
-							<input type="text" name="order_no" class="input-text main-input">
-						</li>
-						<li>
-							<button class="btn btn-primary tab">订单编号：</button>
-							<span class="select-ctrl">
-							<select name="" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="2">不等于</option>
-							</select>
-						</span>
-							<input type="text" name="order_no" class="input-text main-input">
+							<input type="text" name="batch_note" class="input-text main-input">
 						</li>
 					</ul>
 				</div>
 			</div>
 		</div>
 		<div class="search-btns text-c mt-20">
-			<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(1)" style="width: 80px;line-height: 1.5!important">
+			<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(true)" style="width: 80px;line-height: 1.5!important">
 			<input class="btn btn-primary radius" type="reset" value="清空" style="width: 80px;line-height: 1.5!important;">
 		</div>
 	</form>
@@ -222,6 +144,7 @@ layui.use(['table','layer','upload'],function () {
 			{field: 'autonum', title: 'No.',filter: 'autonum', width: 80, sort: true}
             ,{field: 'batch_time', title: '批次号', width: 230, sort: true}
             ,{field: 'batch_note', title: '备注', width: 230}
+            ,{field: 'create_time', title: '导入时间', width: 230, sort: true}
             ,{field: 'ctrl', title: '导出操作', width: 120, toolbar: "#exportTools"}
         ]]
         ,skin: 'row' //表格风格
@@ -352,10 +275,10 @@ function searchFun(type) {
 	}
 }
 
-function hasString(obj) {
-    obj.value == undefined ? obj = obj[0] : "";
-	return obj.value.replace(/(^\s*)|(\s*$)/g,"").length
-}
+//function hasString(obj) {
+//    obj.value == undefined ? obj = obj[0] : "";
+//	return obj.value.replace(/(^\s*)|(\s*$)/g,"").length
+//}
 
 //上传请求时的动画
 function uploading() {
@@ -381,6 +304,30 @@ function exportTable(num) {
 		    layer.msg("没选择数据呀",{'time':"1000"});
 		}
     });
+}
+
+//搜索处理函数
+function searchFun(type) {
+    if (type) {
+        layui.table.reload('main', {
+            url: "{:url('admin/Search/searchByMultiple')}",
+            method: 'post'
+            ,where: {data:$('#search-form').serializeArray(),type: 'oexport_multiple'}
+        });
+        $('#search-form').submit(function (e) {
+            return false;
+        });
+    }else{
+        if (hasString($("#note_search"))>0) {
+            layui.table.reload('main', {
+                url: "{:url('admin/Search/searchBySingle')}",
+                method: 'get'
+                ,where: {condition: $("#note_search").val(),type: 'oexport_single'}
+            });
+        }else{
+            layui.layer.msg("请输入正确的数据！",{time:1000});
+        }
+    }
 }
 
 //显示高级查询

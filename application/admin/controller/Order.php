@@ -12,6 +12,7 @@ namespace app\admin\controller;
 use app\admin\model\OrderHead;
 use app\admin\model\OrderPreview;
 use app\common\controller\Excel;
+use think\Db;
 use think\Exception;
 use think\Loader;
 
@@ -34,16 +35,24 @@ class Order extends Common
     public function getOrderBatch() {
         $limit = $this->request->get('limit');
         $page = $this->request->get('page');
-        $orderModel = Loader::model("OrderBatch");
-        $field = "*,@i:=@i+1 as autonum";
+        //因create_time字段是OrderHead自动生成，故应用OrderHead为主表作查询，否则会报错
+        $orderModel = Loader::model("OrderHead");
+        $orderBatch = Loader::model("OrderBatch");
+        $alias = 'a';
+        $join = [['ceb_order_batch b','a.batch_time=b.batch_time']];
+        $field = "b.batch_time,b.batch_note,a.create_time";
+        $group = 'b.batch_time,b.batch_note,a.create_time';
         //数据集序号设定
-        $i = 0;
+        $i = 1;
         if ($page>1) {
-            $i = ($page-1)*$limit;
+            $i = ($page-1)*$limit+1;
         }
         $orderModel->query("set @i=".$i);
-        $data = $orderModel->field($field)->page($page,$limit)->select();
-        $dataCount = $orderModel->field($field)->count();
+        $data = $orderModel->alias($alias)->join($join)->group($group)->field($field)->page($page,$limit)->select();
+        foreach ($data as $k => $record) {
+            $data[$k]['autonum'] = $i++;
+        }
+        $dataCount = $orderModel->alias($alias)->group($group)->join($join)->count();
         $data_format = [
             "code" => 0,
             "msg" => "success",
@@ -86,7 +95,7 @@ class Order extends Common
         foreach ($data as $k => $record) {
             $data[$k]['autonum'] = $i++;
         }
-        $dataCount = $orderModel->alias($alias)->where($where)->join($join)->field($field)->count();
+        $dataCount = $orderModel->alias($alias)->where($where)->join($join)->count();
         $data_format = [
             "code" => 0,
             "msg" => "success",

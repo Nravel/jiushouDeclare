@@ -367,9 +367,6 @@
     //搜索处理函数
     function searchFun(type) {
         if (type) {
-//            $.post("{:url('admin/Search/searchByMultiple')}",{data:$('#search-form').serializeArray(),type: 'olist_multiple'},function (res) {
-//
-//            });
             layui.table.reload('main', {
                 url: "{:url('admin/Search/searchByMultiple')}",
 				method: 'post'
@@ -385,26 +382,10 @@
                     method: 'get'
                     ,where: {condition: $("#order_search").val(),type: 'olist_single'}
                 });
-//                $.get("{:url('admin/Search/searchBySingle')}",{'a.order_no': $("#order_search").val(),type: 0},function (res) {
-//                    if (res.code === '0000') {
-//                        layui.table.reload('main', {
-//                            url: "{:url('admin/Search/searchBySingle')}"
-//                            ,where: {'a.order_no': $("#order_search").val(),type: 0}
-//                        });
-//                    }else{
-//                        layer.msg(res.msg,{time:2000});
-//                    }
-//                });
             }else{
                 layui.layer.msg("请输入正确的数据！",{time:1000});
             }
         }
-    }
-
-    //验证搜索框是否为空
-    function hasString(obj) {
-        obj.value == undefined ? obj = obj[0] : "";
-        return obj.value.replace(/(^\s*)|(\s*$)/g,"").length
     }
 
     //上传请求时的动画
