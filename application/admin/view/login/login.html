@@ -127,7 +127,6 @@
     function getCookie(){
         var loginCode = $.cookie("login_code");
         var pwd =  $.cookie("pwd");
-        console.log(typeof  pwd);
         if(pwd != 'null'){
             $("[name='online']").attr("checked","true");
         }
