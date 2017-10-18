@@ -196,7 +196,7 @@ class Order extends Common
         $order_nos = $this->request->param('order_nos');
         $batch_no = $this->request->param('batch_no');
         $delbatch = $this->request->param('delbatch');
-//        $remove = $this->request->param('remove');
+        $remove = $this->request->param('remove');
         $orderPreview = Loader::model('OrderPreview');
         if ($orderNo!=null&&$batch_no!=null) {
             $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no,'gnum'=>$gnum]);
@@ -207,9 +207,11 @@ class Order extends Common
             }
         }elseif ($delbatch != null) {
             $res = $orderPreview::destroy(['batch_no'=>$delbatch]);
+        }elseif ($remove != null) {
+            $outdate = date("Ymd",strtotime("-2day"));
+            $res = $orderPreview::where('batch_no','<=',$outdate)->delete();
         }
-
-        if ($res) {
+        if ($res|$res=='0') {
             return ['code'=>'0000','msg'=>'success'];
         }else{
             return ['code'=>'0003','msg'=>'删除失败！'];

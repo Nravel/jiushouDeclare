@@ -245,6 +245,7 @@
                     $("#filetips").html(file.name);
                     $("#filetips").show();
                 });
+                $.post("{:url('admin/Order/delPreviewOrder')}",{remove: true},function (res) {});
                 $("#upcommit").click();
             }
             , done: function (res) {
