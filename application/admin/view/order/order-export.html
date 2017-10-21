@@ -13,11 +13,11 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 订单管理 <span class="c-gray en">&gt;</span> 订单导出 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<!--查询-->
-	<div class="search text-c">
+	<div hidden class="search text-c">
 		<input type="text" name="batch_note" id="note_search" placeholder=" 批次备注" style="width:250px" class="input-text">
 		<button name="" id="" class="btn btn-success" onclick="searchFun(false)" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜备注</button>
 	</div>
-	<form hidden id="search-form" action="" method="post">
+	<form id="search-form" action="" method="post">
 		<div class="panel mt-20">
 			<div class="panel-heading">
 				<span>查询条件</span>
@@ -332,7 +332,7 @@ function searchFun(type) {
 
 //显示高级查询
 function searchAdv() {
-    $(".search").toggle("500");
+//    $(".search").toggle("500");
     $("#search-form").toggle("1000");
 }
 
