@@ -29,14 +29,14 @@
 						<li>
 							<button class="btn btn-primary tab">批次号：</button>
 							<span class="select-ctrl">
-							<select name="batch_time_eq" class="select">
-								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
-								<option value="3">不等于</option>
-								<option value="4">含有（模糊）</option>
-							</select>
-						</span>
+								<select name="batch_time_eq" class="select">
+									<option value="0">等于</option>
+									<option value="1">大于</option>
+									<option value="2">小于</option>
+									<option value="3">不等于</option>
+									<option value="4">含有（模糊）</option>
+								</select>
+							</span>
 							<input type="text" name="batch_time" class="input-text main-input">
 						</li>
 						<li>
@@ -82,7 +82,7 @@
 		</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
 	</div>
-	<div class="mt-20 datas">
+	<div class="datas">
 		<table id="orderLists" lay-filter="olist"></table>
 	</div>
 	<form hidden id="postData" action="{:url('admin/Order/exportData')}" method="post">
