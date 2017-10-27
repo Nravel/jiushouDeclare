@@ -22,6 +22,10 @@ class Admin extends Common
     public function add() {
         return $this->fetch('admin-add');
     }
+    public function edit() {
+        $uid = $this->request->param('uid');
+        return $this->fetch('admin-edit',['uid'=>$uid]);
+    }
     public function role() {
         return $this->fetch('admin-role');
     }
@@ -71,13 +75,27 @@ class Admin extends Common
         $page = $this->request->get('page');
         $join = [
                 ['ceb_auth_group_access b','a.id=b.uid'],
-                ['ceb_auth_group c','b.group_id=c.id']
+//                ['ceb_auth_group c','b.group_id=c.id']
             ];
-        $field = "*,a.status as status,c.status as group_status";
+//        $field = "*,a.status as status,c.status as group_status,a.id as id";
+        $field = "";
         $admin = new \app\admin\model\Admin();
         $data = $admin->alias('a')->join($join)->field($field)->select();
         $count = $admin->alias('a')->join($join)->count();
         if ($count>0) {
+            foreach ($data as $k => $record) {
+                if ($record['group_id']==="") {
+                    $data[$k]['title'] = "未分组";
+                }else{
+                    $auth_group = Db::name('auth_group');
+                    $res = $auth_group->where('id','in',$record['group_id'])->select();
+                    $temp = null;
+                    foreach ($res as $val) {
+                        $temp[]=$val['title'];
+                    }
+                    $data[$k]['title'] = implode(',',$temp);
+                }
+            }
             $data_format = [
                 "code" => 0,
                 "msg" => "success",
@@ -131,18 +149,22 @@ class Admin extends Common
      */
     public function getAuthGroup() {
         $auth_group = Db::name('auth_group');
-        $data = $auth_group->select();
+        $data = $auth_group->select();  //->where('type','<>','-1')
         return [
             'code' => '0000',
             'data' => $data
         ];
     }
 
+    /**
+     * 添加用户
+     * @return array
+     */
     public function addUser() {
         $username = $this->request->post('username');
         $password = $this->request->post('password');
         $status = $this->request->post('status');
-        $gid = implode(',',$this->request->post('gid/a'));
+        $gid = $this->request->post('gid/a') ? implode(',',$this->request->post('gid/a')) : "";
         $validate = new Validate([
             'username' => 'require',
             'password' => 'require'
@@ -158,6 +180,7 @@ class Admin extends Common
         Db::startTrans();
         try{
             $admin->data(['username'=>$username,'password'=>md5($password),'status'=>$status]);
+            $admin->noUpdate();
             $admin->isUpdate(false)->save();
             $res = $auth_group_access->insert(['uid'=>$admin->id,'group_id'=>$gid]);
             if ($res) {

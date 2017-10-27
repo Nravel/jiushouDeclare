@@ -43,13 +43,21 @@
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="status">
-	{{# if (d.status === 1) { }}
+	{{# if (d.status >= 1) { }}
 		<span>启用</span>
 	{{# }else{ }}
 		<span>禁用</span>
 	{{# } }}
 </script>
+<script type="text/html" id="check-date">
+	{{# if (d.login_time.indexOf('1970-01-01 08:00:00') !== -1) { }}
+	<span>该用户未登录过</span>
+	{{# }else{ }}
+	<span>{{ d.login_time }}</span>
+	{{# } }}
+</script>
 <script type="text/javascript">
+	var pdata = null;
     //表格方法式渲染
     layui.use(['table','layer'],function () {
         var table = layui.table;
@@ -71,7 +79,7 @@
                 {field: 'id', title: 'ID', width: 80, sort: true}
                 ,{field: 'username', title: '用户名', width: 230}
                 ,{field: 'title', title: '用户组', width: 500}
-                ,{field: 'login_time', title: '最近登录时间', width: 465, sort: true}
+                ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 465, sort: true}
                 ,{field: 'status', title: '状态',templet: '#status', width: 230, sort: true}
                 ,{field: 'ctrl', title: '操作', width: 120,fixed:"right", toolbar: "#exportTools"}
             ]]
@@ -82,6 +90,7 @@
             ,limit: 10 //每页默认显示的数量
             ,done: function(res, curr, count){
                 //如果是异步请求数据方式，res即为你接口返回的信息。
+//				pdata = res.data;
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
                 $(".total").children("strong").html(count);
             }
@@ -89,12 +98,21 @@
 
         //监听操作工具条
         table.on("tool(alist)",function (obj) {
+            pdata = obj.data;
             var data = obj.data;
-            var url = "{:url('admin/Order/index')}".replace(".html","");
+            var url = "{:url('admin/admin/edit')}".replace('.html','');
             if(obj.event == "edit") {
-                $('#open-tab').attr("data-href",url+'/orderNo/'+data.order_no+'/type/edit');
-                Hui_admin_tab($('#open-tab'));
+				layer.open({
+					type: 2,
+					content: url+'/uid/'+data.id,
+					title: data.username+'_用户修改页面',
+					area: ['300px','400px']
+				});
             }else if(obj.event == "del") {
+                if (data.status ===9) {
+                    layer.open({content:'不能删除超级管理员！！！'});
+                    return;
+                }
                 layer.confirm('确定删除？', function(index){
                     $.post('{:url("admin/admin/delUsers")}',{id: data.id},function (res) {
                         if (res.code == '0000') {
@@ -121,9 +139,15 @@
             if (data.length>0) {
                 //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
                 var str = "";
+                var flag = true;
                 $(data).each(function (index,obj) {
+                    if (obj.status ===9) {
+                        layer.open({content:'选项中含有超级管理员，不能进行删除操作！！！'});
+                        flag = false;
+                    }
                     str+= obj.id+"|";
                 });
+                if (!flag) {return};
                 layer.confirm('确定删除？', function(index){
                     $.post('{:url("admin/admin/delUsers")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
