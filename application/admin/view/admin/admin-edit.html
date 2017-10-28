@@ -13,6 +13,12 @@
 <article class="page-container">
 	<form class="form form-horizontal" id="form-admin-add" method="post">
 	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" value="" placeholder="" id="adminName" name="username">
+		</div>
+	</div>
+	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3">用户状态：</label>
 		<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 			<div class="radio-box">
@@ -48,10 +54,9 @@
 
 	{{# layui.each(d,function(index,item){ }}
 	{{# if (d.length!==0) { }}
-	{{# console.log(parent.pdata.title.split(",").indexOf(item.title)); }}
-	{{# var chk = parent.pdata.title.split(',').indexOf(item.title) ? true : false; console.log(chk) }}
+	{{# var chk = parent.pdata.title.split(',').indexOf(item.title)!==-1 ? 'checked' : ''; }}
 		<div class="check-box mb-10">
-			<input type="checkbox" id="checkbox-{{index+1}}" name="gid[]" value="{{item.id}}" checked ={{ chk  }} >
+			<input type="checkbox" id="checkbox-{{index+1}}" name="gid[]" value="{{item.id}}" {{ chk }} >
 			<label for="checkbox-{{index+1}}">{{ item.title }}</label>
 		</div>
 	{{# }else{ }}
@@ -73,11 +78,13 @@
 
 $(function(){
     var uid = "{$uid}";
+    $('#adminName').val(parent.pdata.username);
 	if (parseInt(uid) === parent.pdata.id) {
 		if (parent.pdata.status >= 1) {
 			$('#status-1').attr('checked','checked');
 			if (parent.pdata.status === 9) {
-				$('#status-2').hidden;
+				$('#status-2').attr('disabled','disabled');
+				$('label[for="status-2"]').css('color','#ddd');
 			}
 		}else{
 			$('#status-2').attr('checked','checked');
@@ -98,6 +105,11 @@ $(function(){
     });
 	$("#form-admin-add").validate({
 		rules:{
+            adminName:{
+                required:true,
+                minlength:4,
+                maxlength:16
+            },
             status:{
 				required:true,
 			}
@@ -108,19 +120,22 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/addUser')}" ,
+				url: "{:url('admin/admin/editUser')}" ,
+				data: {uid: parent.pdata.id},
 				success: function(data){
 				    if (data.code === '0000') {
-                        layer.msg('添加成功!',{time:1000});
                         var index = parent.layer.getFrameIndex(window.name);
-                        parent.$('.btn-refresh').click();
                         parent.layer.close(index);
+                        if (parent.parent.$('#Hui-userbar .dropDown_A>span').html() === parent.pdata.username) {
+                            parent.parent.$('#Hui-userbar .dropDown_A>span').html( $('#adminName').val());
+						}
                         parent.layui.table.reload('main');
+                        parent.layer.msg('修改成功!',{time:1000});
                     }else if (data.msg.indexOf('Duplicate')!==-1){
-				        layer.open ({content:'用户已存在！'});
+                        layer.open ({content:'用户名已存在！'});
                     }else{
                         console.log(data.msg);
-                        layer.open({content:'未知错误！'})
+                        layer.open({content:'未知错误！'});
                     }
 				},
                 error: function(XmlHttpRequest, textStatus, errorThrown){

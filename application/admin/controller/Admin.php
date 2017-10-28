@@ -26,8 +26,8 @@ class Admin extends Common
         $uid = $this->request->param('uid');
         return $this->fetch('admin-edit',['uid'=>$uid]);
     }
-    public function role() {
-        return $this->fetch('admin-role');
+    public function groups() {
+        return $this->fetch('admin-group');
     }
     public function roleAdd() {
         return $this->fetch('admin-role-add');
@@ -46,6 +46,16 @@ class Admin extends Common
     public function passwordEdit() {
         $request = $this->request->post();
         if ($request!=null) {
+            $validate = new Validate([
+                'oldpassword' => 'require',
+                'newpassword' => 'require'
+            ]);
+            if (!$validate->batch()->check(['oldpassword'=>$request['oldpassword'],'newpassword'=>$request['newpassword']])) {
+                return [
+                    'code' => '0003',
+                    'msg' => $validate->getError()
+                ];
+            }
             $admin = new \app\admin\model\Admin();
             $result = $admin->get(['username'=>Session::get('username'),'password'=>md5($request['oldpassword'])]);
             if ($result) {
@@ -120,14 +130,15 @@ class Admin extends Common
         $data = $this->request->post('data');
         $admin = Loader::model('admin');
         $auth_group_access = Db::name('auth_group_access');
-        if ($data===null) {
+        $res = false;
+        if ($data===null && $admin::get($id)['status']!==9) {
             $res = $admin::destroy(['id'=>$id]) or 0;
             $res ? $auth_group_access->where('uid='.$id)->delete() : "" ;
-        }else{
+        }else if($data!==null) {
             foreach (explode('|',$data) as $val) {
+                if ($admin::get($val)['status']===9) break;
                 $res = $admin::destroy(['id'=>$val]) or 0;
                 $res ? $auth_group_access->where('uid='.$val)->delete() : "" ;
-                if (!$res) break;
             }
         }
         if ($res) {
@@ -198,4 +209,105 @@ class Admin extends Common
             ];
         }
     }
+
+    /**
+     * 修改用户信息
+     * @return array
+     */
+    public function editUser() {
+        $username = $this->request->post('username');
+        $uid = $this->request->post('uid');
+        $status = $this->request->post('status');
+        $gid = $this->request->post('gid/a') ? implode(',',$this->request->post('gid/a')) : "";
+        $admin = new \app\admin\model\Admin();
+        $auth_group_access = Db::name('auth_group_access');
+        Db::startTrans();
+        try{
+            $res = $admin::get($uid);
+            $admin->noUpdate();
+            if ($res['status'] === 9) {
+                $admin->isUpdate(true)->save(['username'=>$username],['id'=>$uid]);
+                Session::set('username',$username);
+            }else{
+                $admin->isUpdate(true)->save(['status'=>$status,'username'=>$username],['id'=>$uid]);
+            }
+            $auth_group_access->where(['uid'=>$uid])->update(['group_id'=>$gid]);
+            Db::commit();
+            return [
+                'code' => '0000',
+                'msg' => '用户添加成功！'
+            ];
+        }catch (\Exception $e) {
+            Db::rollback();
+            return [
+                'code' => '0002',
+                'msg' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * 搜索用户
+     * @return array
+     */
+    public function search() {
+        $conditions = $this->request->post('data/a');
+        $where = [];
+        $join = [
+            ['ceb_auth_group_access b','a.id=b.uid']
+        ];
+        foreach ($conditions as $k => $obj) {
+            if (preg_match('/^username$/i',$obj['name'])) {
+                if ($obj['value'] == "") { continue; }
+                $where['username'] = ['like','%'.$obj['value'].'%'];
+            }elseif (preg_match('/time_begin$/i',$obj['name'])) {
+                if ($obj['value']==''&&$conditions[$k+1]['value']=='') {
+                    continue;
+                }elseif ($obj['value']==''&&$conditions[$k+1]['value']!='') {
+                    $obj['value'] = $conditions[$k+1]['value'];
+                }elseif($obj['value']!=''&&$conditions[$k+1]['value']=='') {
+                    $conditions[$k+1]['value'] = $obj['value'];
+                }
+                $fieldname = substr($obj['name'],0,-6);
+                if ($obj['value'] == $conditions[$k+1]['value']) {
+                    $where['DATE_FORMAT('.$fieldname.',\'%Y-%m-%d\')'] = ['exp','=\''.$obj['value'].'\''];
+                }else{
+//                    $where[$this->type[$type_index]['whereKey'].$fieldname] = ['between time',[$obj['value'],$conditions[$k+1]['value']]];
+                    $where['DATE_FORMAT('.$fieldname.',\'%Y-%m-%d\')'] = ['exp','between \''.$obj['value'].'\' and '.'\''.$conditions[$k+1]['value'].'\''];
+                }
+            }
+        }
+        $field = "";
+        $admin = new \app\admin\model\Admin();
+        $data = $admin->alias('a')->join($join)->where($where)->field($field)->select();
+        $count = $admin->alias('a')->join($join)->where($where)->count();
+        if ($count>0) {
+            foreach ($data as $k => $record) {
+                if ($record['group_id']==="") {
+                    $data[$k]['title'] = "未分组";
+                }else{
+                    $auth_group = Db::name('auth_group');
+                    $res = $auth_group->where('id','in',$record['group_id'])->select();
+                    $temp = null;
+                    foreach ($res as $val) {
+                        $temp[]=$val['title'];
+                    }
+                    $data[$k]['title'] = implode(',',$temp);
+                }
+            }
+            $data_format = [
+                "code" => 0,
+                "msg" => "success",
+                "count" => $count,
+                "data" => $data,
+            ];
+            return $data_format;
+        }else{
+            return [
+                'code' => '0001',
+                'msg' => '无数据！'
+            ];
+        }
+    }
+
 }
