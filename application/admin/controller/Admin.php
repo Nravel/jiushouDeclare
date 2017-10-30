@@ -29,6 +29,12 @@ class Admin extends Common
     public function groups() {
         return $this->fetch('admin-group');
     }
+    public function groupsAdd() {
+        return $this->fetch('admin-group-add');
+    }
+    public function groupsEdit() {
+        return $this->fetch('admin-group-edit');
+    }
     public function roleAdd() {
         return $this->fetch('admin-role-add');
     }
@@ -142,15 +148,9 @@ class Admin extends Common
             }
         }
         if ($res) {
-            return [
-                'code' => '0000',
-                'msg' => '删除成功！'
-            ];
+            return feedback('0000','删除成功！');
         }else{
-            return [
-                'code' => '0001',
-                'msg' => '删除失败！'
-            ];
+            return feedback('0001','删除失败！');
         }
     }
 
@@ -235,7 +235,7 @@ class Admin extends Common
             Db::commit();
             return [
                 'code' => '0000',
-                'msg' => '用户添加成功！'
+                'msg' => '用户修改成功！'
             ];
         }catch (\Exception $e) {
             Db::rollback();
@@ -310,4 +310,153 @@ class Admin extends Common
         }
     }
 
+    /**
+     * 获取用户组列表
+     * @return array
+     */
+    public function getGroups() {
+        $limit = $this->request->get('limit');
+        $page = $this->request->get('page');
+        $join = [
+            ['admin b','a.uid=b.id']
+        ];
+        $field = "username";
+        $auth_group = Db::name('auth_group');
+        $data = $auth_group->select(); //->alias('a')->join($join)
+        $count = $auth_group->count();  //->alias('a')->join($join)
+        if ($count>0) {
+            $i = 1;
+            if ($page>1) {
+                $i = ($page-1)*$limit+1;
+            }
+            $auth_group_access = Db::name('auth_group_access');
+            $admin = new \app\admin\model\Admin();
+            foreach ($data as $k => $record) {
+                $data[$k]['autonum'] = $i++;
+                $res = $auth_group_access->alias('a')->join($join)->where('group_id','exp',"REGEXP '^{$record['id']}$|^{$record['id']},|,{$record['id']},|,{$record['id']}$'")->field($field)->select();
+                if (count($res)>0) {
+                    $username = [];
+                    foreach ($res as $row) {
+                        $username[] = $row['username'];
+                    }
+                    $username = implode(',',$username);
+                    $data[$k]['username'] = $username;
+                }else{
+                    $data[$k]['username'] = "未添加用户";
+                }
+            }
+            $data_format = [
+                "code" => 0,
+                "msg" => "success",
+                "count" => $count,
+                "data" => $data,
+            ];
+            return $data_format;
+        }else{
+            return [
+                'code' => '0001',
+                'msg' => '无数据！'
+            ];
+        }
+    }
+
+    /**
+     * 添加用户组
+     * @return array
+     */
+    public function addGroup() {
+        $title = $this->request->post('title');
+        $module = $this->request->post('module');
+        $description = $this->request->post('description');
+        $status = $this->request->post('status');
+        $type = $this->request->post('type',1);
+        $validate = new Validate([
+            'title' => 'require',
+            'module' => 'require',
+            'status' => 'require|length:1',
+        ]);
+        if (!$validate->batch()->check(['title'=>$title,'module'=>$module,'status'=>$status])) {
+            return [
+                'code' => '0003',
+                'msg' => $validate->getError()
+            ];
+        }
+        $auth_group = Db::name('auth_group');
+        Db::startTrans();
+        try{
+            $res = $auth_group->insert(['title'=>$title,'description'=>$description,'module'=>$module,'status'=>$status,'type'=>$type]);
+            if ($res) {
+                Db::commit();
+                return [
+                    'code' => '0000',
+                    'msg' => '用户添加成功！'
+                ];
+            }
+        }catch (\Exception $e) {
+            Db::rollback();
+            return [
+                'code' => '0002',
+                'msg' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * 编辑用户组信息
+     * @return array
+     */
+    public function editGroup() {
+        $title = $this->request->post('title');
+        $module = $this->request->post('module');
+        $description = $this->request->post('description');
+        $status = $this->request->post('status');
+        $gid = $this->request->post('gid');
+        $auth_group = Db::name('auth_group');
+        Db::startTrans();
+        try{
+            $auth_group->where(['id'=>$gid])->update(['title'=>$title,'module'=>$module,'description'=>$description,'status'=>$status]);
+            Db::commit();
+            return feedback('0000','用户组更改成功！');
+
+        }catch (\Exception $e) {
+            Db::rollback();
+            return feedback('0002',$e->getMessage());
+        }
+    }
+
+    /**
+     * 删除用户组
+     * @return array
+     */
+    public function delGroups() {
+        $id = $this->request->post('id');
+        $data = $this->request->post('data');
+        $auth_group = Db::name('auth_group');
+        $auth_group_access = Db::name('auth_group_access');
+        $res = false;
+        if ($data===null) {
+//            $res = $auth_group->delete(['id'=>$id]) or 0;
+            $res = 1;
+            if ($res) {
+                $datas = $auth_group_access->where('group_id','exp',"REGEXP '^{$id}$|^{$id},|,{$id},|,{$id}$'")->select();
+                if (count($datas)>0) {
+                    foreach ($datas as $row) {
+                        $ndata = array_diff(explode(',',$row['group_id']),[$id]);
+                        $auth_group_access->where(['uid'=>$row['uid']])->update(['group_id'=>implode(',',$ndata)]);
+                    }
+                }
+            }
+        }else if($data!==null) {
+            foreach (explode('|',$data) as $val) {
+                if ($auth_group::get($val)['status']===9) break;
+                $res = $auth_group::destroy(['id'=>$val]) or 0;
+                $res ? $auth_group_access->where('uid='.$val)->delete() : "" ;
+            }
+        }
+        if ($res) {
+            return feedback('0000','删除成功！');
+        }else{
+            return feedback('0001','删除失败！');
+        }
+    }
 }

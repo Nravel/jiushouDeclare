@@ -15,11 +15,11 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 用户组管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<span hidden>{$tpl=3}</span>
-	{include file='date-search' /}
+	<!--{include file='date-search' /}-->
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
-			<a href="javascript:;" onclick="admin_add('添加用户组','{:url(\'add\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户组</a>
+			<a href="javascript:;" onclick="group_add('添加用户组','{:url(\'groupsAdd\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户组</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
@@ -35,7 +35,9 @@
 <!--<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>-->
 <!--<script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>-->
 <script type="text/html" id="exportTools">
-	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="修改组信息" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="授权管理" class="layui-btn layui-btn-mini layui-btn-normal" lay-event="authorize"><i class="Hui-iconfont">&#xe63c;</i></a>
+	<a title="组成员管理" class="layui-btn layui-btn-mini layui-btn-warm" lay-event="add"><i class="Hui-iconfont">&#xe62c;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="status">
@@ -45,13 +47,13 @@
 		<span>禁用</span>
 	{{# } }}
 </script>
-<script type="text/html" id="check-date">
-	{{# if (d.login_time.indexOf('1970-01-01 08:00:00') !== -1) { }}
-	<span>该用户未登录过</span>
-	{{# }else{ }}
-	<span>{{ d.login_time }}</span>
-	{{# } }}
-</script>
+<!--<script type="text/html" id="check-date">-->
+	<!--{{# if (d.login_time.indexOf('1970-01-01 08:00:00') !== -1) { }}-->
+	<!--<span>该用户未登录过</span>-->
+	<!--{{# }else{ }}-->
+	<!--<span>{{ d.login_time }}</span>-->
+	<!--{{# } }}-->
+<!--</script>-->
 <script type="text/javascript">
 	var pdata = null;
     //表格方法式渲染
@@ -64,7 +66,7 @@
             ,id: 'main'
 //        ,height: 288 //容器高度
 //        ,data: res.data
-            ,url: '{:url(\'admin/admin/getUsers\')}'
+            ,url: '{:url(\'admin/admin/getGroups\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
@@ -72,12 +74,12 @@
 //		,height: 'full-600'
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
-                {field: 'id', title: 'ID', width: 80, sort: true}
-                ,{field: 'username', title: '用户名', width: 230}
-                ,{field: 'title', title: '用户组', width: 500}
-                ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 465, sort: true}
+                {field: 'autonum', title: 'No.', width: 80, sort: true}
+                ,{field: 'title', title: '用户组名', width: 230}
+                ,{field: 'description', title: '描述', width: 450}
+                ,{field: 'username', title: '组成员',width: 465}   //, templet: '#check-date'
                 ,{field: 'status', title: '状态',templet: '#status', width: 230, sort: true}
-                ,{field: 'ctrl', title: '操作', width: 120,fixed:"right", toolbar: "#exportTools"}
+                ,{field: 'ctrl', title: '操作', width: 170,fixed:"right", toolbar: "#exportTools"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
@@ -96,21 +98,17 @@
         table.on("tool(alist)",function (obj) {
             pdata = obj.data;
             var data = obj.data;
-            var url = "{:url('admin/admin/edit')}".replace('.html','');
+            var url = "{:url('admin/admin/groupsEdit')}".replace('.html','');
             if(obj.event == "edit") {
 				layer.open({
 					type: 2,
 					content: url+'/uid/'+data.id,
-					title: data.username+'_用户修改页面',
-					area: ['300px','400px']
+					title: data.title+'_修改页面',
+					area: ['320px','400px']
 				});
             }else if(obj.event == "del") {
-                if (data.status ===9) {
-                    layer.open({content:'不能删除超级管理员！！！'});
-                    return;
-                }
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/delUsers")}',{id: data.id},function (res) {
+                    $.post('{:url("admin/admin/delGroups")}',{id: data.id},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
@@ -162,20 +160,8 @@
         });
     }
 
-	//用户搜索
-    function searchUser() {
-        layui.table.reload('main', {
-            url: "{:url('admin/admin/search')}",
-            method: 'post'
-            ,where: {data:$('#searchUsers').serializeArray(),type: 'user_multiple'}
-        });
-        $('#searchUsers').submit(function (e) {
-			return false;
-        });
-    }
-
-	/*管理员-增加*/
-    function admin_add(title,url,w,h){
+	/*用户组-增加*/
+    function group_add(title,url,w,h){
         layer_show(title,url,w,h);
     }
 </script>
