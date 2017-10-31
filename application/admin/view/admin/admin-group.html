@@ -25,7 +25,7 @@
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
 	</div>
 	<div class="datas">
-		<table id="orderLists" lay-filter="alist"></table>
+		<table id="groupLists" lay-filter="glist"></table>
 	</div>
 </div>
 {include file='export-footer' /}
@@ -37,7 +37,7 @@
 <script type="text/html" id="exportTools">
 	<a title="修改组信息" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
 	<a title="授权管理" class="layui-btn layui-btn-mini layui-btn-normal" lay-event="authorize"><i class="Hui-iconfont">&#xe63c;</i></a>
-	<a title="组成员管理" class="layui-btn layui-btn-mini layui-btn-warm" lay-event="add"><i class="Hui-iconfont">&#xe62c;</i></a>
+	<a title="组成员管理" class="layui-btn layui-btn-mini layui-btn-warm" lay-event="member"><i class="Hui-iconfont">&#xe62c;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="status">
@@ -62,7 +62,7 @@
         var layer = layui.layer;
         var $ = layui.jquery;
         table.render({
-            elem: '#orderLists' //指定原始表格元素选择器（推荐id选择器）
+            elem: '#groupLists' //指定原始表格元素选择器（推荐id选择器）
             ,id: 'main'
 //        ,height: 288 //容器高度
 //        ,data: res.data
@@ -83,7 +83,7 @@
             ]]
             ,skin: 'row' //表格风格
             ,even: true
-            ,page: false //是否显示分页
+            ,page: true //是否显示分页
             ,limits: [5,10,15,20]
             ,limit: 10 //每页默认显示的数量
             ,done: function(res, curr, count){
@@ -95,7 +95,7 @@
         });
 
         //监听操作工具条
-        table.on("tool(alist)",function (obj) {
+        table.on("tool(glist)",function (obj) {
             pdata = obj.data;
             var data = obj.data;
             var url = "{:url('admin/admin/groupsEdit')}".replace('.html','');
@@ -106,12 +106,27 @@
 					title: data.title+'_修改页面',
 					area: ['320px','400px']
 				});
+            }else if(obj.event == "authorize") {
+                layer.open({
+                    type: 2,
+                    content: url+'/uid/'+data.id,
+                    title: data.title+'_会员管理',
+                    area: ['100%','90%']
+                });
+            }else if(obj.event == "member") {
+                layer.open({
+                    type: 2,
+                    content: "{:url('admin/admin/groupsMember')}",
+                    title: data.title+'_会员管理',
+                    area: ['90%','90%']
+                });
             }else if(obj.event == "del") {
                 layer.confirm('确定删除？', function(index){
                     $.post('{:url("admin/admin/delGroups")}',{id: data.id},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
+                            refleshAdminList();
                             table.reload('main');
                         }else{
                             console.log(res.msg);
@@ -144,8 +159,9 @@
                 });
                 if (!flag) {return};
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/delUsers")}',{data: str.slice(0,-1)},function (res) {
+                    $.post('{:url("admin/admin/delGroups")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
+                            refleshAdminList();
                             table.reload('main');
                             layer.close(index);
                         }else{
@@ -163,6 +179,20 @@
 	/*用户组-增加*/
     function group_add(title,url,w,h){
         layer_show(title,url,w,h);
+    }
+
+    //删除用户组时将刷新管理员列表
+    function refleshAdminList() {
+        var topWindow = $(window.parent.document),
+            iframe = topWindow.find('#iframe_box .show_iframe'),
+            reg = /\/admin\/admin\/index/;
+        $(iframe).each(function (i,item) {
+            if (reg.test($(item).html())) {
+                var riframe = iframe.eq(i).find('iframe');
+//							console.log($(item).html());
+                riframe[0].contentWindow.layui.table.reload('main');
+            }
+        });
     }
 </script>
 </body>

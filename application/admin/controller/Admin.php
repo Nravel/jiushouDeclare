@@ -35,6 +35,9 @@ class Admin extends Common
     public function groupsEdit() {
         return $this->fetch('admin-group-edit');
     }
+    public function groupsMember() {
+        return $this->fetch('admin-group-member');
+    }
     public function roleAdd() {
         return $this->fetch('admin-role-add');
     }
@@ -120,10 +123,7 @@ class Admin extends Common
             ];
             return $data_format;
         }else{
-            return [
-                'code' => '0001',
-                'msg' => '无数据！'
-            ];
+            return feedback('0001','无数据！');
         }
     }
 
@@ -435,22 +435,16 @@ class Admin extends Common
         $auth_group_access = Db::name('auth_group_access');
         $res = false;
         if ($data===null) {
-//            $res = $auth_group->delete(['id'=>$id]) or 0;
-            $res = 1;
+            $res = $auth_group->delete(['id'=>$id]) or 0;
             if ($res) {
-                $datas = $auth_group_access->where('group_id','exp',"REGEXP '^{$id}$|^{$id},|,{$id},|,{$id}$'")->select();
-                if (count($datas)>0) {
-                    foreach ($datas as $row) {
-                        $ndata = array_diff(explode(',',$row['group_id']),[$id]);
-                        $auth_group_access->where(['uid'=>$row['uid']])->update(['group_id'=>implode(',',$ndata)]);
-                    }
-                }
+                $this->removeGroup($auth_group_access, $id);
             }
         }else if($data!==null) {
             foreach (explode('|',$data) as $val) {
-                if ($auth_group::get($val)['status']===9) break;
-                $res = $auth_group::destroy(['id'=>$val]) or 0;
-                $res ? $auth_group_access->where('uid='.$val)->delete() : "" ;
+                $res = $auth_group->delete(['id'=>$val]) or 0;
+                if ($res) {
+                    $this->removeGroup($auth_group_access, $val);
+                }
             }
         }
         if ($res) {
@@ -459,4 +453,134 @@ class Admin extends Common
             return feedback('0001','删除失败！');
         }
     }
+
+    /**
+     * 移除auth_group_access表中的组号
+     * @param $auth_group_access
+     * @param $id
+     */
+    public function removeGroup($auth_group_access, $id,$uid=null) {
+        if ($uid!==null) {
+            $datas = $auth_group_access->where('uid',$uid)->select();
+        }else{
+            $datas = $auth_group_access->where('group_id','exp',"REGEXP '^{$id}$|^{$id},|,{$id},|,{$id}$'")->select();
+        }
+        if (count($datas)>0) {
+            foreach ($datas as $row) {
+                $ndata = array_diff(explode(',',$row['group_id']),[$id]);
+                $auth_group_access->where(['uid'=>$row['uid']])->update(['group_id'=>implode(',',$ndata)]);
+            }
+            return true;
+        }
+    }
+
+    /**
+     * 获取用户组成员列表
+     * @return array
+     */
+    public function getGroupMembers() {
+        $limit = $this->request->get('limit');
+        $page = $this->request->get('page');
+        $gid = $this->request->get('gid');
+        $type = $this->request->get('type');
+        $join = [
+            ['ceb_auth_group_access b','a.id=b.uid']
+        ];
+        $field = "";
+        $admin = new \app\admin\model\Admin();
+        $data = $admin->alias('a')->join($join)->field($field)->select();
+        $count = $admin->alias('a')->join($join)->count();
+        if ($count>0) {
+            $member = [];
+            $nomember = [];
+            foreach ($data as $k => $record) {
+                if ($record['group_id']==="") {
+                    $data[$k]['title'] = "未分组";
+                }else{
+                    $auth_group = Db::name('auth_group');
+                    $res = $auth_group->where('id','in',$record['group_id'])->select();
+                    $temp = null;
+                    foreach ($res as $val) {
+                        $temp[]=$val['title'];
+                    }
+                    $data[$k]['title'] = implode(',',$temp);
+                }
+            }
+            foreach ($data as $row) {
+                if (in_array($gid,explode(',',$row['group_id']))) {
+                    $member[] = $row;
+                }else{
+                    $nomember[] = $row;
+                }
+            }
+            $type === 'mem' ? $data = $member : $data = $nomember;
+            $type === 'mem' ? $count = count($member) : $count = count($nomember);
+            $data_format = [
+                "code" => 0,
+                "msg" => "success",
+                "count" => $count,
+                "data" => $data,
+            ];
+            return $data_format;
+        }else{
+            return feedback('0001','无数据！');
+        }
+    }
+
+    /**
+     * 移除用户组成员
+     * @return array
+     */
+    public function removeGroupMember() {
+        $gid = $this->request->post('gid');
+        $uid = $this->request->post('uid');
+        $data = $this->request->post('data');
+        $auth_group_access = Db::name('auth_group_access');
+        if ($data===null) {
+            $res = $this->removeGroup($auth_group_access, $gid,$uid);
+        }else if($data!==null) {
+            foreach (explode('|',$data) as $val) {
+                $res = $this->removeGroup($auth_group_access, $gid,$val);
+            }
+        }
+
+        if ($res === true) {
+            return feedback('0000','移除成功！');
+        }else{
+            return feedback('0001','移除出错！');
+        }
+    }
+
+    public function addMember() {
+        $gid = $this->request->post('gid');
+        $uid = $this->request->post('uid');
+        $data = $this->request->post('data');
+        $auth_group_access = Db::name('auth_group_access');
+        $res = false;
+        if ($data===null) {
+            $datas = $auth_group_access->where('uid',$uid)->find();
+            if (count($datas['group_id']>0)) {
+                $datas['group_id'].= ','.$gid;
+            }else{
+                $datas['group_id'] = $gid;
+            }
+            $res = $auth_group_access->where(['uid'=>$datas['uid']])->update(['group_id'=>$datas['group_id']]);
+        }else if($data!==null) {
+            foreach (explode('|',$data) as $val) {
+                $datas = $auth_group_access->where('uid',$val)->find();
+                if (count($datas['group_id']>0)) {
+                    $datas['group_id'].= ','.$gid;
+                }else{
+                    $datas['group_id'] = $gid;
+                }
+                $res = $auth_group_access->where(['uid'=>$datas['uid']])->update(['group_id'=>$datas['group_id']]);
+            }
+        }
+        if ($res) {
+            return feedback('0000','移至组成功！');
+        }else{
+            return feedback('0001','移至组出错！');
+        }
+    }
+
 }

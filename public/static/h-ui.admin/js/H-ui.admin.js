@@ -183,7 +183,7 @@ function clrefresh(reg,bool) {
 		if (reg.test($(item).html())) {
 			sum++;
          	var riframe = iframe.eq(i).find('iframe');
-            console.log(riframe+sum);
+            // console.log(riframe+sum);
          	if (riframe[0].contentWindow.layui.table.reload('main')) {
 			}else{
                 riframe.attr('src',riframe.attr('src'));

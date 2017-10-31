@@ -25,7 +25,7 @@
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
 	</div>
 	<div class="datas">
-		<table id="orderLists" lay-filter="alist"></table>
+		<table id="adminLists" lay-filter="alist"></table>
 	</div>
 </div>
 {include file='export-footer' /}
@@ -60,7 +60,7 @@
         var layer = layui.layer;
         var $ = layui.jquery;
         table.render({
-            elem: '#orderLists' //指定原始表格元素选择器（推荐id选择器）
+            elem: '#adminLists' //指定原始表格元素选择器（推荐id选择器）
             ,id: 'main'
 //        ,height: 288 //容器高度
 //        ,data: res.data
