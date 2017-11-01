@@ -8,6 +8,11 @@
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 	{include file='export-head' /}
 <title>权限管理</title>
+	<style>
+		.datas .layui-table-view .layui-table td:nth-child(2),.datas .layui-table-view .layui-table td:nth-child(3) {
+			text-align: left;
+		}
+	</style>
 </head>
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
@@ -18,70 +23,187 @@
 			<button type="submit" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜权限节点</button>
 		</form>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_permission_add('添加权限节点','{:url(\'permissionEdit\')}','','310')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加权限节点</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
-	<table class="table table-border table-bordered table-bg">
-		<thead>
-			<tr>
-				<th scope="col" colspan="7">权限节点</th>
-			</tr>
-			<tr class="text-c">
-				<th width="25"><input type="checkbox" name="" value=""></th>
-				<th width="40">ID</th>
-				<th width="200">权限名称</th>
-				<th>字段名</th>
-				<th width="100">操作</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class="text-c">
-				<td><input type="checkbox" value="1" name=""></td>
-				<td>1</td>
-				<td>栏目添加</td>
-				<td></td>
-				<td><a title="编辑" href="javascript:;" onclick="admin_permission_edit('角色编辑','{:url(\'permissionEdit\')}','1','','310')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" onclick="admin_permission_del(this,'1')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
-			</tr>
-		</tbody>
-	</table>
+	<!--数据显示-->
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<span class="l">
+			<a href="javascript:;" onclick="admin_add('添加根节点','{:url(\'permissionAdd\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加根节点</a>
+			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+		</span>
+		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
+	</div>
+	<div class="datas">
+		<table id="adminLists" lay-filter="alist"></table>
+	</div>
 </div>
 {include file='export-footer' /}
 
 <!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<!--<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>-->
+<!--<script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>-->
+<script type="text/html" id="exportTools">
+	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit" style="background:#5A98DE"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+</script>
+<script type="text/html" id="status">
+	{{# if (d.status >= 1) { }}
+	<span>启用</span>
+	{{# }else{ }}
+	<span>禁用</span>
+	{{# } }}
+</script>
+<script type="text/html" id="check-date">
+	{{# if (d.login_time.indexOf('1970-01-01 08:00:00') !== -1) { }}
+	<span>该用户未登录过</span>
+	{{# }else{ }}
+	<span>{{ d.login_time }}</span>
+	{{# } }}
+</script>
 <script type="text/javascript">
-/*
-	参数解释：
-	title	标题
-	url		请求的url
-	id		需要操作的数据id
-	w		弹出层宽度（缺省调默认值）
-	h		弹出层高度（缺省调默认值）
-*/
-/*管理员-权限-添加*/
-function admin_permission_add(title,url,w,h){
-	layer_show(title,url,w,h);
-}
-/*管理员-权限-编辑*/
-function admin_permission_edit(title,url,id,w,h){
-	layer_show(title,url,w,h);
-}
+    var pdata = null;
+    //表格方法式渲染
+    layui.use(['table','layer'],function () {
+        var table = layui.table;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        table.render({
+            elem: '#adminLists' //指定原始表格元素选择器（推荐id选择器）
+            ,id: 'main'
+//        ,height: 288 //容器高度
+//        ,data: res.data
+            ,url: '{:url(\'admin/admin/getPermissionData\')}'
+//        ,initSort: {
+//            field: 'autonum' //排序字段，对应 cols 设定的各字段名
+//            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+//        }
+//		,height: 'full-600'
+            ,cols: [[ //标题栏
+                {checkbox: true}, //默认全选
+//                {field: 'autonum', title: 'No.', width: 80, sort: true},
+                {field: '_name', title: '权限名称', width: 230}
+                ,{field: 'name', title: '权限', width: 500}
+//                ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 465, sort: true}
+                ,{field: 'status', title: '状态',templet: '#status', width: 230, sort: true}
+                ,{field: 'ctrl', title: '操作', width: 120,fixed:"right", toolbar: "#exportTools"}
+            ]]
+            ,skin: 'row' //表格风格
+            ,even: true
+            ,page: true //是否显示分页
+            ,limits: [5,10,15,20]
+            ,limit: 20 //每页默认显示的数量
+            ,done: function(res, curr, count){
+                //如果是异步请求数据方式，res即为你接口返回的信息。
+//				pdata = res.data;
+                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                $(".total").children("strong").html(count);
+            }
+        });
 
-/*管理员-权限-删除*/
-function admin_permission_del(obj,id){
-	layer.confirm('确认要删除吗？',function(index){
-		$.ajax({
-			type: 'POST',
-			url: '',
-			dataType: 'json',
-			success: function(data){
-				$(obj).parents("tr").remove();
-				layer.msg('已删除!',{icon:1,time:1000});
-			},
-			error:function(data) {
-				console.log(data.msg);
-			},
-		});		
-	});
-}
+        //监听操作工具条
+        table.on("tool(alist)",function (obj) {
+            pdata = obj.data;
+            var data = obj.data;
+            var url = "{:url('admin/admin/edit')}".replace('.html','');
+            if(obj.event == "edit") {
+                layer.open({
+                    type: 2,
+                    content: url+'/uid/'+data.id,
+                    title: data.username+'_用户修改页面',
+                    area: ['300px','400px'],
+                    end: function () {
+                        refleshGroupsList();
+                    }
+                });
+            }else if(obj.event == "del") {
+                if (data.status ===9) {
+                    layer.open({content:'不能删除超级管理员！！！'});
+                    return;
+                }
+                layer.confirm('确定删除？', function(index){
+                    $.post('{:url("admin/admin/delUsers")}',{id: data.id},function (res) {
+                        if (res.code == '0000') {
+                            obj.del();
+                            layer.close(index);
+                            table.reload('main');
+                            refleshGroupsList();
+                        }else{
+                            console.log(res.msg);
+                            layer.close(index);
+                            layer.msg(res.msg,{time: 2000})
+                        }
+                    });
+                });
+            }
+        });
+    });
+
+    //批量删除
+    function delBatch() {
+        layui.use(['table','layer'],function (table,layer) {
+            var $ = layui.jquery;
+            var checkStatus = table.checkStatus('main');
+            var data = checkStatus.data;
+
+            if (data.length>0) {
+                //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
+                var str = "";
+                var flag = true;
+                $(data).each(function (index,obj) {
+                    if (obj.status ===9) {
+                        layer.open({content:'选项中含有超级管理员，不能进行删除操作！！！'});
+                        flag = false;
+                    }
+                    str+= obj.id+"|";
+                });
+                if (!flag) {return};
+                layer.confirm('确定删除？', function(index){
+                    $.post('{:url("admin/admin/delUsers")}',{data: str.slice(0,-1)},function (res) {
+                        if (res.code == '0000') {
+                            table.reload('main');
+                            refleshGroupsList();
+                            layer.close(index);
+                        }else{
+                            layer.close(index);
+                            layer.msg(res.msg,{time: 2000})
+                        }
+                    });
+                });
+            }else{
+                layer.msg("没选择数据呀",{'time':"1000"});
+            }
+        });
+    }
+
+    //用户搜索
+    function searchUser() {
+        layui.table.reload('main', {
+            url: "{:url('admin/admin/search')}",
+            method: 'post'
+            ,where: {data:$('#searchUsers').serializeArray(),type: 'user_multiple'}
+        });
+        $('#searchUsers').submit(function (e) {
+            return false;
+        });
+    }
+
+	/*管理员-增加*/
+    function admin_add(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    //刷新用户组列表
+    function refleshGroupsList() {
+        var topWindow = $(window.parent.document),
+            iframe = topWindow.find('#iframe_box .show_iframe'),
+            reg = /\/admin\/admin\/groups/;
+        $(iframe).each(function (i,item) {
+            if (reg.test($(item).html())) {
+                var riframe = iframe.eq(i).find('iframe');
+//							console.log($(item).html());
+                riframe[0].contentWindow.layui.table.reload('main');
+            }
+        });
+    }
 </script>
 </body>
 </html>

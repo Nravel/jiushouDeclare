@@ -9,6 +9,7 @@
 namespace app\admin\controller;
 
 
+use app\common\controller\Data;
 use think\Db;
 use think\Loader;
 use think\Session;
@@ -43,6 +44,9 @@ class Admin extends Common
     }
     public function permission() {
         return $this->fetch('admin-permission');
+    }
+    public function permissionAdd() {
+        return $this->fetch('admin-permission-add');
     }
     public function permissionEdit() {
         return $this->fetch('admin-permission-edit');
@@ -99,7 +103,7 @@ class Admin extends Common
 //        $field = "*,a.status as status,c.status as group_status,a.id as id";
         $field = "";
         $admin = new \app\admin\model\Admin();
-        $data = $admin->alias('a')->join($join)->field($field)->select();
+        $data = $admin->alias('a')->page($page,$limit)->join($join)->field($field)->select();
         $count = $admin->alias('a')->join($join)->count();
         if ($count>0) {
             foreach ($data as $k => $record) {
@@ -322,7 +326,7 @@ class Admin extends Common
         ];
         $field = "username";
         $auth_group = Db::name('auth_group');
-        $data = $auth_group->select(); //->alias('a')->join($join)
+        $data = $auth_group->page($page,$limit)->select(); //->alias('a')->join($join)
         $count = $auth_group->count();  //->alias('a')->join($join)
         if ($count>0) {
             $i = 1;
@@ -551,6 +555,10 @@ class Admin extends Common
         }
     }
 
+    /**
+     * 添加会员到组
+     * @return array
+     */
     public function addMember() {
         $gid = $this->request->post('gid');
         $uid = $this->request->post('uid');
@@ -583,4 +591,51 @@ class Admin extends Common
         }
     }
 
+    /**
+     * 获取权限数据
+     * @param  string $type  tree获取树形结构 level获取层级结构
+     * @param  string $order 排序方式
+     * @return array         结构数据
+     */
+    public function getPermissionData(){
+        $limit = $this->request->get('limit');
+        $page = $this->request->get('page');
+        $type='tree';
+        $order='';
+        $name='title';
+        $child='id';
+        $parent='pid';
+        $auth_rule = Db::name('auth_rule');
+        $i = 1;
+        if ($page>1) {
+            $i = ($page-1)*$limit+1;
+        }
+        // 判断是否需要排序
+        if(empty($order)){
+            $data=$auth_rule->page($page,$limit)->select();
+        }else{
+            $data = $auth_rule->order($order.' is null,'.$order)->page($page,$limit)->select();
+        }
+        $count = $auth_rule->count();
+        // 获取树形或者结构数据
+        if($type=='tree'){
+            $data=Data::tree($data,$name,$child,$parent);
+        }elseif($type="level"){
+            $data=Data::channelLevel($data,0,'&nbsp;',$child);
+        }
+        if ($count>0) {
+//            foreach ($data as $k => $row) {
+//                $data[$k]['autonum'] = $i++;
+//            }
+            $data_format = [
+                "code" => 0,
+                "msg" => "success",
+                "count" => $count,
+                "data" => $data,
+            ];
+            return $data_format;
+        }else{
+            return feedback('0001','无数据！');
+        }
+    }
 }

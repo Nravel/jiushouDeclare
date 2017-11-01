@@ -81,7 +81,7 @@
             ]]
             ,skin: 'row' //表格风格
             ,even: true
-            ,page: false //是否显示分页
+            ,page: true //是否显示分页
             ,limits: [5,10,15,20]
             ,limit: 10 //每页默认显示的数量
             ,done: function(res, curr, count){
@@ -102,7 +102,10 @@
 					type: 2,
 					content: url+'/uid/'+data.id,
 					title: data.username+'_用户修改页面',
-					area: ['300px','400px']
+					area: ['300px','400px'],
+					end: function () {
+                        refleshGroupsList();
+                    }
 				});
             }else if(obj.event == "del") {
                 if (data.status ===9) {
@@ -115,6 +118,7 @@
                             obj.del();
                             layer.close(index);
                             table.reload('main');
+                            refleshGroupsList();
                         }else{
                             console.log(res.msg);
                             layer.close(index);
@@ -149,6 +153,7 @@
                     $.post('{:url("admin/admin/delUsers")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');
+                            refleshGroupsList();
                             layer.close(index);
                         }else{
                             layer.close(index);
@@ -177,6 +182,20 @@
 	/*管理员-增加*/
     function admin_add(title,url,w,h){
         layer_show(title,url,w,h);
+    }
+
+    //刷新用户组列表
+    function refleshGroupsList() {
+        var topWindow = $(window.parent.document),
+            iframe = topWindow.find('#iframe_box .show_iframe'),
+            reg = /\/admin\/admin\/groups/;
+        $(iframe).each(function (i,item) {
+            if (reg.test($(item).html())) {
+                var riframe = iframe.eq(i).find('iframe');
+//							console.log($(item).html());
+                riframe[0].contentWindow.layui.table.reload('main');
+            }
+        });
     }
 </script>
 </body>

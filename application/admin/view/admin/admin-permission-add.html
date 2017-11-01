@@ -7,31 +7,37 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 	{include file='export-head' /}
-<title>添加用户</title>
+<title>添加权限</title>
 </head>
 <body>
 <article class="page-container">
 	<form class="form form-horizontal" id="form-admin-add" method="post">
 	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>模块：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="adminName" name="username">
+			<input type="text" class="input-text" value="admin" placeholder="" id="module" name="module">
 		</div>
 	</div>
 	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" id="password" name="password">
+			<input type="password" class="input-text" autocomplete="off" value="" placeholder="权限名称" id="title" name="title">
 		</div>
 	</div>
 	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="password" class="input-text" autocomplete="off"  placeholder="确认新密码" id="password2" name="password2">
+			<input type="password" class="input-text" autocomplete="off"  placeholder="权限" id="name" name="name"><span style="color:#666">例如：Order/index</span>
 		</div>
 	</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">条件：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="password" class="input-text" autocomplete="off"  placeholder="条件" id="condition" name="condition">
+			</div>
+		</div>
 	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户状态：</label>
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限状态：</label>
 		<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 			<div class="radio-box">
 				<input name="status" type="radio" id="status-1" checked value="1">
@@ -43,45 +49,7 @@
 			</div>
 		</div>
 	</div>
-		<div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3">用户组：</label>
-			<div class="formControls col-xs-8 col-sm-9 skin-minimal auth-group">
-				<!--<div class="check-box mb-10">-->
-					<!--<input type="checkbox" id="checkbox-1">-->
-					<!--<label for="checkbox-1">复选框</label>-->
-				<!--</div>-->
-			</div>
-		</div>
-	<!--<div class="row cl">-->
-		<!--<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>-->
-		<!--<div class="formControls col-xs-8 col-sm-9">-->
-			<!--<input type="text" class="input-text" value="" placeholder="" id="phone" name="phone">-->
-		<!--</div>-->
-	<!--</div>-->
-	<!--<div class="row cl">-->
-		<!--<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>邮箱：</label>-->
-		<!--<div class="formControls col-xs-8 col-sm-9">-->
-			<!--<input type="text" class="input-text" placeholder="@" name="email" id="email">-->
-		<!--</div>-->
-	<!--</div>-->
-	<!--<div class="row cl">-->
-		<!--<label class="form-label col-xs-4 col-sm-3">角色：</label>-->
-		<!--<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">-->
-			<!--<select class="select" name="adminRole" size="1">-->
-				<!--<option value="0">超级管理员</option>-->
-				<!--<option value="1">总编</option>-->
-				<!--<option value="2">栏目主辑</option>-->
-				<!--<option value="3">栏目编辑</option>-->
-			<!--</select>-->
-			<!--</span> </div>-->
-	<!--</div>-->
-	<!--<div class="row cl">-->
-		<!--<label class="form-label col-xs-4 col-sm-3">备注：</label>-->
-		<!--<div class="formControls col-xs-8 col-sm-9">-->
-			<!--<textarea name="" cols="" rows="" class="textarea"  placeholder="说点什么...100个字符以内" dragonfly="true" onKeyUp="$.Huitextarealength(this,100)"></textarea>-->
-			<!--<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>-->
-		<!--</div>-->
-	<!--</div>-->
+
 	<div class="row cl">
 		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
 			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
@@ -96,18 +64,6 @@
 <script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
-<script type="text/html" id="auth-group">
-	{{# layui.each(d,function(index,item){ }}
-	{{# if (d.length!==0) { }}
-		<div class="check-box mb-10">
-			<input type="checkbox" id="checkbox-{{index+1}}" name="gid[]" value="{{item.id}}">
-			<label for="checkbox-{{index+1}}">{{ item.title }}</label>
-		</div>
-	{{# }else{ }}
-		<span>暂无分组</span>
-	{{# } }}
-	{{# }); }}
-</script>
 <script type="text/javascript">
 	var result = {};
 	$.ajax({
@@ -136,22 +92,16 @@ $(function(){
     });
 	$("#form-admin-add").validate({
 		rules:{
-			adminName:{
-				required:true,
-				minlength:4,
-				maxlength:16
-			},
-			password:{
+			module:{
 				required:true,
 			},
-			password2:{
+			title:{
 				required:true,
-				equalTo: "#password"
+			},
+			name:{
+				required:true,
 			},
             status:{
-				required:true,
-			},
-			adminRole:{
 				required:true,
 			}
 		},
