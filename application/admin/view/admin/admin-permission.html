@@ -9,30 +9,41 @@
 	{include file='export-head' /}
 <title>权限管理</title>
 	<style>
-		.datas .layui-table-view .layui-table td:nth-child(2),.datas .layui-table-view .layui-table td:nth-child(3) {
+		/*.datas .layui-table-view .layui-table td:nth-child(3),.datas .layui-table-view .layui-table td:nth-child(4) {*/
+			/*text-align: left;*/
+			/*padding-left: 210px;*/
+		/*}*/
+		.datas .layui-table-view .layui-table td:nth-child(4),.datas .layui-table-view .layui-table th:nth-child(4) {
 			text-align: left;
+			/*padding-left: 270px;*/
+			padding-left: 15%;
+		}
+		.datas .layui-table-view .layui-table td:nth-child(3),.datas .layui-table-view .layui-table th:nth-child(3) {
+			text-align: left;
+			/*padding-left: 150px;*/
+			padding-left: 5%;
 		}
 	</style>
 </head>
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
-	<div class="text-c">
-		<form class="Huiform" method="post" action="" target="_self">
-			<input type="text" class="input-text" style="width:250px" placeholder="权限名称" id="" name="">
-			<button type="submit" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜权限节点</button>
-		</form>
-	</div>
+	<!--<div class="text-c">-->
+		<!--<form id="searchPermission" class="Huiform" method="post" action="" target="_self">-->
+			<!--<input type="text" class="input-text" style="width:250px" placeholder="权限名称" id="title" name="title">-->
+			<!--<button type="submit" class="btn btn-success" onclick="searchTitle()" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜权限节点</button>-->
+		<!--</form>-->
+	<!--</div>-->
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
-			<a href="javascript:;" onclick="admin_add('添加根节点','{:url(\'permissionAdd\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加根节点</a>
+			<a href="javascript:;" onclick="permission_add('添加根节点','{:url(\'permissionAdd\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加根节点</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
 	</div>
 	<div class="datas">
-		<table id="adminLists" lay-filter="alist"></table>
+		<table id="permissionLists" lay-filter="plist"></table>
 	</div>
 </div>
 {include file='export-footer' /}
@@ -42,7 +53,8 @@
 <!--<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>-->
 <!--<script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>-->
 <script type="text/html" id="exportTools">
-	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit" style="background:#5A98DE"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="添加子权限" class="layui-btn layui-btn-mini" lay-event="add" style="background:#5A98DE"><i class="Hui-iconfont">&#xe604;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="status">
@@ -50,13 +62,6 @@
 	<span>启用</span>
 	{{# }else{ }}
 	<span>禁用</span>
-	{{# } }}
-</script>
-<script type="text/html" id="check-date">
-	{{# if (d.login_time.indexOf('1970-01-01 08:00:00') !== -1) { }}
-	<span>该用户未登录过</span>
-	{{# }else{ }}
-	<span>{{ d.login_time }}</span>
 	{{# } }}
 </script>
 <script type="text/javascript">
@@ -67,7 +72,7 @@
         var layer = layui.layer;
         var $ = layui.jquery;
         table.render({
-            elem: '#adminLists' //指定原始表格元素选择器（推荐id选择器）
+            elem: '#permissionLists' //指定原始表格元素选择器（推荐id选择器）
             ,id: 'main'
 //        ,height: 288 //容器高度
 //        ,data: res.data
@@ -79,53 +84,54 @@
 //		,height: 'full-600'
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
-//                {field: 'autonum', title: 'No.', width: 80, sort: true},
-                {field: '_name', title: '权限名称', width: 230}
+                {field: 'autonum', title: 'No.', width: 80, sort: true}
+                ,{field: '_name', title: '权限名称', width: 230}
                 ,{field: 'name', title: '权限', width: 500}
-//                ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 465, sort: true}
-                ,{field: 'status', title: '状态',templet: '#status', width: 230, sort: true}
-                ,{field: 'ctrl', title: '操作', width: 120,fixed:"right", toolbar: "#exportTools"}
+                ,{field: 'status', title: '状态',templet: '#status', width: 240, sort: true}
+                ,{field: 'ctrl', title: '操作', width: 155,fixed:"right", toolbar: "#exportTools"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
-            ,page: true //是否显示分页
-            ,limits: [5,10,15,20]
-            ,limit: 20 //每页默认显示的数量
+//            ,page: true //是否显示分页
+//            ,limits: [5,10,15,20]
+//            ,limit: 20 //每页默认显示的数量
             ,done: function(res, curr, count){
                 //如果是异步请求数据方式，res即为你接口返回的信息。
-//				pdata = res.data;
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
                 $(".total").children("strong").html(count);
             }
         });
 
         //监听操作工具条
-        table.on("tool(alist)",function (obj) {
+        table.on("tool(plist)",function (obj) {
             pdata = obj.data;
             var data = obj.data;
-            var url = "{:url('admin/admin/edit')}".replace('.html','');
+//            var url = "{:url('admin/admin/edit')}".replace('.html','');
             if(obj.event == "edit") {
                 layer.open({
                     type: 2,
-                    content: url+'/uid/'+data.id,
-                    title: data.username+'_用户修改页面',
-                    area: ['300px','400px'],
+                    content: "{:url('admin/admin/permissionEdit')}",
+                    title: data.title+'_权限修改页面',
+                    area: ['800px','500px'],
+                });
+            }else if(obj.event == "add") {
+                layer.open({
+                    type: 2,
+//                    content: url+'/uid/'+data.id,
+                    content: "{:url('admin/admin/permissionAdd')}",
+                    title: data.title+'_子权限添加页面',
+                    area: ['800px','500px'],
                     end: function () {
-                        refleshGroupsList();
+                        pdata = null;
                     }
                 });
             }else if(obj.event == "del") {
-                if (data.status ===9) {
-                    layer.open({content:'不能删除超级管理员！！！'});
-                    return;
-                }
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/delUsers")}',{id: data.id},function (res) {
+                    $.post('{:url("admin/admin/delPermission")}',{id: data.id},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
                             table.reload('main');
-                            refleshGroupsList();
                         }else{
                             console.log(res.msg);
                             layer.close(index);
@@ -149,18 +155,14 @@
                 var str = "";
                 var flag = true;
                 $(data).each(function (index,obj) {
-                    if (obj.status ===9) {
-                        layer.open({content:'选项中含有超级管理员，不能进行删除操作！！！'});
-                        flag = false;
-                    }
                     str+= obj.id+"|";
                 });
                 if (!flag) {return};
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/delUsers")}',{data: str.slice(0,-1)},function (res) {
+                    $.post('{:url("admin/admin/delPermission")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');
-                            refleshGroupsList();
+                            refleshPermissionList();
                             layer.close(index);
                         }else{
                             layer.close(index);
@@ -186,24 +188,11 @@
         });
     }
 
-	/*管理员-增加*/
-    function admin_add(title,url,w,h){
+	/*权限-增加*/
+    function permission_add(title,url,w,h){
         layer_show(title,url,w,h);
     }
 
-    //刷新用户组列表
-    function refleshGroupsList() {
-        var topWindow = $(window.parent.document),
-            iframe = topWindow.find('#iframe_box .show_iframe'),
-            reg = /\/admin\/admin\/groups/;
-        $(iframe).each(function (i,item) {
-            if (reg.test($(item).html())) {
-                var riframe = iframe.eq(i).find('iframe');
-//							console.log($(item).html());
-                riframe[0].contentWindow.layui.table.reload('main');
-            }
-        });
-    }
 </script>
 </body>
 </html>

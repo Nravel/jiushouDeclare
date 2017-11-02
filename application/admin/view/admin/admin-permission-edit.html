@@ -7,17 +7,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 	{include file='export-head' /}
-<title>添加权限</title>
+<title>修改权限</title>
+	<style>
+		.form-horizontal .form-label {
+			text-align: right;
+		}
+	</style>
 </head>
 <body>
 <article class="page-container">
 	<form class="form form-horizontal" id="form-admin-add" method="post">
-	<div class="row cl" id="mod">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>模块：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="admin" placeholder="" id="module" name="module">
-		</div>
-	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
 		<div class="formControls col-xs-8 col-sm-9">
@@ -65,12 +64,14 @@
 <script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
 <script type="text/javascript">
-	var flag = parent.pdata === null ? false : true;	//子权限添加时，值为true
-	var pid = parent.pdata === null ? 0 : parent.pdata.id;
-	if (flag) {
-	    $('#module').attr({readonly: 'readonly',unselectable: 'on'});
-	    $('#module').val(parent.pdata.module);
-	}
+    $('#title').val(parent.pdata.title);
+    $('#name').val(parent.pdata.name);
+    $('#condition').val(parent.pdata.condition);
+    if (parent.pdata.status === 1) {
+        $('#status-1').attr('checked','checked');
+    }else{
+        $('#status-2').attr('checked','checked');
+    }
     $.validator.addMethod('checkName',function (value,element) {
         var length = value.length;
         var regName = /^\w+\/\w?/;
@@ -79,9 +80,6 @@
 $(function(){
 	$("#form-admin-add").validate({
 		rules:{
-			module:{
-				required:true,
-			},
 			title:{
 				required:true,
 			},
@@ -99,8 +97,8 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/addPermission')}" ,
-				data: {pid: pid},
+				url: "{:url('admin/admin/editPermission')}" ,
+				data: {id: parent.pdata.id},
 				success: function(data){
 				    if (data.code === '0000') {
                         layer.msg('添加成功!',{time:1000});

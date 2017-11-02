@@ -314,6 +314,8 @@ class Admin extends Common
         }
     }
 
+    /******************************************************用户组*******************************************************************/
+
     /**
      * 获取用户组列表
      * @return array
@@ -391,17 +393,11 @@ class Admin extends Common
             $res = $auth_group->insert(['title'=>$title,'description'=>$description,'module'=>$module,'status'=>$status,'type'=>$type]);
             if ($res) {
                 Db::commit();
-                return [
-                    'code' => '0000',
-                    'msg' => '用户添加成功！'
-                ];
+                return feedback('0000','用户添加成功！');
             }
         }catch (\Exception $e) {
             Db::rollback();
-            return [
-                'code' => '0002',
-                'msg' => $e->getMessage()
-            ];
+            return feedback('0002',$e->getMessage());
         }
     }
 
@@ -591,6 +587,12 @@ class Admin extends Common
         }
     }
 
+    public function getAuthorize() {
+
+    }
+
+    /****************************************************权限*****************************************************************/
+
     /**
      * 获取权限数据
      * @param  string $type  tree获取树形结构 level获取层级结构
@@ -612,30 +614,143 @@ class Admin extends Common
         }
         // 判断是否需要排序
         if(empty($order)){
-            $data=$auth_rule->page($page,$limit)->select();
+            $data=$auth_rule->select();
         }else{
-            $data = $auth_rule->order($order.' is null,'.$order)->page($page,$limit)->select();
+            $data = $auth_rule->order($order.' is null,'.$order)->select();
         }
         $count = $auth_rule->count();
-        // 获取树形或者结构数据
+         //获取树形或者结构数据
         if($type=='tree'){
             $data=Data::tree($data,$name,$child,$parent);
         }elseif($type="level"){
             $data=Data::channelLevel($data,0,'&nbsp;',$child);
         }
-        if ($count>0) {
-//            foreach ($data as $k => $row) {
-//                $data[$k]['autonum'] = $i++;
+        $fdata = array_values($data);
+
+        //分页时启用
+//        $fdata = [];
+//        $t = ($page-1)*$limit;
+//        for ($j = 0;$j<$limit;$j++) {
+//            if ($page>1) {
+//                if (!isset($data[$t])) break;
+//                $fdata[$j] = $data[$t];
+//                $t++;
+//            }else{
+//                if (!isset($data[$j])) break;
+//                $fdata[$j] = $data[$j];
 //            }
+//        }
+        if ($count>0) {
+            foreach ($fdata as $k => $row) {
+                $fdata[$k]['autonum'] = $i++;
+            }
             $data_format = [
                 "code" => 0,
                 "msg" => "success",
                 "count" => $count,
-                "data" => $data,
+                "data" => $fdata,
             ];
             return $data_format;
         }else{
             return feedback('0001','无数据！');
         }
     }
+
+    /**
+     * 添加权限
+     * @return array
+     */
+    public function addPermission() {
+        $module = $this->request->post('module');
+        $title = $this->request->post('title');
+        $name = $this->request->post('name');
+        $status = $this->request->post('status');
+        $condition = $this->request->post('condition',1);
+        $pid = $this->request->post('pid',0);
+        $validate = new Validate([
+            'title' => 'require',
+            'module' => 'require',
+            'name' => 'require|/^\w+\/\w?/',
+            'status' => 'require|length:1'
+        ]);
+        if (!$validate->batch()->check(['title'=>$title,'name'=>$name,'module'=>$module,'status'=>$status])) {
+            return feedback('0003',$validate->getError());
+        }
+        $name = ucfirst($module.'/'.implode('/',array_map(function($val){return ucfirst($val);},explode('/',$name))));
+        $auth_rule = Db::name('auth_rule');
+        Db::startTrans();
+        try{
+            $res = $auth_rule->insert(['pid'=>$pid,'title'=>$title,'module'=>$module,'name'=>$name,'status'=>$status,'condition'=>$condition]);
+            if ($res) {
+                Db::commit();
+                return feedback('0000','权限添加成功！');
+            }
+        }catch (\Exception $e) {
+            Db::rollback();
+            return feedback('0002',$e->getMessage());
+        }
+    }
+
+    /**
+     * 修改权限
+     * @return array
+     */
+    public function editPermission() {
+        $title = $this->request->post('title');
+        $name = $this->request->post('name');
+        $status = $this->request->post('status');
+        $condition = $this->request->post('condition',1);
+        $id = $this->request->post('id');
+        $validate = new Validate([
+            'title' => 'require',
+            'name' => 'require|/^\w+\/\w?/',
+            'status' => 'require|length:1'
+        ]);
+        if (!$validate->batch()->check(['title'=>$title,'name'=>$name,'status'=>$status])) {
+            return feedback('0003',$validate->getError());
+        }
+        $auth_rule = Db::name('auth_rule');
+        Db::startTrans();
+        try{
+            $res = $auth_rule->where(['id'=>$id])->update(['title'=>$title,'name'=>$name,'status'=>$status,'condition'=>$condition]);
+            if ($res) {
+                Db::commit();
+                return feedback('0000','权限修改成功！');
+            }
+        }catch (\Exception $e) {
+            Db::rollback();
+            return feedback('0002',$e->getMessage());
+        }
+    }
+
+    /**
+     * 删除权限
+     * @return array
+     */
+    public function delPermission() {
+        $id = $this->request->post('id');
+        $data = $this->request->post('data');
+        $auth_rule = Db::name('auth_rule');
+        $res = false;
+        if ($data===null) {
+            if ($auth_rule->where('pid',$id)->count()>0) {
+                return feedback('0002','请先删除子权限！');
+            }
+            $res = $auth_rule->delete(['id'=>$id]) or 0;
+        }else if($data!==null) {
+            foreach (explode('|',$data) as $val) {
+                if ($auth_rule->where('pid',$val)->count()>0) {
+                    return feedback('0003','请先删除子权限！');
+                }
+                $res = $auth_rule->delete(['id'=>$val]) or 0;
+                if (!$res) break;
+            }
+        }
+        if ($res) {
+            return feedback('0000','删除成功！');
+        }else{
+            return feedback('0001','删除失败！');
+        }
+    }
+
 }
