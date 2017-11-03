@@ -16,12 +16,12 @@
 		.datas .layui-table-view .layui-table td:nth-child(4),.datas .layui-table-view .layui-table th:nth-child(4) {
 			text-align: left;
 			/*padding-left: 270px;*/
-			padding-left: 15%;
+			padding-left: 10%;
 		}
 		.datas .layui-table-view .layui-table td:nth-child(3),.datas .layui-table-view .layui-table th:nth-child(3) {
 			text-align: left;
 			/*padding-left: 150px;*/
-			padding-left: 5%;
+			padding-left: 3%;
 		}
 	</style>
 </head>
@@ -85,7 +85,7 @@
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
                 {field: 'autonum', title: 'No.', width: 80, sort: true}
-                ,{field: '_name', title: '权限名称', width: 230}
+                ,{field: '_name', title: '权限名称', width: 280}
                 ,{field: 'name', title: '权限', width: 500}
                 ,{field: 'status', title: '状态',templet: '#status', width: 240, sort: true}
                 ,{field: 'ctrl', title: '操作', width: 155,fixed:"right", toolbar: "#exportTools"}
@@ -162,7 +162,6 @@
                     $.post('{:url("admin/admin/delPermission")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');
-                            refleshPermissionList();
                             layer.close(index);
                         }else{
                             layer.close(index);

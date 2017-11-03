@@ -109,9 +109,9 @@
             }else if(obj.event == "authorize") {
                 layer.open({
                     type: 2,
-                    content: url+'/uid/'+data.id,
-                    title: data.title+'_会员管理',
-                    area: ['100%','90%']
+                    content: "{:url('admin/admin/groupsAuthorize')}",
+                    title: data.title+'_授权管理',
+                    area: ['90%','90%']
                 });
             }else if(obj.event == "member") {
                 layer.open({

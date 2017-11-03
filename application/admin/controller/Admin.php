@@ -8,7 +8,6 @@
 
 namespace app\admin\controller;
 
-
 use app\common\controller\Data;
 use think\Db;
 use think\Loader;
@@ -39,8 +38,8 @@ class Admin extends Common
     public function groupsMember() {
         return $this->fetch('admin-group-member');
     }
-    public function roleAdd() {
-        return $this->fetch('admin-role-add');
+    public function groupsAuthorize() {
+        return $this->fetch('admin-group-authorize');
     }
     public function permission() {
         return $this->fetch('admin-permission');
@@ -587,11 +586,65 @@ class Admin extends Common
         }
     }
 
-    public function getAuthorize() {
-
+    /**
+     * 获取授权列表
+     * @return array
+     */
+    public function getRules() {
+        $gid = $this->request->post('gid');
+        $type='level';
+        $order='';
+        $name='title';
+        $child='id';
+        $parent='pid';
+        $auth_rule = Db::name('auth_rule');
+        if ($gid === null) {
+            // 判断是否需要排序
+            if(empty($order)){
+                $data=$auth_rule->select();
+            }else{
+                $data = $auth_rule->order($order.' is null,'.$order)->select();
+            }
+//            $count = $auth_rule->count();
+            //获取树形或者结构数据
+            if($type==='tree'){
+                $data=Data::tree($data,$name,$child,$parent);
+            }elseif($type==="level"){
+                $data=Data::channelLevel($data,0,'&nbsp;',$child);
+            }
+        }else{
+            $auth_group = Db::name('auth_group');
+            $data = $auth_group->where(['id'=>$gid])->field('rules')->find();
+        }
+        if (count($data)>0) {
+            return feedback('0000','success',$data);
+        }else{
+            return feedback('0001','fail');
+        }
     }
 
-    /****************************************************权限*****************************************************************/
+    public function editRules() {
+        $gid = $this->request->post('gid');
+        $data = $this->request->post('data/a');
+        $auth_group = Db::name('auth_group');
+        $rules = [];
+        if ($data === null) {
+            $rules = '';
+        }else{
+            foreach ($data as $val) {
+                $rules[] = $val['value'];
+            }
+            $rules = implode(',',$rules);
+        }
+        $res = $auth_group->where('id',$gid)->update(['rules'=>$rules]);
+        if ($res>=0) {
+            return feedback('0000','授权更新成功！');
+        } else{
+            return feedback('0001','未知错误！');
+        }
+    }
+
+    /****************************************************权限**********************************************************/
 
     /**
      * 获取权限数据
@@ -620,9 +673,9 @@ class Admin extends Common
         }
         $count = $auth_rule->count();
          //获取树形或者结构数据
-        if($type=='tree'){
+        if($type==='tree'){
             $data=Data::tree($data,$name,$child,$parent);
-        }elseif($type="level"){
+        }elseif($type==="level"){
             $data=Data::channelLevel($data,0,'&nbsp;',$child);
         }
         $fdata = array_values($data);
