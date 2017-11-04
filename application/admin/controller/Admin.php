@@ -23,8 +23,8 @@ class Admin extends Common
         return $this->fetch('admin-add');
     }
     public function edit() {
-        $uid = $this->request->param('uid');
-        return $this->fetch('admin-edit',['uid'=>$uid]);
+//        $uid = $this->request->param('uid');
+        return $this->fetch('admin-edit');
     }
     public function groups() {
         return $this->fetch('admin-group');
@@ -623,6 +623,10 @@ class Admin extends Common
         }
     }
 
+    /**
+     * 修改用户组权限
+     * @return array
+     */
     public function editRules() {
         $gid = $this->request->post('gid');
         $data = $this->request->post('data/a');
@@ -763,6 +767,7 @@ class Admin extends Common
             return feedback('0003',$validate->getError());
         }
         $auth_rule = Db::name('auth_rule');
+        $name = implode('/',array_map(function($val){return ucwords($val);},explode('/',$name)));
         Db::startTrans();
         try{
             $res = $auth_rule->where(['id'=>$id])->update(['title'=>$title,'name'=>$name,'status'=>$status,'condition'=>$condition]);

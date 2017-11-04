@@ -32,6 +32,7 @@ class Login extends \think\Model {
 //                    return $this->setData('用户已登录',1004);
 //                }
                 Session::set('username',$request['username']);
+                Session::set('uid',$result['id']);
                 $admin->save(['ip'=>$request['ip']],['username'=>$request['username']]);
                 return $this->setData('',0000);
             }else{

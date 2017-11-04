@@ -100,7 +100,7 @@
             if(obj.event == "edit") {
 				layer.open({
 					type: 2,
-					content: url+'/uid/'+data.id,
+					content: "{:url('admin/admin/edit')}",
 					title: data.username+'_用户修改页面',
 					area: ['300px','400px'],
 					end: function () {

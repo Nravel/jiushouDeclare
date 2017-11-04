@@ -77,18 +77,16 @@
     });
 
 $(function(){
-    var uid = "{$uid}";
+//    var uid = parent.pdata.id;
     $('#adminName').val(parent.pdata.username);
-	if (parseInt(uid) === parent.pdata.id) {
-		if (parent.pdata.status >= 1) {
-			$('#status-1').attr('checked','checked');
-			if (parent.pdata.status === 9) {
-				$('#status-2').attr('disabled','disabled');
-				$('label[for="status-2"]').css('color','#ddd');
-			}
-		}else{
-			$('#status-2').attr('checked','checked');
+	if (parent.pdata.status >= 1) {
+		$('#status-1').attr('checked','checked');
+		if (parent.pdata.status === 9) {
+			$('#status-2').attr('disabled','disabled');
+			$('label[for="status-2"]').css('color','#ddd');
 		}
+	}else{
+		$('#status-2').attr('checked','checked');
 	}
     layui.use(['laytpl','jquery'],function(){
         var laytpl = layui.laytpl;

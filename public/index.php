@@ -13,5 +13,7 @@
 
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');
+// 超管id
+define('SUPER','1');
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
