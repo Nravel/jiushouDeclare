@@ -161,7 +161,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/addUser')}" ,
+				url: "{:url('admin/admin/add')}" ,
 				success: function(data){
 				    if (data.code === '0000') {
                         layer.msg('添加成功!',{time:1000});

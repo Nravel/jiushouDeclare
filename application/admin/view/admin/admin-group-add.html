@@ -118,7 +118,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/addGroup')}" ,
+				url: "{:url('admin/admin/groupsAdd')}" ,
 				success: function(data){
 				    if (data.code === '0000') {
                         layer.msg('添加成功!',{time:1000});

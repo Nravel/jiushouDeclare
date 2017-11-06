@@ -96,8 +96,8 @@
             elem: '#memberLists' //指定原始表格元素选择器（推荐id选择器）
             ,id: 'main'
 //        ,height: 288 //容器高度
-        ,where: {gid:parent.pdata.id,type:'mem'}
-            ,url: '{:url(\'admin/admin/getGroupMembers\')}'
+        ,where: {gid:parent.pdata.id,type:'mem',req: 'get'}
+        ,url: '{:url(\'admin/admin/groupsMember\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
@@ -129,7 +129,7 @@
             var data = obj.data;
             if(obj.event == "del") {
                 layer.confirm('确定移除？', function(index){
-                    $.post('{:url("admin/admin/removeGroupMember")}',{gid: parent.pdata.id,uid: obj.data.id},function (res) {
+                    $.post('{:url("admin/admin/groupsMember")}',{gid: parent.pdata.id,uid: obj.data.id,req: "remove"},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
@@ -162,7 +162,7 @@
                     str+= obj.id+"|";
                 });
                 layer.confirm('确定移除？', function(index){
-                    $.post('{:url("admin/admin/removeGroupMember")}',{data: str.slice(0,-1),gid: parent.pdata.id},function (res) {
+                    $.post('{:url("admin/admin/groupsMember")}',{data: str.slice(0,-1),gid: parent.pdata.id,req: "remove"},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');
                             table.reload('nomem');
@@ -191,13 +191,13 @@
             ,id: 'nomem'
 //        ,height: 288 //容器高度
 //        ,data: res.data
-            ,url: '{:url(\'admin/admin/getGroupMembers\')}'
+            ,url: '{:url(\'admin/admin/groupsMember\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
 //        }
 //		,height: 'full-600'
-            ,where: {gid:parent.pdata.id,type:'nomem'}
+            ,where: {gid:parent.pdata.id,type:'nomem',req: 'get'}
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
                 {field: 'id', title: 'ID', width: 80, sort: true}
@@ -223,8 +223,8 @@
         table.on("tool(nmlist)",function (obj) {
             var data = obj.data;
             if(obj.event == "add") {
-                layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/addMember")}',{uid: data.id,gid: parent.pdata.id},function (res) {
+                layer.confirm('确定移至组？', function(index){
+                    $.post('{:url("admin/admin/groupsMember")}',{uid: data.id,gid: parent.pdata.id,req: "add"},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
@@ -257,7 +257,7 @@
                     str+= obj.id+"|";
                 });
                 layer.confirm('确定移至组？', function(index){
-                    $.post('{:url("admin/admin/addMember")}',{data: str.slice(0,-1),gid: parent.pdata.id},function (res) {
+                    $.post('{:url("admin/admin/groupsMember")}',{data: str.slice(0,-1),gid: parent.pdata.id,req: "add"},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');
                             table.reload('nomem');

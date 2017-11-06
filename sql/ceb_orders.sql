@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-11-02 16:43:02
+Date: 2017-11-06 17:09:54
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,12 +33,10 @@ CREATE TABLE `ceb_admin` (
 -- ----------------------------
 -- Records of ceb_admin
 -- ----------------------------
-INSERT INTO `ceb_admin` VALUES ('1', 'admin', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '9', '2017-11-02 15:40:51');
+INSERT INTO `ceb_admin` VALUES ('1', 'admin', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '9', '2017-11-06 08:38:23');
 INSERT INTO `ceb_admin` VALUES ('40', 'tom', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '0', '2017-11-01 09:07:56');
 INSERT INTO `ceb_admin` VALUES ('41', 'jack', '21232f297a57a5a743894a0e4a801fc3', null, '0', null);
-INSERT INTO `ceb_admin` VALUES ('42', 'root', '21232f297a57a5a743894a0e4a801fc3', null, '0', null);
-INSERT INTO `ceb_admin` VALUES ('43', 'test', '202cb962ac59075b964b07152d234b70', null, '1', null);
-INSERT INTO `ceb_admin` VALUES ('44', 'dasd', '202cb962ac59075b964b07152d234b70', null, '1', null);
+INSERT INTO `ceb_admin` VALUES ('42', 'root', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '1', '2017-11-06 08:53:18');
 
 -- ----------------------------
 -- Table structure for `ceb_auth_group`
@@ -54,17 +52,17 @@ CREATE TABLE `ceb_auth_group` (
   `rules` varchar(500) NOT NULL DEFAULT '' COMMENT '用户组拥有的规则id，多个规则 , 隔开',
   PRIMARY KEY (`id`),
   UNIQUE KEY `title` (`module`,`title`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ceb_auth_group
 -- ----------------------------
-INSERT INTO `ceb_auth_group` VALUES ('1', 'admin', '1', '默认用户组', 'admin', '1', '1,2,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,100,102,103,105,106');
-INSERT INTO `ceb_auth_group` VALUES ('18', 'admin', '1', 'test', '', '1', '');
-INSERT INTO `ceb_auth_group` VALUES ('19', 'admin', '1', 'root', '', '1', '');
-INSERT INTO `ceb_auth_group` VALUES ('20', 'admin', '1', 'test2', '', '1', '');
-INSERT INTO `ceb_auth_group` VALUES ('21', 'admin', '1', 'a3', '', '1', '');
-INSERT INTO `ceb_auth_group` VALUES ('7', 'admin', '1', 'admin', 'ffff', '1', '');
+INSERT INTO `ceb_auth_group` VALUES ('1', 'admin', '1', '默认用户组', 'admin', '0', '12,20,21,28,23,30,26,38,39,40,41,42,27,31');
+INSERT INTO `ceb_auth_group` VALUES ('22', 'admin', '1', 'test3', '123', '1', '');
+INSERT INTO `ceb_auth_group` VALUES ('18', 'admin', '1', 'test', 'sadas', '1', '20,21,28,23,30');
+INSERT INTO `ceb_auth_group` VALUES ('19', 'admin', '1', 'root', '', '1', '12,32,20,21,28,23,30,24,25,35,36,37,26,40,27,31,33,34');
+INSERT INTO `ceb_auth_group` VALUES ('20', 'admin', '1', 'test2', 'test2', '0', '24,25,26,27,31');
+INSERT INTO `ceb_auth_group` VALUES ('7', 'admin', '1', 'admin', 'ffff', '1', '24,25,26,27,31');
 
 -- ----------------------------
 -- Table structure for `ceb_auth_group_access`
@@ -81,12 +79,10 @@ CREATE TABLE `ceb_auth_group_access` (
 -- ----------------------------
 -- Records of ceb_auth_group_access
 -- ----------------------------
-INSERT INTO `ceb_auth_group_access` VALUES ('1', ',1');
-INSERT INTO `ceb_auth_group_access` VALUES ('40', '1,18');
-INSERT INTO `ceb_auth_group_access` VALUES ('41', '1,18,7');
-INSERT INTO `ceb_auth_group_access` VALUES ('42', '1,18');
-INSERT INTO `ceb_auth_group_access` VALUES ('43', '1,18');
-INSERT INTO `ceb_auth_group_access` VALUES ('44', '18');
+INSERT INTO `ceb_auth_group_access` VALUES ('1', '1,20,18');
+INSERT INTO `ceb_auth_group_access` VALUES ('40', '1,18,19,20');
+INSERT INTO `ceb_auth_group_access` VALUES ('41', '1,18,19,20');
+INSERT INTO `ceb_auth_group_access` VALUES ('42', '19');
 
 -- ----------------------------
 -- Table structure for `ceb_auth_rule`
@@ -103,19 +99,34 @@ CREATE TABLE `ceb_auth_rule` (
   `condition` char(100) NOT NULL DEFAULT '' COMMENT '规则表达式，为空表示存在就验证，不为空表示按照条件验证',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='规则表';
+) ENGINE=MyISAM AUTO_INCREMENT=49 DEFAULT CHARSET=utf8 COMMENT='规则表';
 
 -- ----------------------------
 -- Records of ceb_auth_rule
 -- ----------------------------
+INSERT INTO `ceb_auth_rule` VALUES ('28', '21', 'admin', 'Admin/Order/Index/Type/Search', '订单查询', '1', '1', '');
 INSERT INTO `ceb_auth_rule` VALUES ('12', '0', 'admin', 'Admin/Index/Index', '首页', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('13', '12', 'admin', 'Admin/Order/Index', '订单管理', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('17', '14', 'admin', 'Admin/Admin/List', '管理员列表', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('14', '12', 'admin', 'Admin/Admin/Index', '管理员管理', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('16', '13', 'admin', 'Admin/Order/Export', '订单导出', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('15', '13', 'admin', 'Admin/Order/List', '订单列表', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('18', '14', 'admin', 'Admin/Admin/Groups', '用户组管理', '1', '1', '');
-INSERT INTO `ceb_auth_rule` VALUES ('19', '14', 'admin', 'Admin/Admin/Permission', '权限管理', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('27', '24', 'admin', 'Admin/Admin/Permission', '权限管理', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('20', '0', 'admin', 'Admin/Order/Index', '订单管理', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('21', '20', 'admin', 'Admin/Order/Index/Type/List', '订单列表', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('23', '20', 'admin', 'Admin/Order/Index/Type/Export', '订单导出', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('24', '0', 'admin', 'Admin/Admin', '管理员管理', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('25', '24', 'admin', 'Admin/Admin/Index', '管理员列表', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('26', '24', 'admin', 'Admin/Admin/Groups', '用户组管理', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('30', '23', 'admin', 'Admin/Order/Exportall', '导出', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('31', '27', 'admin', 'Admin/Admin/Permissionadd', '添加权限', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('32', '12', 'admin', 'Admin/Index/Welcome', '欢迎', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('33', '27', 'admin', 'Admin/Admin/Permissionedit', '修改', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('34', '27', 'admin', 'Admin/Admin/Delpermission', '删除', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('35', '25', 'admin', 'Admin/Admin/Add', '添加', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('36', '25', 'admin', 'Admin/Admin/Edit', '修改', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('37', '25', 'admin', 'Admin/Admin/Delusers', '删除', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('38', '26', 'admin', 'Admin/Admin/Groupsadd', '添加', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('39', '26', 'admin', 'Admin/Admin/Groupsedit', '修改', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('40', '26', 'admin', 'Admin/Admin/Groupsauthorize', '授权', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('41', '26', 'admin', 'Admin/Admin/Groupsmember', '组员管理', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('42', '26', 'admin', 'Admin/Admin/Delgroups', '删除', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('48', '0', 'admin', 'Admin/T/', 'test', '1', '1', '');
 
 -- ----------------------------
 -- Table structure for `ceb_order_batch`

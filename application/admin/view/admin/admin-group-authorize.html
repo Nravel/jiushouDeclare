@@ -113,7 +113,7 @@ $(function(){
 });
 	//提交权限更改
 	function postAuthorize() {
-	    $.post("{:url('admin/admin/editRules')}",{gid: parent.pdata.id,data: $('#form-authorize').serializeArray()},function(res){
+	    $.post("{:url('admin/admin/groupsAuthorize')}",{gid: parent.pdata.id,data: $('#form-authorize').serializeArray(),req: 'edit'},function(res){
 	        if (res.code === '0000') {
 				layer.open({
                     content: res.msg,
@@ -135,8 +135,9 @@ $(function(){
 
     //获取授权信息
 	function getRules(data) {
+	    data.req = 'get';
         $.ajax({
-            url: "{:url('admin/admin/getRules')}",
+            url: "{:url('admin/admin/groupsAuthorize')}",
             data: data,
             async: false,
 			type: 'post',

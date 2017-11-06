@@ -97,17 +97,16 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/editPermission')}" ,
+				url: "{:url('admin/admin/permissionEdit')}" ,
 				data: {id: parent.pdata.id},
 				success: function(data){
 				    if (data.code === '0000') {
-                        layer.msg('添加成功!',{time:1000});
-                        var index = parent.layer.getFrameIndex(window.name);
-                        parent.$('.btn-refresh').click();
-                        parent.layer.close(index);
-                        parent.layui.table.reload('main');
-                    }else if (data.msg.indexOf('Duplicate')!==-1){
-				        layer.open ({content:'该权限节点已存在！'});
+                        layer.msg(data.msg,{time:1000,end:function () {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.$('.btn-refresh').click();
+                            parent.layer.close(index);
+                            parent.layui.table.reload('main');
+                        }});
                     }else{
                         console.log(data.msg);
                         layer.open({content:'未知错误！'})

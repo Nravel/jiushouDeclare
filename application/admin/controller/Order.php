@@ -381,6 +381,9 @@ class Order extends Common
         return $res;
     }
 
+    /**
+     *清空上传目录
+     */
     public function clearUploads() {
         $excelObj = new Excel();
         is_dir("uploads") ? $excelObj->del_dir("uploads",1) : "" ;

@@ -76,7 +76,7 @@
             ,id: 'main'
 //        ,height: 288 //容器高度
 //        ,data: res.data
-            ,url: '{:url(\'admin/admin/getPermissionData\')}'
+            ,url: '{:url(\'admin/admin/permission\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
@@ -189,6 +189,7 @@
 
 	/*权限-增加*/
     function permission_add(title,url,w,h){
+        pdata = null;
         layer_show(title,url,w,h);
     }
 

@@ -308,11 +308,11 @@
             var data = obj.data;
             var url = "{:url('admin/Order/index')}".replace(".html","");
             if (obj.event == "details") {
-                $('#open-tab').attr("data-href",url+'/orderNo/'+data.order_no+'/type/details');
+                $('#open-tab').attr("data-href",url+'/type/details'+'/orderNo/'+data.order_no);
                 $('#open-tab').attr("data-title",data.buyer_name+"_订单详情");
                 Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "edit") {
-                $('#open-tab').attr("data-href",url+'/orderNo/'+data.order_no+'/type/edit');
+                $('#open-tab').attr("data-href",url+'/type/edit'+'/orderNo/'+data.order_no);
                 $('#open-tab').attr("data-title",data.buyer_name+"_订单修改");
                 Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "del") {

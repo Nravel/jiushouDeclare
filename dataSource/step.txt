@@ -1,0 +1,36 @@
+菜单  checkout <- 规则<-组
+
+/*************************************导航
+首页	Admin/Index/Index
+欢迎	Admin/Index/Welcome
+
+/*************************************订单管理
+订单列表	admin/order/index/type/list
+订单导出	admin/order/index/type/export
+
+/*************************************管理员管理
+管理员列表	admin/admin/index
+	修改密码	admin/admin/passwordedit
+	添加		admin/admin/add
+	修改		admin/admin/edit
+	删除		admin/admin/delusers
+	
+用户组管理	admin/admin/groups
+	添加		admin/admin/groupsadd
+	修改		admin/admin/groupsedit
+	授权		admin/admin/groupsauthorize
+	组员管理	admin/admin/groupsmember
+	删除		admin/admin/delgroups
+	
+权限管理	admin/admin/permission
+	添加	admin/admin/permissionadd
+	修改	admin/admin/permissionedit
+	删除	admin/admin/delpermission
+
+/*************************************白名单
+		'admin/order/getorderdatas',
+        'admin/order/getorderbatch',
+        'admin/admin/getpermissiondata'，
+		'admin/search/searchbymultiple'，
+		'admin/admin/search'，
+		'admin/admin/getauthgroup'

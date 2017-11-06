@@ -123,7 +123,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/editGroup')}" ,
+				url: "{:url('admin/admin/groupsEdit')}" ,
 				data: {gid: parent.pdata.id},
 				success: function(data){
 				    if (data.code === '0000') {

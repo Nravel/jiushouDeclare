@@ -23,12 +23,10 @@ class Common extends Controller
     protected $allowLists = [
         'admin/order/getorderdatas',
         'admin/order/getorderbatch',
-        'admin/admin/getusers',
-        'admin/admin/getgroups',
-        'admin/admin/getpermissiondata',
         'admin/search/searchbymultiple',
+        'admin/order/clearuploads',
+        'admin/order/delPreviewOrder',
         'admin/admin/search',
-        'admin/admin/getrules',
         'admin/admin/getauthgroup'
         ];
 

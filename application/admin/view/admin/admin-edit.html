@@ -118,7 +118,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "{:url('admin/admin/editUser')}" ,
+				url: "{:url('admin/admin/edit')}" ,
 				data: {uid: parent.pdata.id},
 				success: function(data){
 				    if (data.code === '0000') {
