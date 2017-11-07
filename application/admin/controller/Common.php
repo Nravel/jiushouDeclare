@@ -21,13 +21,12 @@ class Common extends Controller
     protected $username;
     protected $status;
     protected $allowLists = [
-        'admin/order/getorderdatas',
-        'admin/order/getorderbatch',
+        'admin/index/index',
+        'admin/order/preview',
+        'admin/order/clearUploads',
         'admin/search/searchbymultiple',
-        'admin/order/clearuploads',
-        'admin/order/delPreviewOrder',
-        'admin/admin/search',
-        'admin/admin/getauthgroup'
+		'admin/admin/search',
+		'admin/admin/getauthgroup'
         ];
 
     public function __construct(Request $request = null) {
@@ -39,9 +38,10 @@ class Common extends Controller
             exit;
         }
         $auth = new Auth();
-        $rule = $request->path();
+        $rule = substr_replace($request->path(),'',strpos($request->path(),'/orderNum'));
+        $rule = preg_replace('/\/orderNum(.*)$/','',$request->path());
         $uid = Session::get('uid');
-//        dump($rule);exit;
+//        dump($rule);
         if (!$auth->check($rule,$uid)&&$uid != SUPER&&!in_array($rule,$this->allowLists)) {
 //            $this->error('您没有权限访问！','','',1);
 //         return   file_get_contents(url('admin/Index/index','',true,true));
@@ -51,7 +51,7 @@ class Common extends Controller
 ////                    alert("您没有权限访问！");
 //                    window.onload = function() {removeIframe();}
 ////                    top.location.href = "'.Url::build('admin/index/index','',true,true).'"
-//                    </script>';
+//                 </script>';
         }
 //        $this->username = Session::get('username');
 //        $this->status = Session::get('status');

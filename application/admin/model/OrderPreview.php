@@ -12,7 +12,7 @@ namespace app\admin\model;
 use think\Db;
 use think\Loader;
 use think\Model;
-use app\admin\validate\Order;
+use app\admin\validate\Order as OrderValidate;
 
 class OrderPreview extends Model {
     public function saveData($datas,$modify=false) {

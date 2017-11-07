@@ -123,7 +123,7 @@
         var nres = "";
         //请求对应订单数据
         $.ajax({
-            url:"{:url('admin/Order/getOrderDetails')}",
+            url:"{:url('admin/Order/details')}",
             data: {"orderNo":order_no},
             async : false,
             type: "post",
@@ -132,7 +132,7 @@
             }
         });
         if (!result.length) {
-            var reg = /(type\/list)|(type\/details)/;
+            var reg = /(order\/index)|(order\/details)/;
             clrefresh(reg,true);
             return;
         }
@@ -249,7 +249,7 @@
         table.render({
             elem: "#order-goods",
             id: "ogoods-main",
-            url: "{:url('admin/Order/getOrderDetails')}",
+            url: "{:url('admin/Order/details')}",
 //			height: 200,
             where: {orderNo: order_no},
             cols: [[
@@ -277,7 +277,7 @@
             done: function (res,curr,count) {
                 nres = res.data;
                 if (!nres.length) {
-                    var reg = /(type\/list)|(type\/details)/;
+                    var reg = /(order\/index)|(order\/details)/;
                     clrefresh(reg,true);
                 }
                 $(".total").children("strong").html(count);
@@ -287,7 +287,7 @@
         table.on("tool(ogoods)",function (obj) {
             var data = obj.data;
             if (obj.event == "commit") {
-                var url = "{:url('admin/Order/editOrder')}";
+                var url = "{:url('admin/Order/edit')}";
                 data = {
                     etype: "goods",
 					orderNo : data.order_no,
@@ -296,7 +296,7 @@
                 $.post(url,data,function (res) {
 					if (res.code == "0000") {
                         layer.msg(res.msg,{time: 2000});
-                        var reg = /(type\/details)/;
+                        var reg = /(order\/details)/;
                         clrefresh(reg,false);
 					}else{
 					    layer.open({
@@ -325,7 +325,7 @@
 							if (res.code == '0000') {
 								obj.del();
 								layer.close(index);
-                                var reg = /(type\/list)|(type\/details)/;
+                                var reg = /(order\/index)|(order\/details)/;
                                 clrefresh(reg,true);
 //								var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
 //								parent.layer.close(index); //再执行关闭
@@ -343,10 +343,10 @@
 
     //修改订单头信息
     function commitHead() {
-		$.post('{:url("admin/Order/editOrder")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
+		$.post('{:url("admin/Order/edit")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
             if (res.code == "0000") {
                 layer.msg(res.msg,{time: 2000});
-                var reg = /(type\/list)|(type\/details)/;
+                var reg = /(order\/index)|(order\/details)/;
                 clrefresh(reg,false);
             }else if(res.code == "0010"|res.code == "0001") {
                 layer.open({

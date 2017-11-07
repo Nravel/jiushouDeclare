@@ -94,7 +94,7 @@
 		var result = "";
 		//请求对应订单数据
         $.ajax({
-			url:"{:url('admin/Order/getOrderDetails')}",
+			url:"{:url('admin/Order/details')}",
 			data: {"orderNo":order_no},
             async : false,
 			type: "post",
@@ -103,7 +103,7 @@
     		}
 		});
         if (!result.length) {
-            var reg = /(type\/list)/;
+            var reg = /(order\/index)/;
             clrefresh(reg,true);
             return;
         }
@@ -202,7 +202,7 @@
 		table.render({
 			elem: "#order-goods",
 			id: "ogoods-main",
-			url: "{:url('admin/Order/getOrderDetails')}",
+			url: "{:url('admin/Order/details')}",
 //			height: 200,
 			where: {orderNo: order_no},
 			cols: [[
@@ -228,7 +228,6 @@
 			limits: [2,5,10],
 			limit: 5,
 			done: function (res,curr,count) {
-//				console.log(res);
                 $(".total").children("strong").html(count);
             }
 		});
@@ -243,8 +242,8 @@
         });
     })
 	function editHead(headdata) {
-        var url = "{:url('admin/Order/index')}".replace('.html','');
-        $('#open-tab').attr("data-href",url+'/orderNo/'+"{$orderNo}"+'/type/edit');
+        var url = "{:url('admin/Order/edit')}".replace('.html','');
+        $('#open-tab').attr("data-href",url+'/orderNum/'+"{$orderNo}");
         if (headdata == 'data') {
             $('#open-tab').attr("data-title",$('a[data]').attr('data')+"_订单修改");
 		}else{

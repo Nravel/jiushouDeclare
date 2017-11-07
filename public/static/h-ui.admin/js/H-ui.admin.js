@@ -191,7 +191,7 @@ function clrefresh(reg,bool) {
         }
     });
     if (sum>2&&bool) return;
-    console.clear();
+    // console.clear();
     bool ? removeIframe() : "";
 }
 

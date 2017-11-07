@@ -8,6 +8,11 @@
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 	{include file='export-head' /}
 <title>修改用户</title>
+	<style>
+		.auth-group label[for^="checkbox-"] {
+			line-height: 25px;
+		}
+	</style>
 </head>
 <body>
 <article class="page-container">
@@ -55,7 +60,7 @@
 	{{# layui.each(d,function(index,item){ }}
 	{{# if (d.length!==0) { }}
 	{{# var chk = parent.pdata.title.split(',').indexOf(item.title)!==-1 ? 'checked' : ''; }}
-		<div class="check-box mb-10">
+		<div class="check-box">
 			<input type="checkbox" id="checkbox-{{index+1}}" name="gid[]" value="{{item.id}}" {{ chk }} >
 			<label for="checkbox-{{index+1}}">{{ item.title }}</label>
 		</div>

@@ -5,8 +5,13 @@
 欢迎	Admin/Index/Welcome
 
 /*************************************订单管理
-订单列表	admin/order/index/type/list
-订单导出	admin/order/index/type/export
+订单列表	admin/order/index
+	详情	admin/order/details
+	修改	admin/order/edit
+	删除	admin/order/delOrder
+	导入	admin/order/importData
+订单导出	admin/order/export
+	导出订单	admin/order/exportData
 
 /*************************************管理员管理
 管理员列表	admin/admin/index
@@ -28,9 +33,9 @@
 	删除	admin/admin/delpermission
 
 /*************************************白名单
-		'admin/order/getorderdatas',
         'admin/order/getorderbatch',
-        'admin/admin/getpermissiondata'，
+        'admin/order/preview',
+        'admin/order/clearUploads',
 		'admin/search/searchbymultiple'，
 		'admin/admin/search'，
 		'admin/admin/getauthgroup'

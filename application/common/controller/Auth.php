@@ -78,7 +78,8 @@ class Auth {
         'auth_group'        => 'auth_group',        // 用户组数据表名
         'auth_group_access' => 'auth_group_access', // 用户-用户组关系表
         'auth_rule'         => 'auth_rule',         // 权限规则表
-        'auth_user'         => 'auth_member'             // 用户信息表
+//        'auth_user'         => 'auth_member'             // 用户信息表
+        'auth_user'         => 'admin'             // 用户信息表
     );
     
     public function __construct() {
@@ -187,7 +188,7 @@ class Auth {
         $authList = [];   //
         foreach ($rules as $rule) {
             if (!empty($rule['condition'])) { //根据condition进行验证
-                $this->getUserInfo($uid); //获取用户信息,一维数组
+                $user = $this->getUserInfo($uid); //获取用户信息,一维数组
                 $command = preg_replace('/\{(\w*?)\}/', '$user[\'\\1\']', $rule['condition']);
                 @(eval('$condition=(' . $command . ');'));
                 $condition && $authList[] = strtolower($rule['name']);
@@ -207,7 +208,8 @@ class Auth {
     protected function getUserInfo($uid) {
         static $userinfo = [];
         if (!isset($userinfo[$uid])) {
-            $userinfo[$uid] = Db::name($this->config['auth_user'])->where(['uid' => $uid])->find();
+//            $userinfo[$uid] = Db::name($this->config['auth_user'])->where(['uid' => $uid])->find();
+            $userinfo[$uid] = Db::name($this->config['auth_user'])->where(['id' => $uid])->find();
         }
         return $userinfo[$uid];
     }

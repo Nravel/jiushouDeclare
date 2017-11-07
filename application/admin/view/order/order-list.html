@@ -190,7 +190,7 @@
             ,id: 'main'
 //            ,height: 288 //容器高度
 //        ,data: res.data
-            ,url: "{:url(\'order/getOrderDatas\')}"
+            ,url: "{:url(\'order/index\')}"
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
@@ -245,7 +245,7 @@
                     $("#filetips").html(file.name);
                     $("#filetips").show();
                 });
-                $.post("{:url('admin/Order/delPreviewOrder')}",{remove: true},function (res) {});
+                $.post("{:url('admin/Order/preview')}",{remove: true,req: 'del'},function (res) {});
                 $("#upcommit").click();
             }
             , done: function (res) {
@@ -257,14 +257,14 @@
                     $('#preview-data').html(JSON.stringify(res.data));
                     layer.open({
                         type: 2,
-                        content: "{:url('admin/Order/index','type=preview')}",
+                        content: "{:url('admin/Order/preview')}",
                         title: '上传数据预览',
                         skin: 'preview-class',
                         area: ['98%','98%'],
                         shade: 0,
                         end: function(){
                             table.reload('main');
-                            $.post("{:url('admin/Order/delPreviewOrder')}",{delbatch: res.data.batch_no},function (res) {});
+                            $.post("{:url('admin/Order/preview')}",{delbatch: res.data.batch_no,req: 'del'},function (res) {});
                             $.post("{:url('admin/Order/clearUploads')}",function (res) {});
                         }
                     });
@@ -306,13 +306,14 @@
         //监听操作工具条
         table.on("tool(olist)",function (obj) {
             var data = obj.data;
-            var url = "{:url('admin/Order/index')}".replace(".html","");
+            var detailUrl = "{:url('admin/Order/details')}".replace(".html","");
+            var editUrl = "{:url('admin/Order/edit')}".replace(".html","");
             if (obj.event == "details") {
-                $('#open-tab').attr("data-href",url+'/type/details'+'/orderNo/'+data.order_no);
+                $('#open-tab').attr("data-href",detailUrl+'/orderNum/'+data.order_no);
                 $('#open-tab').attr("data-title",data.buyer_name+"_订单详情");
                 Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "edit") {
-                $('#open-tab').attr("data-href",url+'/type/edit'+'/orderNo/'+data.order_no);
+                $('#open-tab').attr("data-href",editUrl+'/orderNum/'+data.order_no);
                 $('#open-tab').attr("data-title",data.buyer_name+"_订单修改");
                 Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "del") {
