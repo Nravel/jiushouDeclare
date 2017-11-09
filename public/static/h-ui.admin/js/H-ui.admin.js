@@ -174,7 +174,7 @@ function removeIframeAll(){
 	}
 }
 
-/*关闭标签页时刷新前一页*/
+/*关闭标签页时刷新特定页*/
 function clrefresh(reg,bool) {
     var topWindow = $(window.parent.document),
         iframe = topWindow.find('#iframe_box .show_iframe'),

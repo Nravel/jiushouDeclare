@@ -21,7 +21,7 @@ class Common extends Controller
     protected $username;
     protected $status;
     protected $allowLists = [
-        'admin/index/index',
+//        'admin/index/index',
         'admin/order/preview',
         'admin/order/clearUploads',
         'admin/search/searchbymultiple',
@@ -35,29 +35,37 @@ class Common extends Controller
         //登录控制
         if (!Session::get('username')) {
             $this->redirect('login/index');
-            exit;
+            $this->error('请先登录！',"javascript:top.location.href="."'".$request->domain() .Url::build('login/index')."'",'',1);
         }
+        //权限验证
         $auth = new Auth();
         $rule = substr_replace($request->path(),'',strpos($request->path(),'/orderNum'));
         $rule = preg_replace('/\/orderNum(.*)$/','',$request->path());
+        if ($request->isAjax()) {array_push($this->allowLists,'admin/order/details');}
         $uid = Session::get('uid');
-//        dump($rule);
-        if (!$auth->check($rule,$uid)&&$uid != SUPER&&!in_array($rule,$this->allowLists)) {
-//            $this->error('您没有权限访问！','','',1);
-//         return   file_get_contents(url('admin/Index/index','',true,true));
-//            header('X-Frame-Options:Deny');
-            dump($rule);exit;
-//            echo '<script>
-////                    alert("您没有权限访问！");
-//                    window.onload = function() {removeIframe();}
-////                    top.location.href = "'.Url::build('admin/index/index','',true,true).'"
-//                 </script>';
+        if ($uid != SUPER&&!in_array($rule,$this->allowLists)&&!$auth->check($rule,$uid)) {
+//            dump($rule);exit;
+            if (!$request->isAjax()) {
+                echo '<script>
+                        var navtabs = window.parent.document.getElementById("min_title_list");
+                        var iframes = window.parent.document.getElementById("iframe_box");
+                        if (iframes===null) {
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.open({content: "您没有权限访问！"});
+                            parent.layer.close(index); //执行关闭自身操作
+                        }else{
+                            window.onload = function() {layer.open({content: "您没有权限访问！"})}
+                            iframes.removeChild(iframes.lastElementChild);
+                            iframes.lastElementChild.style.display = "block";
+                            navtabs.removeChild(navtabs.lastElementChild);
+                            navtabs.lastElementChild.classList.add("active");
+                            iframes.lastElementChild.querySelector("iframe").contentWindow.layer.open({content: "您没有权限访问！"});
+                        }      
+                   </script>';
+                die('没有权限！');
+            }else{
+                die('没有权限！');
+            }
         }
-//        $this->username = Session::get('username');
-//        $this->status = Session::get('status');
-//        if(Session::get('status')){
-//            $this->error('请注意，该帐户已登录！',Url::build('admin/Index/index'),'',1);
-//        }
     }
-
 }

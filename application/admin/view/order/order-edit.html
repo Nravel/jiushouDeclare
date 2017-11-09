@@ -332,7 +332,11 @@
 //                                parent.layui.table.reload('main')==undefined ? parent.location.reload() : "" ;
 							}else{
 								layer.close(index);
-								layer.msg(res.msg,{time: 2000})
+                                if (typeof res !== 'string') {
+                                    layer.msg(res.msg,{time: 2000});
+                                }else{
+                                    layer.msg(res,{time: 2000});
+                                }
 							}
 						});
                     });
@@ -382,7 +386,11 @@
 //                            parent.layui.table.reload('ogoods-main');
                         }else{
                             layer.close(index);
-                            layer.msg(res.msg,{time: 2000})
+                            if (typeof res !== 'string') {
+                                layer.msg(res.msg,{time: 2000});
+                            }else{
+                                layer.msg(res,{time: 2000});
+                            }
                         }
                     });
                 });

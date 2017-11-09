@@ -99,6 +99,11 @@ class Auth {
         if (!$this->config['auth_on']) {
             return true;
         }
+        //验证用户状态
+        if ($this->getUserInfo($uid)['status']===0) {
+            return false;
+        }
+
         $authList = $this->getAuthList($uid, $type); //获取用户需要验证的所有有效规则列表
         if (is_string($name)) {
             $name = strtolower($name);
@@ -147,8 +152,28 @@ class Auth {
         if (isset($groups[$uid])) {
             return $groups[$uid];
         }
-        $user_groups = Db::view($this->config['auth_group_access'], 'uid,group_id')->view($this->config['auth_group'], 'title,rules', "{$this->config['auth_group_access']}.group_id={$this->config['auth_group']}.id")
-                        ->where(['uid' => $uid, 'status' => 1])->select();
+        /****************源码*********************/
+//        $user_groups = Db::view($this->config['auth_group_access'], 'uid,group_id')->view($this->config['auth_group'], 'title,rules', "{$this->config['auth_group_access']}.group_id={$this->config['auth_group']}.id")
+//                        ->where(['uid' => $uid, 'status' => 1])->select();
+
+/**************************修改源码*****************************/
+        $gids = Db::name($this->config['auth_group_access'])->field('group_id')->where(['uid' => $uid])->find();
+        if ($gids['group_id']===''){
+            $user_groups = [];
+        }else{
+            foreach (explode(',',$gids['group_id']) as $gid) {
+                $u_groups = Db::name($this->config['auth_group'].' a')->field('title,rules')
+                    ->where(['status' => 1, "a.id"=>$gid])->find();
+                if ($u_groups!==null) {
+                    $u_groups['uid'] = $uid;
+                    $u_groups['group_id'] = $gid;
+                    $user_groups[] = $u_groups;
+                }else{
+                    $user_groups = [];
+                }
+            }
+        }
+/*****************************************************************/
         $groups[$uid] = $user_groups ? $user_groups : [];
         return $groups[$uid];
     }

@@ -104,7 +104,9 @@
 		});
         if (!result.length) {
             var reg = /(order\/index)/;
-            clrefresh(reg,true);
+            if (!parent.document.querySelector('#iframe_box').lastElementChild.style.display==='none') {
+                clrefresh(reg,true);
+			}
             return;
         }
         var headdata = result[0]; //取第一条数据的信息，因为头信息都一样

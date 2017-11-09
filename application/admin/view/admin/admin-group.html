@@ -129,9 +129,12 @@
                             refleshAdminList();
                             table.reload('main');
                         }else{
-                            console.log(res.msg);
                             layer.close(index);
-                            layer.msg(res.msg,{time: 2000})
+                            if (typeof res !== 'string') {
+                                layer.msg(res.msg,{time: 2000});
+                            }else{
+                                layer.msg(res,{time: 2000});
+                            }
                         }
                     });
                 });
@@ -166,7 +169,11 @@
                             layer.close(index);
                         }else{
                             layer.close(index);
-                            layer.msg(res.msg,{time: 2000})
+                            if (typeof res !== 'string') {
+                                layer.msg(res.msg,{time: 2000});
+                            }else{
+                                layer.msg(res,{time: 2000});
+                            }
                         }
                     });
                 });

@@ -11,6 +11,7 @@ use think\Model;
 use think\Validate;
 use think\Db;
 use think\Loader;
+use think\Session;
 use app\common\controller\Data;
 
 class Admin extends Model {
