@@ -34,7 +34,7 @@ class Common extends Controller
         $this->request = $request;
         //登录控制
         if (!Session::get('username')) {
-            $this->redirect('login/index');
+//            $this->redirect('login/index');
             $this->error('请先登录！',"javascript:top.location.href="."'".$request->domain() .Url::build('login/index')."'",'',1);
         }
         //权限验证

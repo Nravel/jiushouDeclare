@@ -19,7 +19,7 @@
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
-			<a href="javascript:;" onclick="group_add('添加用户组','{:url(\'groupsAdd\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户组</a>
+			<a href="javascript:;" onclick="group_add('添加用户组','{:url(\'groupsAdd\')}','800','450')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户组</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
@@ -104,20 +104,23 @@
 					type: 2,
 					content: "{:url('admin/admin/groupsEdit')}",
 					title: data.title+'_修改页面',
-					area: ['320px','400px']
+					area: ['380px','400px'],
+                    maxmin: true
 				});
             }else if(obj.event == "authorize") {
                 layer.open({
                     type: 2,
                     content: "{:url('admin/admin/groupsAuthorize')}",
                     title: data.title+'_授权管理',
-                    area: ['90%','90%']
+                    maxmin: true,
+                    area: ['90%','70%']
                 });
             }else if(obj.event == "member") {
                 layer.open({
                     type: 2,
                     content: "{:url('admin/admin/groupsMember')}",
                     title: data.title+'_会员管理',
+                    maxmin: true,
                     area: ['90%','90%']
                 });
             }else if(obj.event == "del") {

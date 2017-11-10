@@ -16,12 +16,12 @@
 		.datas .layui-table-view .layui-table td:nth-child(4),.datas .layui-table-view .layui-table th:nth-child(4) {
 			text-align: left;
 			/*padding-left: 270px;*/
-			padding-left: 10%;
+			padding-left: 12%;
 		}
 		.datas .layui-table-view .layui-table td:nth-child(3),.datas .layui-table-view .layui-table th:nth-child(3) {
 			text-align: left;
 			/*padding-left: 150px;*/
-			padding-left: 3%;
+			padding-left: 5%;
 		}
 	</style>
 </head>
@@ -37,7 +37,7 @@
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="l">
-			<a href="javascript:;" onclick="permission_add('添加根节点','{:url(\'permissionAdd\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加根节点</a>
+			<a href="javascript:;" onclick="permission_add('添加根节点','{:url(\'permissionAdd\')}','800','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加根节点</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
@@ -85,8 +85,8 @@
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
                 {field: 'autonum', title: 'No.', width: 80, sort: true}
-                ,{field: '_name', title: '权限名称', width: 280}
-                ,{field: 'name', title: '权限', width: 500}
+                ,{field: '_name', title: '权限名称', width: 380}
+                ,{field: 'name', title: '权限', width: 755}
                 ,{field: 'status', title: '状态',templet: '#status', width: 240, sort: true}
                 ,{field: 'ctrl', title: '操作', width: 155,fixed:"right", toolbar: "#exportTools"}
             ]]
@@ -112,7 +112,8 @@
                     type: 2,
                     content: "{:url('admin/admin/permissionEdit')}",
                     title: data.title+'_权限修改页面',
-                    area: ['800px','500px'],
+                    maxmin: true,
+                    area: ['800px','400px'],
                 });
             }else if(obj.event == "add") {
                 layer.open({
@@ -120,7 +121,8 @@
 //                    content: url+'/uid/'+data.id,
                     content: "{:url('admin/admin/permissionAdd')}",
                     title: data.title+'_子权限添加页面',
-                    area: ['800px','500px'],
+                    maxmin: true,
+                    area: ['800px','400px'],
                     end: function () {
                         pdata = null;
                     }
