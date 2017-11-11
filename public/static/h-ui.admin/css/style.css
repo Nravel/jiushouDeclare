@@ -76,6 +76,9 @@ padding: 0;
 .total {
     margin-top: 5px;
 }
+.layui-table th {
+    position: static;
+}
 .datas .layui-table-view .layui-table td, .layui-table-view .layui-table th {
     text-align: center;
 }
