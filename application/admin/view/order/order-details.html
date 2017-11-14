@@ -104,7 +104,7 @@
 		});
         if (!result.length) {
             var reg = /(order\/index)/;
-            if (!parent.document.querySelector('#iframe_box').lastElementChild.style.display==='none') {
+            if (!(parent.document.querySelector('#iframe_box').lastElementChild.style.display==='none')) {
                 clrefresh(reg,true);
 			}
             return;

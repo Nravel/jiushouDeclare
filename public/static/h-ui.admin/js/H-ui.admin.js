@@ -190,7 +190,7 @@ function clrefresh(reg,bool) {
 			}
         }
     });
-    if (sum>2&&bool) return;
+    if (sum>2&&bool) {removeIframe();return};
     // console.clear();
     bool ? removeIframe() : "";
 }

@@ -90,6 +90,7 @@ class Order extends Model {
     public function editOrder() {
         $etype = $this->request->param("etype");
         $orderNo = $this->request->param("orderNo");
+        $hres = $this->request->param("res");
         $data = $this->request->param("data/a");
         $validate = Loader::validate('Order');
         if ($etype == "head") {
@@ -105,17 +106,24 @@ class Order extends Model {
                 return ['code'=>"0002",'msg'=>$e];
             }
         }elseif ($etype == "goods") {
-            $data['currency'] = $data['item_currency'];
-            $result = $validate->scene('edit_goods')->batch()->check($data);
-            if (!$result) {
-                $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
-                return ['code'=>"0010",'msg'=>$msg];
+            $hres === '0000' ? $hres = 1 : $hres = 0;
+            $lastres = '';
+            foreach ($data as $k => $record) {
+                $record['currency'] = $record['item_currency'];
+                $result = $validate->scene('edit_goods')->batch()->check($record);
+                if (!$result) {
+                    $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
+                    return ['code'=>"0010",'msg'=>$msg];
+                }
+                try{
+                    $temp=Loader::model("OrderGoods")->allowField(true)->save($record,"id=".$record['id']);
+                    $res = $temp || $lastres;
+                }catch (\Exception $e) {
+                    return ['code'=>"0002",'msg'=>$e];
+                }
+                $lastres = $temp;
             }
-            try{
-                $res=Loader::model("OrderGoods")->allowField(true)->save($data,"id=".$data['id']);
-            }catch (\Exception $e) {
-                return ['code'=>"0002",'msg'=>$e];
-            }
+            $res = $hres || $res;
         }
         if ($res) {
             return ['code'=>"0000",'msg'=>"修改成功！"];
@@ -123,6 +131,47 @@ class Order extends Model {
             return ['code'=>"0001",'msg'=>"数据没有变更！"];
         }
     }
+
+    /**
+     * 修改订单信息（原版）
+     * @return array
+     */
+//    public function editOrder() {
+//        $etype = $this->request->param("etype");
+//        $orderNo = $this->request->param("orderNo");
+//        $data = $this->request->param("data/a");
+//        $validate = Loader::validate('Order');
+//        if ($etype == "head") {
+//            $data = $this->request->param();
+//            $result = $validate->scene('edit_head')->batch()->check($data);
+//            if (!$result) {
+//                $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
+//                return ['code'=>"0010",'msg'=>$msg];
+//            }
+//            try{
+//                $res=Loader::model("OrderHead")->allowField(true)->save($data,"order_no='".$data['order_no']."'");
+//            }catch (\Exception $e) {
+//                return ['code'=>"0002",'msg'=>$e];
+//            }
+//        }elseif ($etype == "goods") {
+//            $data['currency'] = $data['item_currency'];
+//            $result = $validate->scene('edit_goods')->batch()->check($data);
+//            if (!$result) {
+//                $msg = '<font color="#DD514C">'.implode(',<br>',$validate->getError()).'</font>';
+//                return ['code'=>"0010",'msg'=>$msg];
+//            }
+//            try{
+//                $res=Loader::model("OrderGoods")->allowField(true)->save($data,"id=".$data['id']);
+//            }catch (\Exception $e) {
+//                return ['code'=>"0002",'msg'=>$e];
+//            }
+//        }
+//        if ($res) {
+//            return ['code'=>"0000",'msg'=>"修改成功！"];
+//        }else{
+//            return ['code'=>"0001",'msg'=>"数据没有变更！"];
+//        }
+//    }
 
     /**
      * 删除订单

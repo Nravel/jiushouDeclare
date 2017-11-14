@@ -33,6 +33,10 @@
 			color: #DD514C;
 			line-height: 30px;
 		}
+		.goods-wrap {
+			padding: 15px;
+			padding-bottom: 5px;
+		}
 	</style>
 </head>
 <body>
@@ -46,20 +50,23 @@
 		</div>
 		<div class="panel-body container-fluid">
 		</div>
-		<div id="ohead-submit" class="text-c">
-			<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius mt-10 mb-10" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
+		<div class="goods-wrap">
+			<div class="cl pd-5 bg-1 bk-gray text-c">
+				<span class="l">
+					<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
+					<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+				</span>
+				<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
+				<span class="r total">共有数据：<strong></strong> 条</span>
+			</div>
+			<div id="og-details" class="datas">
+				<table id="order-goods" lay-filter="ogoods"></table>
+			</div>
 		</div>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-40 text-c">
-		<span class="l">
-			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
-			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-		</span>
-		<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
-		<span class="r total">共有数据：<strong></strong> 条</span>
-	</div>
-	<div id="og-details" class="datas">
-		<table id="order-goods" lay-filter="ogoods"></table>
+
+	<div id="ohead-submit" class="text-c">
+		<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius mt-10 mb-10" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
 	</div>
 </div>
 {include file='export-footer' /}
@@ -93,8 +100,8 @@
 		</ul>
 	</form>
 </script>
+<!--<a title="确认" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>-->
 <script type="text/html" id="tools">
-	<a title="确认" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
 	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/javascript">
@@ -112,6 +119,7 @@
 			$(document.body).append(html);
         });
     });
+    var subData = null;
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
         var $ = layui.jquery;
@@ -267,7 +275,7 @@
                 {field: "price",title: "单价",width: 100,templet: "#og-input10", sort: true,edit: 'text'},
                 {field: "total_price",title: "总价",width: 100,templet: "#og-input11", sort: true,edit: 'text'},
                 {field: "item_currency",title: "币制",width: 70,templet: "#og-input12",edit: 'text'},
-                {field: 'ctrl', title: '操作', width: 160, toolbar: "#tools", fixed: "right"}
+                {field: 'ctrl', title: '操作', width: 60, toolbar: "#tools", fixed: "right"}
             ]],
 //            skin: "row",
             even: true,
@@ -275,6 +283,7 @@
             limits: [2,5,10],
             limit: 5,
             done: function (res,curr,count) {
+                subData = res.data;
                 nres = res.data;
                 if (!nres.length) {
                     var reg = /(order\/index)|(order\/details)/;
@@ -345,14 +354,33 @@
         });
     });
 
-    //修改订单头信息
+    //修改订单信息
     function commitHead() {
-		$.post('{:url("admin/Order/edit")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
-            if (res.code == "0000") {
-                layer.msg(res.msg,{time: 2000});
+//        console.log(subData);
+        $.post('{:url("admin/Order/edit")}',$(".ohead").serialize()+'&etype=head&order_no='+"{$orderNo}",function (res) {
+            if (res.code === "0000"|res.code === "0001") {
+                var url = "{:url('admin/Order/edit')}";
+                var data = {
+                    etype: "goods",
+                    orderNo : subData.order_no,
+                    res : res.code,
+                    data: subData
+                };
+                $.post(url,data,function (res) {
+                    if (res.code === "0000"|res.code === "0001") {
+                        layer.msg(res.msg,{time: 2000});
+                        var reg = /(order\/details)/;
+                        clrefresh(reg,false);
+                    }else{
+                        layer.open({
+                            content: res.msg
+                        });
+                    }
+                });
+//                layer.msg(res.msg,{time: 2000});
                 var reg = /(order\/index)|(order\/details)/;
                 clrefresh(reg,false);
-            }else if(res.code == "0010"|res.code == "0001") {
+            }else if(res.code === "0010") {
                 layer.open({
                     content: res.msg
                 });
@@ -362,7 +390,8 @@
                 });
                 console.log(res.msg);
             }
-        })
+        });
+
     }
 
     //批量删除
