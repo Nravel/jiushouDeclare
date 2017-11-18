@@ -7,16 +7,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 {include file='export-head' /}
-<title>404页面</title>
+<title>跳转页面</title>
+	<style>
+		.error-color {
+			color: #333;
+		}
+		.success-color {
+			color: #3CBAFF;
+		}
+	</style>
 </head>
 <body>
 <section class="container-fluid page-404 minWP text-c">
-	<p class="error-title"><i class="Hui-iconfont va-m" style="font-size:80px">&#xe688;</i>
-		<span class="va-m"> 404</span>
+	<p class="error-title">
+		{eq name='code' value='0' }
+		<i class="Hui-iconfont va-m" style="font-size:80px">&#xe688;</i>
+		<span class="va-m"> error</span>
+		{else/}
+		<i class="Hui-iconfont va-m" style="font-size:80px;color: #00ACFD">&#xe668;</i>
+		<span class="va-m" style="color: #00ACFD"> success</span>
+		{/eq}
 	</p>
-	<p class="error-description">{:strip_tags($msg)}</p>
+	<p class="error-description error-color">{eq name='code' value='0' }<span class="error-color">{else/}<span class="success-color">{/eq}{:strip_tags($msg)}</span></p>
 	<p class="error-info">
-		页面自动 <a id="href" href="{$url}">跳转</a> 等待时间： <b id="wait">{$wait}</b>
+		页面自动 <a id="href" href="{$url}" style="color: #0a6999">跳转</a> 等待时间： <b id="wait">{$wait}</b>
 	</p>
 </section>
 <script type="text/javascript">
