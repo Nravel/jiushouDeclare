@@ -18,11 +18,12 @@
 	<!--{include file='date-search' /}-->
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
-		<span class="l">
+		<span class="r">
 			<a href="javascript:;" onclick="group_add('添加用户组','{:url(\'groupsAdd\')}','800','450')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户组</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
-		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
+		<!--<span class="l total mr-10">共有数据：<strong></strong> 条</span>-->
+		<span class="l total mr-10">用户组列表</span>
 	</div>
 	<div class="datas">
 		<table id="groupLists" lay-filter="glist"></table>
@@ -55,6 +56,7 @@
 	<!--{{# } }}-->
 <!--</script>-->
 <script type="text/javascript">
+	setAlign(['description','username'],'left');
 	var pdata = null;
     //表格方法式渲染
     layui.use(['table','layer'],function () {

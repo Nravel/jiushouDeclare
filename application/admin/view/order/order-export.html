@@ -27,6 +27,10 @@
 			<div class="panel-heading">
 				<span>查询条件</span>
 				<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>
+				<span class="search-btns r mr-15">
+					<a class="layui-btn layui-btn-normal layui-btn-mini" title="确认查询" href="javascript:void(0)" onclick="searchFun(true)"><i class="Hui-iconfont">&#xe665;</i></a>
+					<a class="layui-btn layui-btn-danger layui-btn-mini" title="重置" href="javascript:document.getElementById('search-form').reset()"><i class="Hui-iconfont">&#xe66b;</i></a>
+				</span>
 			</div>
 			<div class="panel-body">
 				<div class="search-adv">
@@ -67,14 +71,14 @@
 				</div>
 			</div>
 		</div>
-		<div class="search-btns text-c mt-20">
-			<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(true)" style="width: 80px;line-height: 1.5!important">
-			<input class="btn btn-primary radius" type="reset" value="清空" style="width: 80px;line-height: 1.5!important;">
-		</div>
+		<!--<div class="search-btns text-c mt-20">-->
+			<!--<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(true)" style="width: 80px;line-height: 1.5!important">-->
+			<!--<input class="btn btn-primary radius" type="reset" value="清空" style="width: 80px;line-height: 1.5!important;">-->
+		<!--</div>-->
 	</form>
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
-		<span class="l">
+		<span class="r">
 			<a href="javascript:;" onclick="searchAdv()" class="btn btn-primary radius"><i class="layui-icon">&#xe615;</i> 高级查询</a>
 			<a class="btn  btn-success radius" data-title="批量导出就手订单" onclick="exportTable(0)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出就手订单</a>
 			<!--<a class="btn  btn-success radius" data-title="批量导出清单" onclick="exportTable(1)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出清单</a>-->
@@ -85,7 +89,8 @@
 			<!--<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>-->
 			<!--<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>-->
 		</span>
-		<span class="r total">共有数据：<strong></strong> 条</span>
+		<!--<span class="l total">共有数据：<strong></strong> 条</span>-->
+		<span class="l total">批次列表</span>
 	</div>
 	<div class="datas">
 		<table id="orderLists" lay-filter="olist"></table>
@@ -110,6 +115,7 @@
 	<!--<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">一次性导出</a>-->
 </script>
 <script type="text/javascript">
+	setAlign(['batch_note'],'left');
 layui.config({
 	debug : true,
 	version : true	 //清除缓存

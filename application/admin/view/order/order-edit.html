@@ -25,6 +25,7 @@
 		}
 		#ohead-submit .btn {
 			width: 100px;
+			margin-top: -3px;
 		}
 		.panel-body {
 			overflow-x: hidden;
@@ -47,26 +48,25 @@
 			<span>订单基本信息</span>
 			<!--<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>-->
 			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
+			<span id="ohead-submit" class="r">
+				<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
+			</span>
 		</div>
 		<div class="panel-body container-fluid">
 		</div>
 		<div class="goods-wrap">
 			<div class="cl pd-5 bg-1 bk-gray text-c">
 				<span class="l">
-					<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
-					<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+					<a href="javascript:;" class="" style="line-height: 30px;"><i class="layui-icon"></i> 订单商品信息</a>
 				</span>
-				<span class="og-tip">请务必先点击要修改的单元格，再修改内容!</span>
-				<span class="r total">共有数据：<strong></strong> 条</span>
+				<span class="og-tip">您可以通过点击要修改的单元格来修改内容!</span>
+				<!--<span class="r total">共有数据：<strong></strong> 条</span>-->
+				<span class="r"><a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span>
 			</div>
 			<div id="og-details" class="datas">
 				<table id="order-goods" lay-filter="ogoods"></table>
 			</div>
 		</div>
-	</div>
-
-	<div id="ohead-submit" class="text-c">
-		<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius mt-10 mb-10" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
 	</div>
 </div>
 {include file='export-footer' /}
@@ -88,6 +88,11 @@
                                 <input name={{ item.fieldname }} type="radio" value='0' {{# if(!parseInt(item.content)) { }} checked {{# }else{ }}  {{# } }} ><font style="color: #dd514c">未报关</font> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input name={{ item.fieldname }} type="radio" value='1' {{# if(parseInt(item.content)) { }} checked {{# }else{ }}  {{# } }} ><font style="color: #5EB95E">已报关</font>
                             </div>
+						{{# }else if(item.fieldname === 'pay_status'){ }}
+							<div class="radio-box" style="vertical-align: middle;padding-left: 10px;height: 20px;">
+								<input name={{ item.fieldname }} type="radio" value='0' {{# if(!parseInt(item.content)) { }} checked {{# }else{ }}  {{# } }} ><font style="color: #dd514c">未支付</font> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input name={{ item.fieldname }} type="radio" value='1' {{# if(parseInt(item.content)) { }} checked {{# }else{ }}  {{# } }} ><font style="color: #5EB95E">已支付</font>
+							</div>
 						{{# }else{ }}
 							<span><input name={{ item.fieldname }} class="input-text size-M" type="text" value={{ item.content }}></span>
 						{{# } }}
@@ -109,16 +114,16 @@
         debug : true,
         version : true	 //清除缓存
     });
-    $(document).ready(function () {
-		html = "";
-		var og_fields = ["item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","item_currency"];
-		$.each(og_fields,function (index,field) {
-			html+= '<script type="text/html\" id="og-input'+(index+1)+'">'+
-						'<input name='+field+' class="input-text size-MINI" type="text" value={{ d.'+field+' }}>'+
-					'<\/script>';
-			$(document.body).append(html);
-        });
-    });
+//    $(document).ready(function () {
+//		html = "";
+//		var og_fields = ["item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","item_currency"];
+//		$.each(og_fields,function (index,field) {
+//			html+= '<script type="text/html\" id="og-input'+(index+1)+'">'+
+//						'<input name='+field+' class="input-text size-MINI" type="text" value={{ d.'+field+' }}>'+
+//					'<\/script>';
+//			$(document.body).append(html);
+//        });
+//    });
     var subData = null;
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
@@ -162,6 +167,11 @@
                     "field": "报关状态",
                     "content": headdata.declare_status,
                     "fieldname": "declare_status"
+                },
+                {
+                    "field": "支付状态",
+                    "content": headdata.pay_status,
+                    "fieldname": "pay_status"
                 },
                 {
                     "field": "电商平台代码",
@@ -262,20 +272,34 @@
             where: {orderNo: order_no},
             cols: [[
                 {checkbox: true},
-                {field: "gnum",title: "商品序号", width: 100, sort: true},
-                {field: "item_name",title: "企业商品名称",width: 200,templet: "#og-input1",edit: 'text'},
-                {field: "qty",title: "数量",width: 100,templet: "#og-input2", sort: true,edit: 'text'},
-                {field: "unit",title: "计量单位",width: 100,templet: "#og-input3", sort: true,edit: 'text'},
-                {field: "qty1",title: "法定数量",width: 100,templet: "#og-input4", sort: true,edit: 'text'},
-                {field: "unit1",title: "法定计量单位",width: 125,templet: "#og-input5", sort: true,edit: 'text'},
-                {field: "country",title: "原产国",width: 80,templet: "#og-input6",edit: 'text'},
-                {field: "hscode",title: "海关商品编码(Hscode)",width: 185,templet: "#og-input7", sort: true,edit: 'text'},
-                {field: "gjcode",title: "国检商品编号",width: 150,templet: "#og-input8", sort: true,edit: 'text'},
-                {field: "gtype",title: "商品规格型号",width: 120,templet: "#og-input9",edit: 'text'},
-                {field: "price",title: "单价",width: 100,templet: "#og-input10", sort: true,edit: 'text'},
-                {field: "total_price",title: "总价",width: 100,templet: "#og-input11", sort: true,edit: 'text'},
-                {field: "item_currency",title: "币制",width: 70,templet: "#og-input12",edit: 'text'},
-                {field: 'ctrl', title: '操作', width: 60, toolbar: "#tools", fixed: "right"}
+//                {field: "gnum",title: "商品序号", width: 115, sort: true},
+//                {field: "item_name",title: "企业商品名称",width: 200,templet: "#og-input1",edit: 'text'},
+//                {field: "qty",title: "数量",width: 100,templet: "#og-input2", sort: true,edit: 'text'},
+//                {field: "unit",title: "计量单位",width: 120,templet: "#og-input3", sort: true,edit: 'text'},
+//                {field: "qty1",title: "法定数量",width: 120,templet: "#og-input4", sort: true,edit: 'text'},
+//                {field: "unit1",title: "法定计量单位",width: 145,templet: "#og-input5", sort: true,edit: 'text'},
+//                {field: "country",title: "原产国",width: 80,templet: "#og-input6",edit: 'text'},
+//                {field: "hscode",title: "海关商品编码(Hscode)",width: 130,templet: "#og-input7", sort: true,edit: 'text'},
+//                {field: "gjcode",title: "国检商品编号",width: 150,templet: "#og-input8", sort: true,edit: 'text'},
+//                {field: "gtype",title: "商品规格型号",width: 120,templet: "#og-input9",edit: 'text'},
+//                {field: "price",title: "单价",width: 100,templet: "#og-input10", sort: true,edit: 'text'},
+//                {field: "total_price",title: "总价",width: 100,templet: "#og-input11", sort: true,edit: 'text'},
+//                {field: "item_currency",title: "币制",width: 70,templet: "#og-input12",edit: 'text'},
+//                {field: 'ctrl', title: '操作', width: 60, toolbar: "#tools", fixed: "right"}
+                {field: "gnum",title: "商品序号", width: 115, sort: true},
+                {field: "item_name",title: "企业商品名称",width: 200,edit: 'text'},
+                {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
+                {field: "unit",title: "计量单位",width: 120, sort: true,edit: 'text'},
+                {field: "qty1",title: "法定数量",width: 120, sort: true,edit: 'text'},
+                {field: "unit1",title: "法定计量单位",width: 145, sort: true,edit: 'text'},
+                {field: "country",title: "原产国",width: 80,edit: 'text'},
+                {field: "hscode",title: "海关商品编码(Hscode)",width: 130,sort: true,edit: 'text'},
+                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},
+                {field: "gtype",title: "商品规格型号",width: 120,edit: 'text'},
+                {field: "price",title: "单价",width: 100, sort: true,edit: 'text'},
+                {field: "total_price",title: "总价",width: 100, sort: true,edit: 'text'},
+                {field: "item_currency",title: "币制",width: 70,edit: 'text'},
+                {field: 'ctrl', title: '操作', width: 110, toolbar: "#tools", fixed: "right"}
             ]],
 //            skin: "row",
             even: true,
@@ -289,7 +313,7 @@
                     var reg = /(order\/index)|(order\/details)/;
                     clrefresh(reg,true);
                 }
-                $(".total").children("strong").html(count);
+//                $(".total").children("strong").html(count);
             }
         });
         //监听操作工具条

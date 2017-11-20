@@ -8,9 +8,12 @@
     background: #F5FAFE;
     border-radius: 5px 5px 0 0;
     border-bottom: 1px solid #ddd;
-    padding: 0 20px;
+    padding: 5px 20px;
     color: #333;
     font-size: 16px;
+}
+.search-btns a:active {
+    color: white;
 }
 .panel-body {
     padding: 10px 20px;
@@ -79,7 +82,10 @@ padding: 0;
 .layui-table th {
     position: static;
 }
-.datas .layui-table-view .layui-table td, .layui-table-view .layui-table th {
+.datas .layui-table-view .layui-table td {
+    text-align: center;
+}
+.layui-table-view .layui-table th{
     text-align: center;
 }
  .datas .layui-table-view .layui-table th,.datas .layui-table-header {

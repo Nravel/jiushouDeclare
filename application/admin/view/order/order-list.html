@@ -32,6 +32,10 @@
 			<div class="panel-heading">
 				<span>查询条件</span>
 				<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>
+				<span class="search-btns r mr-15">
+					<a class="layui-btn layui-btn-normal layui-btn-mini" title="确认查询" href="javascript:void(0)" onclick="searchFun(true)"><i class="Hui-iconfont">&#xe665;</i></a>
+					<a class="layui-btn layui-btn-danger layui-btn-mini" title="重置" href="javascript:document.getElementById('search-form').reset()"><i class="Hui-iconfont">&#xe66b;</i></a>
+				</span>
 			</div>
 			<div class="panel-body">
 				<div class="search-adv">
@@ -122,14 +126,11 @@
 				</div>
 			</div>
 		</div>
-		<div class="search-btns text-c mt-20">
-			<input class="btn btn-primary radius" type="submit" value="查询" onclick="searchFun(true)" style="width: 80px;line-height: 1.5!important">
-			<input class="btn btn-primary radius" type="reset" value="清空" style="width: 80px;line-height: 1.5!important;">
-		</div>
+
 	</form>
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
-		<span class="l">
+		<span class="r">
 			<a href="javascript:;" onclick="searchAdv()" class="btn btn-primary radius"><i class="layui-icon">&#xe615;</i> 高级查询</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 			<a id="upload_excel" class="btn  btn-success radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入订单</a>
@@ -137,7 +138,8 @@
 			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>
 			<a id="open-tab" hidden data-href="" data-title="" href="javascript:void(0)"></a>
 		</span>
-		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
+		<!--<span class="l total mr-10">共有数据：<strong></strong> 条</span>-->
+		<span class="l total">订单信息列表</span>
 	</div>
 	<div class="datas">
 		<table id="orderLists" lay-filter="olist"></table>
@@ -164,6 +166,17 @@
 	{{# } else { }}
 	<span title="已报关" style="color: #5EB95E"><i class="Hui-iconfont">&#xe6e1;</i></span>
 	{{# } }}
+</script>
+<script type="text/html" id="pstatus">
+	{{# console.log(d.pay_status) }}
+	{{# if (d.pay_status === '0') { }}
+	<span title="未支付" style="color: #dd514c"><i class="Hui-iconfont">&#xe6dd;</i></span>
+	{{# } else { }}
+	<span title="已支付" style="color: #5EB95E"><i class="Hui-iconfont">&#xe6e1;</i></span>
+	{{# } }}
+</script>
+<script type="text/html" id="address">
+	<div class="layui-table-cell laytable-cell-1-consignee_address" title="{{d.consignee_address}}">{{d.consignee_address}}</div>
 </script>
 <script type="text/javascript">
     layui.config({
@@ -201,26 +214,27 @@
 //		,height: 'full-600'
             ,cols: [[ //标题栏
                 {checkbox: true} //默认全选
-                ,{field: 'autonum', title: 'No.',width: 70, sort: true}
+                ,{field: 'autonum', title: 'No.',width: 80, sort: true}
                 ,{field: 'batch_time', title: '批次号', width: 180, sort: true}
                 ,{field: 'batch_note', title: '批次备注', width: 180}
                 ,{field: 'create_time', title: '导入时间', width: 170, sort: true}
                 ,{field: 'order_no', title: '订单编号', width: 130, sort: true}
-                ,{field: 'declare_status', title: '报关状态',templet: '#dstatus', width: 90}
                 ,{field: 'buyer_name', title: '订购人姓名', width: 100}
-                ,{field: 'buyer_telephone', title: '订购人电话', width: 120}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 130}
                 ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130}
                 ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true}
-                ,{field: 'discount', title: '非现金抵扣金额', width: 140, sort: true}
+                ,{field: 'discount', title: '非现金抵扣金额', width: 155, sort: true}
                 ,{field: 'tax_total', title: '代扣税款', width: 120, sort: true}
-                ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true}
+                ,{field: 'actural_paid', title: '实际支付金额', width: 140, sort: true}
                 ,{field: 'currency', title: '币制', width: 100}
                 ,{field: 'consignee', title: '收货人姓名', width: 100}
-                ,{field: 'consignee_telephone', title: '收货人电话', width: 120}
-                ,{field: 'consignee_address', title: '收货地址', width: 300}
-                ,{field: 'ctrl', title: '操作', width: 140, toolbar: "#tools", fixed: "right"}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 130}
+                ,{field: 'consignee_address', title: '收货地址', templet: '#address', width: 400}
+                ,{field: 'declare_status', title: '报关状态',templet: '#dstatus',fixed: "right", width: 100}
+                ,{field: 'pay_status', title: '支付状态',templet: '#pstatus',fixed: "right", width: 100}
+                ,{field: 'ctrl', title: '操作', width: 135, toolbar: "#tools", fixed: "right"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
@@ -342,6 +356,7 @@
 
     $(document).ready(function () {
         $("#upcommit").hide();
+        setAlign(['consignee_address','batch_note'],'left');
     });
 
     //批量删除

@@ -28,16 +28,16 @@
 		<div class="cl pd-5 bg-1 bk-gray mt-10">
 			<span class="l">
 				<!--<a href="javascript:;" onclick="admin_add('添加用户','{:url(\'add\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户</a>-->
-				<span id="memtitle" href="javascript:;" class="" style="color: #47A8FC"><i class="layui-icon"></i> </span>
+				<span id="memtitle" href="javascript:;" class="" style="color: #47A8FC;line-height: 30px;"><i class="layui-icon"></i> </span>
 
 			</span>
-			<span class="r total mr-10 total-top">共有数据：<strong></strong> 条</span>
+			<!--<span class="r total mr-10 total-top">共有数据：<strong></strong> 条</span>-->
+			<span class="r">
+				<a class="btn  btn-warning  radius ml-10" data-title="批量移除组成员" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6de;</i> 批量移除成员</a>
+			</span>
 		</div>
 		<div class="datas">
 			<table id="memberLists" lay-filter="mlist"></table>
-		</div>
-		<div class="text-c mb-5">
-			<a class="btn  btn-warning  radius ml-10" data-title="批量移除组成员" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6de;</i> 批量移除成员</a>
 		</div>
 	</div>
 
@@ -45,17 +45,18 @@
 		<div class="cl pd-5 bg-1 bk-gray mt-10">
 			<span class="l">
 				<!--<a href="javascript:;" onclick="admin_add('添加用户','{:url(\'add\')}','800')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户</a>-->
-				<span id="nomemtitle" href="javascript:;" class="" style="color: #F37B1D"><i class="layui-icon"></i> 非用户组成员</span>
+				<span id="nomemtitle" href="javascript:;" class="" style="color: #F37B1D;line-height: 30px"><i class="layui-icon"></i> 非用户组成员</span>
 
 			</span>
-			<span class="r total mr-10 total-bottom">共有数据：<strong></strong> 条</span>
+			<!--<span class="r total mr-10 total-bottom">共有数据：<strong></strong> 条</span>-->
+			<span class="r">
+				<a class="btn  btn-secondary  radius ml-10" data-title="批量添加组成员" onclick="addMemberBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6dc;</i> 批量移至组成员</a>
+			</span>
 		</div>
 		<div class="datas">
 			<table id="nomemLists" lay-filter="nmlist"></table>
 		</div>
-		<div class="text-c mb-5">
-			<a class="btn  btn-secondary  radius ml-10" data-title="批量添加组成员" onclick="addMemberBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6dc;</i> 批量移至组成员</a>
-		</div>
+
 	</div>
 </div>
 {include file='export-footer' /}
@@ -87,6 +88,7 @@
 <script type="text/javascript">
 	$('#memtitle').html(parent.pdata.title+'_成员');
 	$('#nomemtitle').html('非'+parent.pdata.title+'_成员');
+    setAlign(['title'],'left');
     //表格方法式渲染用户组成员
     layui.use(['table','layer'],function () {
         var table = layui.table;
@@ -106,7 +108,7 @@
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
                 {field: 'id', title: 'ID', width: 80, sort: true}
-                ,{field: 'username', title: '用户名', width: 150}
+                ,{field: 'username', title: '用户名', width: 170}
                 ,{field: 'title', title: '用户组', width: 494}
                 ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 400, sort: true}
                 ,{field: 'status', title: '状态',templet: '#status', width: 200, sort: true}
@@ -201,7 +203,7 @@
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
                 {field: 'id', title: 'ID', width: 80, sort: true}
-                ,{field: 'username', title: '用户名', width: 150}
+                ,{field: 'username', title: '用户名', width: 170}
                 ,{field: 'title', title: '用户组', width: 494}
                 ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 400, sort: true}
                 ,{field: 'status', title: '状态',templet: '#status', width: 200, sort: true}

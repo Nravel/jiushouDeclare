@@ -13,16 +13,16 @@
 			/*text-align: left;*/
 			/*padding-left: 210px;*/
 		/*}*/
-		.datas .layui-table-view .layui-table td:nth-child(4),.datas .layui-table-view .layui-table th:nth-child(4) {
-			text-align: left;
-			/*padding-left: 270px;*/
-			padding-left: 12%;
-		}
-		.datas .layui-table-view .layui-table td:nth-child(3),.datas .layui-table-view .layui-table th:nth-child(3) {
-			text-align: left;
-			/*padding-left: 150px;*/
-			padding-left: 5%;
-		}
+		/*.datas .layui-table-view .layui-table td:nth-child(4),.datas .layui-table-view .layui-table th:nth-child(4) {*/
+			/*text-align: left;*/
+			/*!*padding-left: 270px;*!*/
+			/*padding-left: 12%;*/
+		/*}*/
+		/*.datas .layui-table-view .layui-table td:nth-child(3),.datas .layui-table-view .layui-table th:nth-child(3) {*/
+			/*text-align: left;*/
+			/*!*padding-left: 150px;*!*/
+			/*padding-left: 5%;*/
+		/*}*/
 	</style>
 </head>
 <body>
@@ -36,11 +36,12 @@
 	<!--</div>-->
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
-		<span class="l">
+		<span class="r">
 			<a href="javascript:;" onclick="permission_add('添加根节点','{:url(\'permissionAdd\')}','800','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加根节点</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
-		<span class="r total mr-10">共有数据：<strong></strong> 条</span>
+		<!--<span class="l total mr-10">共有数据：<strong></strong> 条</span>-->
+		<span class="l total mr-10">权限列表</span>
 	</div>
 	<div class="datas">
 		<table id="permissionLists" lay-filter="plist"></table>
@@ -65,6 +66,7 @@
 	{{# } }}
 </script>
 <script type="text/javascript">
+	setAlign(['_name','name'],'left');
     var pdata = null;
     //表格方法式渲染
     layui.use(['table','layer'],function () {

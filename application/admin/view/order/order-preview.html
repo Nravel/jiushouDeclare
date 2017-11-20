@@ -61,35 +61,36 @@
 	<!--</div>-->
 	<div class="tb-wrap mt-20">
 		<div class="cl pd-5 bg-1 bk-gray text-c">
-		<span class="l">
-			<span href="javascript:;" class="" style="color: #DD514C"><i class="layui-icon"></i> 异常数据</span>
-			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delErrBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-		</span>
+			<span  class="l" href="javascript:;" style="color: #DD514C;line-height: 30px;"><i class="layui-icon"></i> 异常数据</span>
+			<span class="r">
+				<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delErrBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+				<span class="upbtn-wrap text-c mb-5 ">
+					<a id="" class="btn  btn-warning radius" onclick="emitAll()" data-title="更改所有并检测" href="javascript:;"><i class="Hui-iconfont">&#xe6f7;</i> 提交所有更改并检测</a>
+				</span>
+			</span>
 			<span class="og-tip">通过将鼠标悬停在粉红色字上可以查看错误信息，您可以单击单元格来修改对应的内容！</span>
-			<span class="r total top-total">共有数据：<strong></strong> 条</span>
+			<!--<span class="r total top-total">共有数据：<strong></strong> 条</span>-->
 		</div>
 		<div id="oe-details" class="datas">
 			<table id="order-err" lay-filter="oerr"></table>
-		</div>
-		<div class="upbtn-wrap text-c mb-5">
-			<a id="" class="btn  btn-warning radius" onclick="emitAll()" data-title="更改所有并检测" href="javascript:;"><i class="Hui-iconfont">&#xe6f7;</i> 提交所有更改并检测</a>
 		</div>
 	</div>
 
 	<div class="tb-wrap mt-40">
 		<div class="cl pd-5 bg-1 bk-gray text-c">
-		<span class="l">
-			<span href="javascript:;" class="" style="color: #47A8FC"><i class="layui-icon"></i> 正确数据</span>
+			<span href="javascript:;" class="l" style="color: #47A8FC;line-height: 30px;"><i class="layui-icon"></i> 正确数据</span>
+		<span class="r">
+
 			<a class="btn  btn-danger radius ml-10" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<span class="upbtn-wrap text-c mb-5">
+				<a id="upcommit" class="btn  btn-secondary radius" onclick="commitAll()" data-title="确定导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 确定导入</a>
+			</span>
 		</span>
 			<span class="og-tip">您可以单击单元格来修改对应的内容！</span>
-			<span class="r total bot-total">共有数据：<strong></strong> 条</span>
+			<!--<span class="r total bot-total">共有数据：<strong></strong> 条</span>-->
 		</div>
 		<div id="os-details" class="datas">
 			<table id="order-succ" lay-filter="osucc"></table>
-		</div>
-		<div class="upbtn-wrap text-c mb-5">
-			<a id="upcommit" class="btn  btn-secondary radius" onclick="commitAll()" data-title="确定导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 确定导入</a>
 		</div>
 	</div>
 
@@ -127,6 +128,7 @@
 					'<\/script>';
 			$(document.body).append(html);
         });
+		setAlign(['item_name','consignee_address'],'left');
     });
     function spliceData(obj) {
         $(error_arr).each(function (i,item) {
@@ -178,8 +180,8 @@
 //			height: 200,
             cols: [[
                 {checkbox: true} //默认全选
-                ,{field: 'autonum', title: 'No.',width: 70, sort: true}
-                ,{field: '', title: '错误数',width: 80,templet: '#err'}
+                ,{field: 'autonum', title: 'No.',width: 80, sort: true}
+                ,{field: '', title: '错误数',width: 100,templet: '#err',sort: true}
                 ,{field: 'order_no', title: '订单编号', width: 150,templet: '#oe-span1', sort: true, edit: "text"}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text",templet: '#oe-span2'}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text",templet: '#oe-span3'}
@@ -188,18 +190,18 @@
                 ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true, edit: "text",templet: '#oe-span6'}
                 ,{field: 'currency', title: '币制', width: 90, edit: "text",templet: '#oe-span7'}
                 ,{field: 'buyer_name', title: '订购人姓名', width: 100, edit: "text",templet: '#oe-span8'}
-                ,{field: 'buyer_telephone', title: '订购人电话', width: 120, edit: "text",templet: '#oe-span9'}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 140, edit: "text",templet: '#oe-span9'}
                 ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130, edit: "text",templet: '#oe-span10'}
                 ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180, edit: "text",templet: '#oe-span11'}
                 ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text",templet: '#oe-span12'}
-                ,{field: 'consignee_telephone', title: '收货人电话', width: 120, edit: "text",templet: '#oe-span13'}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 140, edit: "text",templet: '#oe-span13'}
                 ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text",templet: '#oe-span14'},
                 {field: "gnum",title: "商品序号", width: 100, sort: true, edit: "text",templet: '#oe-span15'},
                 {field: "item_name",title: "企业商品名称",width: 200,edit: 'text',templet: '#oe-span16'},
                 {field: "qty",title: "数量",width: 100, sort: true,edit: 'text',templet: '#oe-span17'},
                 {field: "unit",title: "计量单位",width: 100, sort: true,edit: 'text',templet: '#oe-span18'},
                 {field: "qty1",title: "法定数量",width: 100, sort: true,edit: 'text',templet: '#oe-span19'},
-                {field: "unit1",title: "法定计量单位",width: 125, sort: true,edit: 'text',templet: '#oe-span20'},
+                {field: "unit1",title: "法定计量单位",width: 130, sort: true,edit: 'text',templet: '#oe-span20'},
                 {field: "country",title: "原产国",width: 80,edit: 'text',templet: '#oe-span21'},
                 {field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true,edit: 'text',templet: '#oe-span22'},
                 {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text',templet: '#oe-span23'},
@@ -272,7 +274,7 @@
             where: {batch_no: preview_data.batch_no,req: 'get'},
             cols: [[
                 {checkbox: true} //默认全选
-                ,{field: 'autonum', title: 'No.',width: 70, sort: true}
+                ,{field: 'autonum', title: 'No.',width: 80, sort: true}
                 ,{field: 'order_no', title: '订单编号', width: 150, sort: true}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
@@ -281,18 +283,18 @@
                 ,{field: 'actural_paid', title: '实际支付金额', width: 130, sort: true, edit: "text"}
                 ,{field: 'currency', title: '币制', width: 90, edit: "text"}
                 ,{field: 'buyer_name', title: '订购人姓名', width: 100, edit: "text"}
-                ,{field: 'buyer_telephone', title: '订购人电话', width: 120, edit: "text"}
+                ,{field: 'buyer_telephone', title: '订购人电话', width: 140, edit: "text"}
                 ,{field: 'buyer_id_type', title: '订购人证件类型', width: 130, edit: "text"}
                 ,{field: 'buyer_id_number', title: '订购人证件号码', width: 180, edit: "text"}
                 ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text"}
-                ,{field: 'consignee_telephone', title: '收货人电话', width: 120, edit: "text"}
+                ,{field: 'consignee_telephone', title: '收货人电话', width: 140, edit: "text"}
                 ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text"},
                 {field: "gnum",title: "商品序号", width: 100, sort: true, edit: "text"},
                 {field: "item_name",title: "企业商品名称",width: 200,edit: 'text'},
                 {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
                 {field: "unit",title: "计量单位",width: 100, sort: true,edit: 'text'},
                 {field: "qty1",title: "法定数量",width: 100, sort: true,edit: 'text'},
-                {field: "unit1",title: "法定计量单位",width: 125, sort: true,edit: 'text'},
+                {field: "unit1",title: "法定计量单位",width: 130, sort: true,edit: 'text'},
                 {field: "country",title: "原产国",width: 80,edit: 'text'},
                 {field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true,edit: 'text'},
                 {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},

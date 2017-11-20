@@ -18,8 +18,7 @@
 			padding: 0 15px;
 		}
 		#order-details .panel-heading a {
-			margin-bottom: 4px;
-			margin-left: 5px;
+			margin-top: 9px;
 		}
 		#order-details .panel-heading span {
 			line-height: 40px;
@@ -32,7 +31,7 @@
 	<div id="order-details" class="panel mt-20">
 		<div class="panel-heading">
 			<span>订单基本信息</span>
-			<a title="修改" onclick="editHead('data')" data="" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+			<a title="修改" onclick="editHead('data')" data="" class="layui-btn layui-btn-mini f-r" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
 			<a id="open-tab" hidden data-href="" data-title="" href="javascript:void(0)"></a>
 			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
 		</div>
@@ -42,7 +41,7 @@
 	</div>
 	<div class="cl pd-5 bg-1 bk-gray mt-40">
 		<span class="l">
-			<a href="javascript:;" class=""><i class="layui-icon"></i> 订单商品信息</a>
+			<a href="javascript:;" class="" style="line-height: 30px;"><i class="layui-icon"></i> 订单商品信息</a>
 			<!--<a class="btn  btn-danger radius ml-10" data-title="批量删除" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>-->
 		</span>
 		<span class="r total">共有数据：<strong></strong> 条</span>
@@ -67,6 +66,12 @@
 							{{# }else{ }}
 								<span style="color: #5EB95E">已报关</span>
 							{{# } }}
+						{{# }else if (item.field === '支付状态') { }}
+							{{# if (item.content === '0') { }}
+								<span style="color: #dd514c">未支付</span>
+							{{# }else{ }}
+								<span style="color: #5EB95E">已支付</span>
+							{{# } }}
 						{{# }else{ }}
 						<span>{{ item.content }}</span>
 						{{# } }}
@@ -81,6 +86,7 @@
 	<!--<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>-->
 </script>
 <script type="text/javascript">
+    setAlign(['item_name'],'left');
     layui.config({
         debug : true,
         version : true	 //清除缓存
@@ -125,6 +131,10 @@
                 {
                     "field": "报关状态",
                     "content": headdata.declare_status,
+                },
+                {
+                    "field": "支付状态",
+                    "content": headdata.pay_status,
                 },
                 {
                     "field": "电商平台代码",
@@ -209,14 +219,14 @@
 			where: {orderNo: order_no},
 			cols: [[
 //                {checkbox: true},
-				{field: "gnum",title: "商品序号", width: 100, sort: true},
+				{field: "gnum",title: "商品序号", width: 115, sort: true},
 				{field: "item_name",title: "企业商品名称",width: 265},
 				{field: "qty",title: "数量",width: 100, sort: true},
-				{field: "unit",title: "计量单位",width: 100, sort: true},
-				{field: "qty1",title: "法定数量",width: 100, sort: true},
-				{field: "unit1",title: "法定计量单位",width: 125, sort: true},
+				{field: "unit",title: "计量单位",width: 120, sort: true},
+				{field: "qty1",title: "法定数量",width: 120, sort: true},
+				{field: "unit1",title: "法定计量单位",width: 140, sort: true},
 				{field: "country",title: "原产国",width: 80},
-				{field: "hscode",title: "海关商品编码(Hscode)",width: 185, sort: true},
+				{field: "hscode",title: "海关商品编码(Hscode)",width: 130, sort: true},
 				{field: "gjcode",title: "国检商品编号",width: 150, sort: true},
 				{field: "gtype",title: "商品规格型号",width: 120},
 				{field: "price",title: "单价",width: 100, sort: true},
