@@ -17,6 +17,10 @@
 		.page-container {
 			padding-top: 10px;
 		}
+		.og-tip {
+			color: #DD514C;
+			line-height: 30px;
+		}
 	</style>
 </head>
 <body>
@@ -129,7 +133,7 @@
 
 	</form>
 	<!--数据显示-->
-	<div class="cl pd-5 bg-1 bk-gray mt-20">
+	<div class="cl pd-5 bg-1 bk-gray mt-20 text-c">
 		<span class="r">
 			<a href="javascript:;" onclick="searchAdv()" class="btn btn-primary radius"><i class="layui-icon">&#xe615;</i> 高级查询</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
@@ -140,6 +144,7 @@
 		</span>
 		<!--<span class="l total mr-10">共有数据：<strong></strong> 条</span>-->
 		<span class="l total">订单信息列表</span>
+		<span class="og-tip">当格子内容显示不全时,您可以点击该格内容来得到完整显示!</span>
 	</div>
 	<div class="datas">
 		<table id="orderLists" lay-filter="olist"></table>
@@ -168,7 +173,6 @@
 	{{# } }}
 </script>
 <script type="text/html" id="pstatus">
-	{{# console.log(d.pay_status) }}
 	{{# if (d.pay_status === '0') { }}
 	<span title="未支付" style="color: #dd514c"><i class="Hui-iconfont">&#xe6dd;</i></span>
 	{{# } else { }}
@@ -176,7 +180,8 @@
 	{{# } }}
 </script>
 <script type="text/html" id="address">
-	<div class="layui-table-cell laytable-cell-1-consignee_address" title="{{d.consignee_address}}">{{d.consignee_address}}</div>
+	<div title="{{d.consignee_address}}">{{d.consignee_address}}</div>
+	<!--<div class="layui-table-cell laytable-cell-1-consignee_address" title="{{d.consignee_address}}">{{d.consignee_address}}</div>-->
 </script>
 <script type="text/javascript">
     layui.config({
@@ -232,6 +237,7 @@
                 ,{field: 'consignee', title: '收货人姓名', width: 100}
                 ,{field: 'consignee_telephone', title: '收货人电话', width: 130}
                 ,{field: 'consignee_address', title: '收货地址', templet: '#address', width: 400}
+                ,{field: '', title: '', width: 1}
                 ,{field: 'declare_status', title: '报关状态',templet: '#dstatus',fixed: "right", width: 100}
                 ,{field: 'pay_status', title: '支付状态',templet: '#pstatus',fixed: "right", width: 100}
                 ,{field: 'ctrl', title: '操作', width: 135, toolbar: "#tools", fixed: "right"}

@@ -54,7 +54,7 @@ class OrderBatch extends Model
         //定义商品信息的字段
         $goods_fields = Loader::model("OrderGoods")->getTableFields();
         //移除不需要的字段
-        $gfields_no = ["id","order_no","item_no","item_describe","bar_code","qty2","unit2"];
+        $gfields_no = ["id","order_no","item_no","item_describe","bar_code","qty2","unit2","gjcode"];
         //由于数据位置已在数组中固定，故要保持商品字段与数据位置对应，适当进行偏移
         foreach ($head_fields as $k => $val) {
             $temp[$k] = "";

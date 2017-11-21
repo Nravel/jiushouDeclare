@@ -255,9 +255,8 @@ class Order extends Model {
                 $filepath =ROOT_PATH.$rootpath.DS.$info->getSaveName();
                 $excelObj->setFilePath($filepath);
                 //获得excel表中所有记录
-                $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0, false);
-//            去除数据的表头行
-                array_shift($datas);
+                $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),22, false);
+                dump($datas);exit;
                 $res = $this->savePreviewData($datas,true);
                 return $res;
 //                $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0);
