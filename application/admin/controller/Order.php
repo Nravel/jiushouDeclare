@@ -89,6 +89,7 @@ class Order extends Common
      * @return mixed
      */
     public function preview() {
+//        dump($this->request->param('batch_no'));
         if ($this->request->param('req')==='del') {
             return $this->orderModel->delPreviewOrder();
         }else if ($this->request->param('req')==='save') {

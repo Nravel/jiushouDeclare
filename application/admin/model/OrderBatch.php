@@ -49,8 +49,9 @@ class OrderBatch extends Model
         //定义订单头的字段
         $head_fields = Loader::model("OrderHead")->getTableFields();
         //移除不需要的字段
-        $hfields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_time","declare_status","pay_status","create_time"];
+        $hfields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_time","declare_status","pay_status","create_time","buyer_regno","books_no","license_no"];
         $head_fields = array_merge(array_diff($head_fields,$hfields_no));
+        dump($head_fields);exit;
         //定义商品信息的字段
         $goods_fields = Loader::model("OrderGoods")->getTableFields();
         //移除不需要的字段

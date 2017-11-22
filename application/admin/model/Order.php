@@ -232,12 +232,13 @@ class Order extends Model {
         if ($data_batch!=null) {
             $data = collection(Loader::model('OrderPreview')->all(['batch_no'=>$data_batch]))->toArray();
             foreach ($data as $record) {
-                $record = array_filter($record,function ($val){if ($val != null) return $val;});
+//                $record = array_filter($record,function ($val){if ($val != null) return $val;});
                 array_shift($record);
                 array_pop($record);
                 $ndata[] = array_values($record);
             }
-            $ndata = $excelObj->getSameOrder($ndata,0);
+            $ndata = $excelObj->getSameOrder($ndata,22,false);
+            dump($ndata);exit;
             $result = Loader::model("OrderBatch")->saveBatch($ndata, $note);
             if ($result["code"] == "0000") {
                 return json($result);
@@ -256,7 +257,6 @@ class Order extends Model {
                 $excelObj->setFilePath($filepath);
                 //获得excel表中所有记录
                 $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),22, false);
-                dump($datas);exit;
                 $res = $this->savePreviewData($datas,true);
                 return $res;
 //                $datas = $excelObj->getSameOrder($excelObj->getSheetsContent(),0);
