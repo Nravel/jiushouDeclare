@@ -21,72 +21,91 @@ class OrderHead extends Model
     protected $updateTime = false;
 
     //新增订单头记录
-    public function saveDatas($datas,$harr,$garr,$batch) {
+    public function saveDatas($datas,$harr=null,$garr=null,$batch=null) {
         $orderHead = new OrderHead();
         $ordergoods = Loader::model('OrderGoods');
         //excel表中不存在，数据库中不能为空的字段
-        $datas_fill = ["batch_time"=>$batch];
+//        $datas_fill = ["batch_time"=>$batch];
         //相同订单中的订单编号$records['diff']的数组下标
-        $orderIndex = 0;
-        foreach ($datas as $records) {
-            //处理相同订单的数据
-            if (array_key_exists('same',$records)) {
-                $datas = null;
-                foreach ($harr as $k => $val) {
-                    if (array_key_exists($k,$records['same'])&&$val) {
-                        $datas[$val] = $records['same'][$k];
-                    }
-                    if (array_key_exists($k,$records['diff'][0])&&$val&&$k!=$orderIndex) {
-                        //将该字段相加
-                        $sum = 0;
-                        foreach ($records['diff'] as $diff_row) {
-                            $sum+= $diff_row[$k];
-                        }
-                        $datas[$val] = $sum;
-                    }
-                }
-                $datas = array_merge($datas,$datas_fill);
-                try {
-                    $orderHead->startTrans();
-                    $orderHead->data($datas);
-                    $orderHead->isUpdate(false)->save();
-                    $res = $ordergoods->saveMoreDatas($records['same'], $records['diff'], $garr,$orderIndex);
-                    if ($res['code']!="0000") {
-                        return $res;
-                    }
-                    $orderHead->commit();
-                }catch (\Exception $e) {
-                    $orderHead->rollback();
-                    return [
-                        "code" => "0001",
-                        "error" => $e->getMessage(),
-                    ];
-                }
-            }else{
-                $datas = null;
-                foreach ($harr as $k => $val) {
-                    if ($val) {
-                        $datas[$val] = $records[$k];
-                    }
-                }
-                try {
-                    $orderHead->startTrans();
-                    $datas = array_merge($datas, $datas_fill);
-                    $orderHead->data($datas);
-                    $orderHead->isUpdate(false)->save($datas);
-                    $res = $ordergoods->saveSingleData($records, $garr,$orderIndex);
-                    if ($res['code']!="0000") {
-                        return $res;
-                    }
-                    $orderHead->commit();
-                }catch (\Exception $e) {
-                    $orderHead->rollback();
-                    return [
-                        "code" => "0001",
-                        "error" => $e->getMessage(),
-                    ];
-                }
+//        $orderIndex = 0;
+//        foreach ($datas as $records) {
+//            //处理相同订单的数据
+//            if (array_key_exists('same',$records)) {
+//                $datas = null;
+//                foreach ($harr as $k => $val) {
+//                    if (array_key_exists($k,$records['same'])&&$val) {
+//                        $datas[$val] = $records['same'][$k];
+//                    }
+//                    if (array_key_exists($k,$records['diff'][0])&&$val&&$k!=$orderIndex) {
+//                        //将该字段相加
+//                        $sum = 0;
+//                        foreach ($records['diff'] as $diff_row) {
+//                            $sum+= $diff_row[$k];
+//                        }
+//                        $datas[$val] = $sum;
+//                    }
+//                }
+//                $datas = array_merge($datas,$datas_fill);
+//                try {
+//                    $orderHead->startTrans();
+//                    $orderHead->data($datas);
+//                    $orderHead->isUpdate(false)->save();
+//                    $res = $ordergoods->saveMoreDatas($records['same'], $records['diff'], $garr,$orderIndex);
+//                    if ($res['code']!="0000") {
+//                        return $res;
+//                    }
+//                    $orderHead->commit();
+//                }catch (\Exception $e) {
+//                    $orderHead->rollback();
+//                    return [
+//                        "code" => "0001",
+//                        "error" => $e->getMessage(),
+//                    ];
+//                }
+//            }else{
+//                $datas = null;
+//                foreach ($harr as $k => $val) {
+//                    if ($val) {
+//                        $datas[$val] = $records[$k];
+//                    }
+//                }
+//                try {
+//                    $orderHead->startTrans();
+//                    $datas = array_merge($datas, $datas_fill);
+//                    $orderHead->data($datas);
+//                    $orderHead->isUpdate(false)->save($datas);
+//                    $res = $ordergoods->saveSingleData($records, $garr,$orderIndex);
+//                    if ($res['code']!="0000") {
+//                        return $res;
+//                    }
+//                    $orderHead->commit();
+//                }catch (\Exception $e) {
+//                    $orderHead->rollback();
+//                    return [
+//                        "code" => "0001",
+//                        "error" => $e->getMessage(),
+//                    ];
+//                }
+//            }
+//        }
+        try {
+            $orderHead->startTrans();
+            $orderHead->data($datas);
+            $orderHead->isUpdate(false)->allowField(true)->saveAll($datas);
+            foreach ($datas as $k => $record) {
+                $datas[$k]['currency'] = $datas[$k]['item_currency'];
             }
+            $res = $ordergoods->saveGoodsData($datas);
+            if ($res['code']!="0000") {
+                return $res;
+            }
+            $orderHead->commit();
+        }catch (\Exception $e) {
+            $orderHead->rollback();
+            return [
+                "code" => "0001",
+                "error" => $e->getMessage(),
+            ];
         }
         if (empty($datas)) {
             return [

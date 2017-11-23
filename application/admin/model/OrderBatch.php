@@ -47,26 +47,43 @@ class OrderBatch extends Model
      */
     public function saveOrders($datas, $batch) {
         //定义订单头的字段
-        $head_fields = Loader::model("OrderHead")->getTableFields();
+//        $head_fields = Loader::model("OrderHead")->getTableFields();
         //移除不需要的字段
-        $hfields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_time","declare_status","pay_status","create_time","buyer_regno","books_no","license_no"];
-        $head_fields = array_merge(array_diff($head_fields,$hfields_no));
-        dump($head_fields);exit;
+//        $hfields_no = ["id","pay_code","pay_name","pay_transaction_id","oh_note","batch_time","declare_status","pay_status","create_time","buyer_regno","books_no","license_no"];
+//        $head_fields = array_merge(array_diff($head_fields,$hfields_no));
         //定义商品信息的字段
-        $goods_fields = Loader::model("OrderGoods")->getTableFields();
+//        $goods_fields = Loader::model("OrderGoods")->getTableFields();
         //移除不需要的字段
-        $gfields_no = ["id","order_no","item_no","item_describe","bar_code","qty2","unit2","gjcode"];
+//        $gfields_no = ["id","order_no","item_no","item_describe","bar_code","qty2","unit2","gjcode"];
         //由于数据位置已在数组中固定，故要保持商品字段与数据位置对应，适当进行偏移
-        foreach ($head_fields as $k => $val) {
-            $temp[$k] = "";
-        }
-        $goods_fields = array_merge($temp,array_diff($goods_fields,$gfields_no));
+//        foreach ($head_fields as $k => $val) {
+//            $temp[$k] = "";
+//        }
+//        $goods_fields = array_merge($temp,array_diff($goods_fields,$gfields_no));
         //交换一些字段顺序，保正与数据对应
 //        $field_index1 = array_search('qty1',$goods_fields);
 //        $field_index2 = array_search('unit',$goods_fields);
 //        $goods_fields[$field_index1] = 'unit';
 //        $goods_fields[$field_index2] = 'qty1';
-        $result = Loader::model("OrderHead")->saveDatas($datas,$head_fields,$goods_fields,$batch);
+//        $result = Loader::model("OrderHead")->saveDatas($datas,$head_fields,$goods_fields,$batch);
+        //合并相同订单的数据
+        foreach ($datas as $key => $records) {
+            if (count($records)>1) {
+                $sum_fields = ['goods_value'=>'0','freight'=>'0','discount'=>'0','tax_total'=>'0','actural_paid'=>'0','freight2'=>'0','insured_fee'=>'0'];
+                foreach ($records as $row) {
+                    foreach ($row as $k => $val) {
+                        if (in_array($k,array_keys($sum_fields))) {
+                            $sum_fields[$k] += $val;
+                        }
+                    }
+                }
+                $datas[$key][0] = array_merge($records[0],$sum_fields);
+            }
+            $datas[$key][0]["batch_time"] = $batch;
+            $datas[$key][0]['order_no'] = date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))).random_int(1000,9999), -8, 8);
+            $ndatas[] = $datas[$key][0];
+        }
+        $result = Loader::model("OrderHead")->saveDatas($ndatas);
         return $result;
     }
 

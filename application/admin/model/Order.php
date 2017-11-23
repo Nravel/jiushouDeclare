@@ -232,13 +232,13 @@ class Order extends Model {
         if ($data_batch!=null) {
             $data = collection(Loader::model('OrderPreview')->all(['batch_no'=>$data_batch]))->toArray();
             foreach ($data as $record) {
-//                $record = array_filter($record,function ($val){if ($val != null) return $val;});
+//                $record = array_filter($record,function ($val){if ($val !== 'null') return $val;});
                 array_shift($record);
                 array_pop($record);
-                $ndata[] = array_values($record);
+//                $ndata[] = array_values($record);
+                $ndata[] = $record;
             }
-            $ndata = $excelObj->getSameOrder($ndata,22,false);
-            dump($ndata);exit;
+            $ndata = $excelObj->getSameOrder($ndata,'logistics_no',false);
             $result = Loader::model("OrderBatch")->saveBatch($ndata, $note);
             if ($result["code"] == "0000") {
                 return json($result);
@@ -302,14 +302,15 @@ class Order extends Model {
      */
     public function editPreviewOrder() {
         $batch_no = $this->request->param("batch_no");
-        $orderNo = $this->request->param("orderNo");
+        $logistics_no = $this->request->param("logistics_no");
         $data = $this->request->param("data/a");
         $gnum = $data['gnum'];
         $ndata[] = $data;
         $orderPreview = new OrderPreview();
         $err_info = $orderPreview->checkOrder($ndata);
+        dump($logistics_no);exit;
         if ($err_info!=null) {
-            $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no,'gnum'=>$gnum]);
+            $orderPreview::destroy(['logistics_no'=>$logistics_no,'batch_no'=>$batch_no,'gnum'=>$gnum]);
             $res = $this->savePreviewData($ndata);
             return $res;
         }else{
@@ -346,18 +347,18 @@ class Order extends Model {
      * @return array
      */
     public function delPreviewOrder() {
-        $orderNo = $this->request->param('order_no');
+        $logistics_no = $this->request->param('logistics_no');
         $gnum = $this->request->param('gnum');
-        $order_nos = $this->request->param('order_nos');
+        $logistics_nos = $this->request->param('logistics_nos');
         $batch_no = $this->request->param('batch_no');
         $delbatch = $this->request->param('delbatch');
         $remove = $this->request->param('remove');
         $orderPreview = Loader::model('OrderPreview');
-        if ($orderNo!=null&&$batch_no!=null) {
-            $res = $orderPreview::destroy(['order_no'=>$orderNo,'batch_no'=>$batch_no,'gnum'=>$gnum]);
-        }elseif ($order_nos!=null&&$batch_no!=null) {
-            foreach (explode('|',$order_nos) as $val) {
-                $res = $orderPreview::destroy(['order_no'=>explode('@',$val)[0],'gnum'=>explode('@',$val)[1],'batch_no'=>$batch_no]);
+        if ($logistics_no!=null&&$batch_no!=null) {
+            $res = $orderPreview::destroy(['logistics_no'=>$logistics_no,'batch_no'=>$batch_no,'gnum'=>$gnum]);
+        }elseif ($logistics_nos!=null&&$batch_no!=null) {
+            foreach (explode('|',$logistics_nos) as $val) {
+                $res = $orderPreview::destroy(['logistics_no'=>explode('@',$val)[0],'gnum'=>explode('@',$val)[1],'batch_no'=>$batch_no]);
                 if (!$orderPreview) break;
             }
         }elseif ($delbatch != null) {

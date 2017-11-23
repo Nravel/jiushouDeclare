@@ -76,6 +76,6 @@ class Order extends Validate
     protected $scene = [
         'edit_head' => ['goods_value','freight','discount','tax_total','actural_paid','currency','buyer_name','buyer_telephone','buyer_id_type','buyer_id_number','consignee','consignee_telephone','consignee_address','declare_status','pay_status','trade_mode','a_country','freight2','insured_fee','wrap_type','gross_weight','net_weight','bill_no','voyage_no','pack_no'],
         'edit_goods' => ['item_name','qty','qty1','unit','unit1','country','hscode','gtype','price','total_price','currency'],
-        'preview' => ['goods_value','freight','discount','tax_total','actural_paid','currency','buyer_name','buyer_telephone','buyer_id_type','buyer_id_number','consignee','consignee_telephone','consignee_address','declare_status','pay_status','trade_mode','a_country','freight2','insured_fee','wrap_type','gross_weight','net_weight','bill_no','voyage_no','pack_no','item_name','qty','qty1','unit','unit1','country','hscode','gtype','price','total_price','item_currency']
+        'preview' => ['goods_value','freight','discount','tax_total','actural_paid','currency','buyer_name','buyer_telephone','buyer_id_type','buyer_id_number','consignee','consignee_telephone','consignee_address','declare_status','pay_status','logistics_no','trade_mode','a_country','freight2','insured_fee','wrap_type','gross_weight','net_weight','bill_no','voyage_no','pack_no','item_name','qty','qty1','unit','unit1','country','hscode','gtype','price','total_price','item_currency']
     ];
 }

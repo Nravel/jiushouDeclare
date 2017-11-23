@@ -121,7 +121,11 @@
 		$.each(oe_fields,function (index,field) {
 			html+= '<script type="text/html\" id="oe-span'+(index+1)+'">'+
 						'{{# if(\''+field+'\' in d.error_info) { }}'+
-            				'<span data-toggle="tooltip" data-placement="top" title="{{ d.error_info.'+field+' }}" style="color: #F581B1;">{{ d.'+field+' }}</span>'+
+				        	'{{# if(d.'+field+' !== "") { }}'+
+            					'<span data-toggle="tooltip" data-placement="top" title="{{ d.error_info.'+field+' }}" style="color: #F581B1;">{{ d.'+field+' }}</span>'+
+                			'{{# }else{ }}'+
+                				'<span data-toggle="tooltip" data-placement="top" title="{{ d.error_info.'+field+' }}" style="color: #F581B1;">*</span>'+
+                			'{{# } }}'+
 						'{{# }else{ }}'+
             				'<span>{{ d.'+field+' }}</span>'+
             			'{{# } }}'+
@@ -304,19 +308,19 @@
                 ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text"}
                 ,{field: 'consignee_telephone', title: '收货人电话', width: 140, edit: "text"}
                 ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text"}
-                ,{field: 'logistics_no', title: '物流运单编号', width: 150, sort: true}
-                ,{field: 'trade_mode', title: '贸易方式', width: 120, sort: true}
-//                ,{field: 'books_no', title: '账册编号', width: 120, sort: true}
-//                ,{field: 'license_no', title: '许可证件号', width: 120, sort: true}
-                ,{field: 'a_country', title: '起运国', width: 100, sort: true}
-                ,{field: 'freight2', title: '运费', width: 100, sort: true}
-                ,{field: 'insured_fee', title: '保费', width: 100, sort: true}
-                ,{field: 'wrap_type', title: '包装种类', width: 120, sort: true}
-                ,{field: 'gross_weight', title: '毛重(公斤)', width: 130, sort: true}
-                ,{field: 'net_weight', title: '净重(公斤)', width: 130, sort: true}
-                ,{field: 'bill_no', title: '提单号', width: 160, sort: true}
-                ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true}
-                ,{field: 'pack_no', title: '件数', width: 100, sort: true},
+                ,{field: 'logistics_no', title: '物流运单编号', width: 150, edit: "text", sort: true}
+                ,{field: 'trade_mode', title: '贸易方式', width: 120, edit: "text", sort: true}
+//                ,{field: 'books_no', title: '账册编号', width: 120, sort: true, edit: "text"}
+//                ,{field: 'license_no', title: '许可证件号', width: 120, sort: true, edit: "text"}
+                ,{field: 'a_country', title: '起运国', width: 100, sort: true, edit: "text"}
+                ,{field: 'freight2', title: '运费', width: 100, sort: true, edit: "text"}
+                ,{field: 'insured_fee', title: '保费', width: 100, sort: true, edit: "text"}
+                ,{field: 'wrap_type', title: '包装种类', width: 120, sort: true, edit: "text"}
+                ,{field: 'gross_weight', title: '毛重(公斤)', width: 130, sort: true, edit: "text"}
+                ,{field: 'net_weight', title: '净重(公斤)', width: 130, sort: true, edit: "text"}
+                ,{field: 'bill_no', title: '提单号', width: 160, sort: true, edit: "text"}
+                ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true, edit: "text"}
+                ,{field: 'pack_no', title: '件数', width: 100, sort: true, edit: "text"},
                 {field: "gnum",title: "商品序号", width: 120, sort: true, edit: "text"},
                 {field: "item_name",title: "企业商品名称",width: 260,edit: 'text'},
                 {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
@@ -356,7 +360,7 @@
             if (obj.event == "commit") {
                 var url = "{:url('admin/Order/preview')}";
                 data = {
-					orderNo : data.order_no,
+                    logistics_no : data.logistics_no,
 					batch_no : data.batch_no,
 					data: data,
 					req: 'edit'
@@ -378,7 +382,7 @@
                 });
             }else if(obj.event == "del") {
 				layer.confirm('确定删除？', function(index){
-					$.post('{:url("admin/Order/preview")}',{order_no: data.order_no,batch_no: data.batch_no,gnum: data.gnum,req: 'del'},function (res) {
+					$.post('{:url("admin/Order/preview")}',{logistics_no: data.logistics_no,batch_no: data.batch_no,gnum: data.gnum,req: 'del'},function (res) {
 						if (res.code == '0000') {
 							obj.del();
 							layer.close(index);
@@ -396,7 +400,10 @@
     //提交所有非法信息的更改
 	function emitAll() {
         var url = "{:url('admin/Order/preview')}";
-        var data = {datas: error_arr,req: 'save'};
+        var data = {
+            datas: JSON.stringify(error_arr),
+            req: 'save'
+        };
         $.post(url,data,function (res) {
             if (res.code == "0000") {
                 res.data.error_arr == null ? rlength = 0 : rlength = res.data.error_arr.length;
@@ -495,10 +502,10 @@
                 //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
                 var str = "";
                 $(data).each(function (index,obj) {
-                    str+= obj.order_no+'@'+obj.gnum+"|";
+                    str+= obj.logistics_no+'@'+obj.gnum+"|";
                 });
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/Order/preview")}',{batch_no: data[0].batch_no,order_nos: str.slice(0,-1),req: 'del'},function (res) {
+                    $.post('{:url("admin/Order/preview")}',{batch_no: data[0].batch_no,logistics_nos: str.slice(0,-1),req: 'del'},function (res) {
                         if (res.code == '0000') {
                             layer.close(index);
                             layui.table.reload('osucc-main');
