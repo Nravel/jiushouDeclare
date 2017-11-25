@@ -67,7 +67,9 @@ class OrderBatch extends Model
 //        $goods_fields[$field_index2] = 'qty1';
 //        $result = Loader::model("OrderHead")->saveDatas($datas,$head_fields,$goods_fields,$batch);
         //合并相同订单的数据
+        $goods_info_start = array_search('gnum',array_keys($datas[0][0]));
         foreach ($datas as $key => $records) {
+            $goods_info = [];
             if (count($records)>1) {
                 $sum_fields = ['goods_value'=>'0','freight'=>'0','discount'=>'0','tax_total'=>'0','actural_paid'=>'0','freight2'=>'0','insured_fee'=>'0'];
                 foreach ($records as $row) {
@@ -76,9 +78,14 @@ class OrderBatch extends Model
                             $sum_fields[$k] += $val;
                         }
                     }
+                    $goods_info[] = array_splice($row,$goods_info_start);
                 }
                 $datas[$key][0] = array_merge($records[0],$sum_fields);
+            }else{
+                $goods_info[] = array_splice($records[0],$goods_info_start);
             }
+            array_splice($datas[$key][0],$goods_info_start,count($goods_info[0]));
+            $datas[$key][0]['goods_info'] = $goods_info;
             $datas[$key][0]["batch_time"] = $batch;
             $datas[$key][0]['order_no'] = date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))).random_int(1000,9999), -8, 8);
             $ndatas[] = $datas[$key][0];

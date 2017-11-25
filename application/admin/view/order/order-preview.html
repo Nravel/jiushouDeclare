@@ -50,7 +50,7 @@
 	<!--<div id="order-details" class="panel mt-20">-->
 		<!--<div class="panel-heading">-->
 			<!--<span>订单基本信息</span>-->
-			<!--&lt;!&ndash;<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>&ndash;&gt;-->
+			<!--&lt;!&ndash;<a title="修改" class="layui-btn layui-btn-xs" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>&ndash;&gt;-->
 			<!--&lt;!&ndash;<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>&ndash;&gt;-->
 		<!--</div>-->
 		<!--<div class="panel-body container-fluid">-->
@@ -99,12 +99,12 @@
 
 <!--请在下方写此页面业务相关的脚本-->
 <script type="text/html" id="etools">
-	<a title="提交更改并检测" class="layui-btn layui-btn-mini" lay-event="commit" style="background: #F37B1D"><i class="Hui-iconfont">&#xe6f7;</i></a>
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<a title="提交更改并检测" class="layui-btn layui-btn-xs" lay-event="commit" style="background: #F37B1D"><i class="Hui-iconfont">&#xe6f7;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="tools">
-	<a title="修改" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<a title="修改" class="layui-btn layui-btn-xs layui-btn-xs" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="err">
 	<span class="badge badge-danger radius">{{ Object.keys(d.error_info).length }}</span>
@@ -136,7 +136,7 @@
     });
     function spliceData(obj) {
         $(error_arr).each(function (i,item) {
-            if (obj.autonum == item.autonum) {
+            if (obj.autonum === item.autonum) {
                 error_arr.splice(i,1);
             }
         });
@@ -144,6 +144,7 @@
     var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
     var error_arr = preview_data.error_arr;
     var nres = "";
+    var e_options = {};
     layui.use(['laytpl','jquery','table'],function () {
         var laytpl = layui.laytpl;
         var $ = layui.jquery;
@@ -176,17 +177,18 @@
 //        var headdata = result[0]; //取第一条数据的信息，因为头信息都一样
         //订单信息方法式渲染
 		//非法信息
-        table.render({
+		var err_table_options = {
             elem: "#order-err",
             id: "oerr-main",
-			data: error_arr,
+            data: error_arr,
 //            url: "{:url('admin/Order/getPreviewData')}",
 //			height: 200,
+            cellMinWidth: 100,
             cols: [[
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
                 ,{field: '', title: '错误数',width: 100,templet: '#err',sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 170,templet: '#oe-span1', sort: true, edit: "text"}
+//                ,{field: 'order_no', title: '订单编号', width: 170,templet: '#oe-span1', sort: true, edit: "text"}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text",templet: '#oe-span2'}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text",templet: '#oe-span3'}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 160, sort: true, edit: "text",templet: '#oe-span4'}
@@ -233,23 +235,26 @@
             even: true,
             page: true,
             limits: [5,10,20,40,80],
-            limit: 8,
+            limit: 5,
             done: function (res,curr,count) {
-                $(".top-total").children("strong").html(count);
+//                $(".top-total").children("strong").html(error_arr.length);
+//                $("#oe-details .layui-laypage-count").html('共 '+error_arr.length+' 条');
+                $.extend(true,e_options,err_table_options);
                 if (count == 0) {
                     layer.msg("恭喜！所有订单信息都正确！");
                     $('.tb-wrap:first-child').hide();
                     flag = true;
-				}else{
+                }else{
                     $('.tb-wrap:first-child').show();
                     flag = false;
-				}
+                }
             }
-        });
+        };
+        table.render(err_table_options);
         //监听非法信息操作工具条
         table.on("tool(oerr)",function (obj) {
             var data = obj.data;
-            if (obj.event == "commit") {
+            if (obj.event === "commit") {
                 var url = "{:url('admin/Order/preview')}";
                 data = {datas: data,req: 'save'};
                 $.post(url,data,function (res) {
@@ -265,20 +270,21 @@
 								}
                             });
                             layer.msg("数据仍存在错误！",{time: 2000});
-						}
-                        table.reload('oerr-main');
+                        }
+                        table.init('oerr',test);
                     }else{
                         layer.open({
                             content: res.msg
                         });
                     }
                 });
-            }else if(obj.event == "del") {
+            }else if(obj.event === "del") {
                 layer.confirm('确定删除？', function(index){
                     spliceData(obj.data);
 					obj.del();
-					layer.close(index);
-					table.reload('oerr-main');
+//					table.reload('oerr-main',{data: error_arr});
+                    layer.close(index);
+                    table.init('oerr',e_options);
                 });
             }
         });
@@ -293,7 +299,7 @@
             cols: [[
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 170, sort: true}
+//                ,{field: 'order_no', title: '订单编号', width: 170, sort: true}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 160, sort: true, edit: "text"}
@@ -340,7 +346,7 @@
             even: true,
             page: true,
             limits: [5,10,20,40,80],
-            limit: 8,
+            limit: 5,
             done: function (res,curr,count) {
                 $(".bot-total").children("strong").html(count);
                 if (count == 0) {
@@ -372,7 +378,8 @@
                         obj.del();
                         res.data.error_arr[0].autonum = error_arr.length+1;
                         error_arr.push(res.data.error_arr[0]);
-                        table.reload('oerr-main');
+                        table.reload('oerr-main',{data: error_arr});
+                        table.reload('osucc-main');
                         layer.msg("数据存在错误，已移至数据异常区！",{time: 2000});
 					}else{
                         layer.open({
@@ -414,11 +421,11 @@
                     error_arr.splice(0,error_arr.length);
                     error_arr.push.apply(error_arr,res.data.error_arr);
                     layui.table.reload('osucc-main');
-                    layui.table.reload('oerr-main');
+                    table.reload('oerr-main',{data: error_arr});
                 }else {
                     error_arr.splice(0,error_arr.length);
                     error_arr.push.apply(error_arr,res.data.error_arr);
-                    layui.table.reload('oerr-main');
+                    layui.table.reload('oerr-main',{data: error_arr});
                     layer.msg("数据仍存在错误！",{time: 2000});
                 }
             }else{
@@ -450,7 +457,7 @@
 //                    ndata.error_arr = error_arr;
 //                    $(parent.document).find('#preview-data').html(JSON.stringify(ndata));
                     layer.close(index);
-                    layui.table.reload('oerr-main');
+                    layui.table.reload('oerr-main',{data: error_arr});
                 });
             }else{
                 layer.msg("没选择数据呀",{'time':"1000"});

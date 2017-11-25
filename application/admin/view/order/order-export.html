@@ -28,8 +28,8 @@
 				<span>查询条件</span>
 				<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>
 				<span class="search-btns r mr-15">
-					<a class="layui-btn layui-btn-normal layui-btn-mini" title="确认查询" href="javascript:void(0)" onclick="searchFun(true)"><i class="Hui-iconfont">&#xe665;</i></a>
-					<a class="layui-btn layui-btn-danger layui-btn-mini" title="重置" href="javascript:document.getElementById('search-form').reset()"><i class="Hui-iconfont">&#xe66b;</i></a>
+					<a class="layui-btn layui-btn-normal layui-btn-xs" title="确认查询" href="javascript:void(0)" onclick="searchFun(true)"><i class="Hui-iconfont">&#xe665;</i></a>
+					<a class="layui-btn layui-btn-danger layui-btn-xs" title="重置" href="javascript:document.getElementById('search-form').reset()"><i class="Hui-iconfont">&#xe66b;</i></a>
 				</span>
 			</div>
 			<div class="panel-body">
@@ -108,11 +108,11 @@
 <script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>
 <script type="text/html" id="exportTools">
-	<a class="layui-btn layui-btn-normal layui-btn-mini" lay-event="jiushou_ex">导出就手订单</a>
-	<!--<a class="layui-btn layui-btn-mini" lay-event="list_ex">导出清单</a>-->
-	<!--<a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="entry_ex">导出入库单</a>-->
-	<!--<a class="layui-btn layui-btn-warm layui-btn-mini" lay-event="transprot_ex">导出运单</a>-->
-	<!--<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">一次性导出</a>-->
+	<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="jiushou_ex">导出就手订单</a>
+	<!--<a class="layui-btn layui-btn-xs" lay-event="list_ex">导出清单</a>-->
+	<!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="entry_ex">导出入库单</a>-->
+	<!--<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="transprot_ex">导出运单</a>-->
+	<!--<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="all_ex">一次性导出</a>-->
 </script>
 <script type="text/javascript">
 	setAlign(['batch_note'],'left');
@@ -150,13 +150,14 @@ layui.use(['table','layer','upload'],function () {
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
 //        }
 //		,height: 'full-600'
+		,cellMinWidth: 100
         ,cols: [[ //标题栏
-            {checkbox: true}, //默认全选
+            {type:'checkbox'}, //默认全选
 			{field: 'autonum', title: 'No.',filter: 'autonum', width: 80, sort: true}
-            ,{field: 'batch_time', title: '批次号', width: 230, sort: true}
-            ,{field: 'batch_note', title: '备注', width: 230}
-            ,{field: 'create_time', title: '导入时间', width: 230, sort: true}
-            ,{field: 'ctrl', title: '导出操作', width: 120, toolbar: "#exportTools"}
+            ,{field: 'batch_time', title: '批次号', sort: true}
+            ,{field: 'batch_note', title: '备注'}
+            ,{field: 'create_time', title: '导入时间',  sort: true}
+            ,{field: 'ctrl', title: '导出操作',  toolbar: "#exportTools"}
         ]]
         ,skin: 'row' //表格风格
         ,even: true

@@ -36,6 +36,7 @@
 		}
 		.goods-wrap {
 			padding: 15px;
+			padding-top: 5px;
 			padding-bottom: 5px;
 		}
 	</style>
@@ -43,10 +44,10 @@
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 订单管理 <span class="c-gray en">&gt;</span> <span class="nav-buyer"></span> <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
-	<div id="order-details" class="panel mt-20">
+	<div id="order-details" class="panel">
 		<div class="panel-heading">
 			<span>订单基本信息</span>
-			<!--<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>-->
+			<!--<a title="修改" class="layui-btn layui-btn-xs" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>-->
 			<!--<a href="javascript:;" onclick="searchAdv()" class="directive-close"><i class="layui-icon">&#x1006;</i></a>-->
 			<span id="ohead-submit" class="r">
 				<a id="ohead-submit-btn" onclick="commitHead()" class="btn  btn-primary radius" data-title="确认修改" href="javascript:;"><i class="Hui-iconfont">&#xe6e1;</i> 确认修改</a>
@@ -105,15 +106,16 @@
 		</ul>
 	</form>
 </script>
-<!--<a title="确认" class="layui-btn layui-btn-mini layui-btn-mini" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>-->
+<!--<a title="确认" class="layui-btn layui-btn-xs layui-btn-xs" lay-event="commit" style="background: #5A98DE"><i class="Hui-iconfont">&#xe6e1;</i></a>-->
 <script type="text/html" id="tools">
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/javascript">
     layui.config({
         debug : true,
         version : true	 //清除缓存
     });
+    setAlign(['item_name'],'left');
 //    $(document).ready(function () {
 //		html = "";
 //		var og_fields = ["item_name","qty","unit","qty1","unit1","country","hscode","gjcode","gtype","price","total_price","item_currency"];
@@ -156,6 +158,11 @@
                 {
                     "field": "订单编号",
                     "content": headdata.order_no,
+                    "fieldname": ""
+                },
+                {
+                    "field": "物流运单编号",
+                    "content": headdata.logistics_no,
                     "fieldname": ""
                 },
                 {
@@ -254,9 +261,59 @@
                     "fieldname": "consignee_telephone",
                 },
                 {
+                    "field": "贸易方式",
+                    "content": headdata.trade_mode,
+                    "fieldname": "trade_mode"
+                },
+                {
+                    "field": "起运国",
+                    "content": headdata.a_country,
+                    "fieldname": "a_country"
+                },
+                {
+                    "field": "运费",
+                    "content": headdata.freight2,
+                    "fieldname": "freight2"
+                },
+                {
+                    "field": "保费",
+                    "content": headdata.insured_fee,
+                    "fieldname": "insured_fee"
+                },
+                {
+                    "field": "包装种类",
+                    "content": headdata.wrap_type,
+                    "fieldname": "wrap_type"
+                },
+                {
+                    "field": "毛重(公斤)",
+                    "content": headdata.gross_weight,
+                    "fieldname": "gross_weight"
+                },
+                {
+                    "field": "净重(公斤)",
+                    "content": headdata.net_weight,
+                    "fieldname": "net_weight"
+                },
+                {
+                    "field": "提单号",
+                    "content": headdata.bill_no,
+                    "fieldname": "bill_no"
+                },
+                {
+                    "field": "航班航次号",
+                    "content": headdata.voyage_no,
+                    "fieldname": "voyage_no"
+                },
+                {
+                    "field": "件数",
+                    "content": headdata.pack_no,
+                    "fieldname": "pack_no"
+                },
+                {
                     "field": "收货地址",
                     "content": headdata.consignee_address,
-                    "fieldname": "consignee_address",
+                    "fieldname": "consignee_address"
                 }
             ]
         }
@@ -270,6 +327,7 @@
             url: "{:url('admin/Order/details')}",
 //			height: 200,
             where: {orderNo: order_no},
+            cellMinWidth: 100,
             cols: [[
                 {checkbox: true},
 //                {field: "gnum",title: "商品序号", width: 115, sort: true},
@@ -287,14 +345,14 @@
 //                {field: "item_currency",title: "币制",width: 70,templet: "#og-input12",edit: 'text'},
 //                {field: 'ctrl', title: '操作', width: 60, toolbar: "#tools", fixed: "right"}
                 {field: "gnum",title: "商品序号", width: 115, sort: true},
-                {field: "item_name",title: "企业商品名称",width: 200,edit: 'text'},
+                {field: "item_name",title: "企业商品名称",edit: 'text'},
                 {field: "qty",title: "数量",width: 100, sort: true,edit: 'text'},
                 {field: "unit",title: "计量单位",width: 120, sort: true,edit: 'text'},
                 {field: "qty1",title: "法定数量",width: 120, sort: true,edit: 'text'},
                 {field: "unit1",title: "法定计量单位",width: 145, sort: true,edit: 'text'},
                 {field: "country",title: "原产国",width: 80,edit: 'text'},
-                {field: "hscode",title: "海关商品编码(Hscode)",width: 130,sort: true,edit: 'text'},
-                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},
+                {field: "hscode",title: "海关商品编码(Hscode)",sort: true,edit: 'text'},
+//                {field: "gjcode",title: "国检商品编号",width: 150, sort: true,edit: 'text'},
                 {field: "gtype",title: "商品规格型号",width: 120,edit: 'text'},
                 {field: "price",title: "单价",width: 100, sort: true,edit: 'text'},
                 {field: "total_price",title: "总价",width: 100, sort: true,edit: 'text'},

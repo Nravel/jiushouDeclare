@@ -36,8 +36,8 @@
 <!--<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>-->
 <!--<script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>-->
 <script type="text/html" id="exportTools">
-	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<a title="修改" class="layui-btn layui-btn-xs" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
 </script>
 <script type="text/html" id="status">
 	{{# if (d.status >= 1) { }}
@@ -72,13 +72,14 @@
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
 //        }
 //		,height: 'full-600'
+			,cellMinWidth: 100
             ,cols: [[ //标题栏
                 {checkbox: true}, //默认全选
                 {field: 'id', title: 'ID', width: 80, sort: true}
-                ,{field: 'username', title: '用户名', width: 230}
-                ,{field: 'title', title: '用户组', width: 500}
-                ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 465, sort: true}
-                ,{field: 'status', title: '状态',templet: '#status', width: 230, sort: true}
+                ,{field: 'username', title: '用户名', width: 130}
+                ,{field: 'title', title: '用户组'}
+                ,{field: 'login_time', title: '最近登录时间', templet: '#check-date',width: 200, sort: true}
+                ,{field: 'status', title: '状态',templet: '#status', width: 120, sort: true}
                 ,{field: 'ctrl', title: '操作', width: 120,fixed:"right", toolbar: "#exportTools"}
             ]]
             ,skin: 'row' //表格风格

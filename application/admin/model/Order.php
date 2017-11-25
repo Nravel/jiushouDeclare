@@ -308,7 +308,6 @@ class Order extends Model {
         $ndata[] = $data;
         $orderPreview = new OrderPreview();
         $err_info = $orderPreview->checkOrder($ndata);
-        dump($logistics_no);exit;
         if ($err_info!=null) {
             $orderPreview::destroy(['logistics_no'=>$logistics_no,'batch_no'=>$batch_no,'gnum'=>$gnum]);
             $res = $this->savePreviewData($ndata);
