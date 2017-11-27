@@ -200,6 +200,7 @@
     //        });
     //    }
     //});
+	var currpage = "";
     //表格方法式渲染
     layui.use(['table','layer','upload'],function () {
         var table = layui.table;
@@ -261,6 +262,7 @@
             ,limits: [5,10,15,20]
             ,limit: 10 //每页默认显示的数量
             ,done: function(res, curr, count){
+                currpage = curr;
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
                 $(".total").children("strong").html(count);
@@ -359,6 +361,7 @@
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
+                            $('.layui-laypage-count').html('共 '+($('.layui-laypage-count').html().match(/\d+/)-1)+' 条');
 						}else{
                             layer.close(index);
                             if (typeof res !== 'string') {

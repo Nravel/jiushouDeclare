@@ -22,8 +22,8 @@ class Order extends Model {
      * @return array
      */
     public function getOrderDatas() {
-        $limit = $this->request->get('limit');
-        $page = $this->request->get('page');
+        $limit = $this->request->param('limit');
+        $page = $this->request->param('page');
         $orderModel = Loader::model("OrderHead");
         $order = ['a.batch_time'=>'desc'];
 //        $batch = $this->request->param('batch');
@@ -308,7 +308,6 @@ class Order extends Model {
         $ndata[] = $data;
         $orderPreview = new OrderPreview();
         $err_info = $orderPreview->checkOrder($ndata);
-        dump($logistics_no);exit;
         if ($err_info!=null) {
             $orderPreview::destroy(['logistics_no'=>$logistics_no,'batch_no'=>$batch_no,'gnum'=>$gnum]);
             $res = $this->savePreviewData($ndata);

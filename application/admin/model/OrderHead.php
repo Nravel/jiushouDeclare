@@ -90,11 +90,8 @@ class OrderHead extends Model
 //        }
         try {
             $orderHead->startTrans();
-            $orderHead->data($datas);
+//            $orderHead->data($datas);
             $orderHead->isUpdate(false)->allowField(true)->saveAll($datas);
-            foreach ($datas as $k => $record) {
-                $datas[$k]['currency'] = $datas[$k]['item_currency'];
-            }
             $res = $ordergoods->saveGoodsData($datas);
             if ($res['code']!="0000") {
                 return $res;

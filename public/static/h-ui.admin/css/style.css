@@ -94,6 +94,9 @@ padding: 0;
  .datas .layui-table-tool {
      background: #f5fafe;
  }
+.layui-table-tool:hover {
+    overflow-x: initial;
+}
 
 /*订单详情订单头部分*/
 #order-details .panel-body {

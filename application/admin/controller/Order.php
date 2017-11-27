@@ -99,6 +99,8 @@ class Order extends Common
             }
         }else if ($this->request->param('req')==='get') {
             return $this->orderModel->getPreviewData();
+        }else if ($this->request->param('req')==='get') {
+            return $this->orderModel->getPreviewData();
         }else if ($this->request->param('req')==='edit') {
             return $this->orderModel->editPreviewOrder();
         }else{

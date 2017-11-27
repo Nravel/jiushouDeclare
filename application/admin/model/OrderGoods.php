@@ -78,10 +78,21 @@ class OrderGoods extends Model
 
     public function saveGoodsData($datas) {
         $orderGoods = new OrderGoods();
+        $ndatas = [];
+        $i = 0;
+        foreach ($datas as $key => $record) {
+            $order_no = $record['order_no'];
+            foreach ($record['goods_info'] as $goods_datas) {
+                $goods_datas['order_no'] = $order_no;
+                $goods_datas['currency'] = $goods_datas['item_currency'];
+                $ndatas[$i] = $goods_datas;
+                $i++;
+            }
+        }
         try {
             $orderGoods->startTrans();
-            $orderGoods->data($datas);
-            $orderGoods->isUpdate(false)->allowField(true)->saveAll($datas);   //->field('currency as cur,item_currency as currency')
+//            $orderGoods->data($ndatas);
+            $orderGoods->isUpdate(false)->allowField(true)->saveAll($ndatas);   //->field('currency as cur,item_currency as currency')
             $orderGoods->commit();
             return [
                 "code" => "0000",

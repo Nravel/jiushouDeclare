@@ -74,7 +74,6 @@ class OrderPreview extends Model {
             foreach ($newdatas as $k => $row) {
                 if (array_key_exists('id',$row))
                 unset($newdatas[$k]['id']);
-
             }
         }
         $oPreview->startTrans();
@@ -83,7 +82,7 @@ class OrderPreview extends Model {
             $oPreview->commit();
             return [
                 'code' => '0000',
-                'msg' => 'success',
+                'msg' => '更改成功！',
                 'data' => ['batch_no'=>$batch_no,'error_arr'=>$error_arr],
             ];
         }catch (\Exception $e) {
