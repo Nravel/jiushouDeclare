@@ -126,6 +126,32 @@
 						</span>
 							<input type="text" name="consignee" class="input-text main-input">
 						</li>
+						<li>
+							<button class="btn btn-primary tab">物流运单编号：</button>
+							<span class="select-ctrl">
+							<select name="logistics_no_eq" class="select">
+								<option value="0">等于</option>
+								<option value="1">大于</option>
+								<option value="2">小于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
+							</select>
+						</span>
+							<input type="text" name="logistics_no" class="input-text main-input">
+						</li>
+						<li>
+							<button class="btn btn-primary tab">提单号：</button>
+							<span class="select-ctrl">
+							<select name="bill_no_eq" class="select">
+								<option value="0">等于</option>
+								<option value="1">大于</option>
+								<option value="2">小于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
+							</select>
+						</span>
+							<input type="text" name="bill_no" class="input-text main-input">
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -239,19 +265,19 @@
                 ,{field: 'consignee', title: '收货人姓名', width: 100}
                 ,{field: 'consignee_telephone', title: '收货人电话', width: 130}
                 ,{field: 'consignee_address', title: '收货地址', templet: '#address', width: 400}
-//                ,{field: 'logistics_no', title: '物流运单编号', width: 150, sort: true}
-//                ,{field: 'trade_mode', title: '贸易方式', width: 120, sort: true}
+                ,{field: 'logistics_no', title: '物流运单编号', width: 150, sort: true}
+                ,{field: 'trade_mode', title: '贸易方式', width: 120, sort: true}
 //                ,{field: 'books_no', title: '账册编号', width: 120, sort: true}
 //                ,{field: 'license_no', title: '许可证件号', width: 120, sort: true}
-//                ,{field: 'a_country', title: '起运国', width: 100, sort: true}
-//                ,{field: 'freight2', title: '运费', width: 100, sort: true}
-//                ,{field: 'insured_fee', title: '保费', width: 100, sort: true}
-//                ,{field: 'wrap_type', title: '包装种类', width: 120, sort: true}
-//                ,{field: 'gross_weight', title: '毛重(公斤)', width: 130, sort: true}
-//                ,{field: 'net_weight', title: '净重(公斤)', width: 130, sort: true}
-//                ,{field: 'bill_no', title: '提单号', width: 160, sort: true}
-//                ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true}
-//                ,{field: 'pack_no', title: '件数', width: 100, sort: true},
+                ,{field: 'a_country', title: '起运国', width: 100, sort: true}
+                ,{field: 'freight2', title: '运费', width: 100, sort: true}
+                ,{field: 'insured_fee', title: '保费', width: 100, sort: true}
+                ,{field: 'wrap_type', title: '包装种类', width: 120, sort: true}
+                ,{field: 'gross_weight', title: '毛重(公斤)', width: 130, sort: true}
+                ,{field: 'net_weight', title: '净重(公斤)', width: 130, sort: true}
+                ,{field: 'bill_no', title: '提单号', width: 160, sort: true}
+                ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true}
+                ,{field: 'pack_no', title: '件数', width: 100, sort: true}
                 ,{field: 'declare_status', title: '报关状态',templet: '#dstatus',fixed: "right", width: 100}
                 ,{field: 'pay_status', title: '支付状态',templet: '#pstatus',fixed: "right", width: 100}
                 ,{field: 'ctrl', title: '操作', width: 135, toolbar: "#tools", fixed: "right"}

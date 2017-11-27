@@ -45,7 +45,7 @@
 </head>
 <body>
 <!--<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:layui.table.reload('oerr-main');layui.table.reload('osucc-main');" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>-->
-<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:location.replace(location.href)" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+<!--<a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:4px" href="javascript:location.replace(location.href)" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>-->
 <div class="page-container">
 	<!--<div id="order-details" class="panel mt-20">-->
 		<!--<div class="panel-heading">-->
@@ -186,7 +186,7 @@
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
                 ,{field: '', title: '错误数',width: 100,templet: '#err',sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 170,templet: '#oe-span1', sort: true, edit: "text"}
+//                ,{field: 'order_no', title: '订单编号', width: 170,templet: '#oe-span1', sort: true, edit: "text"}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text",templet: '#oe-span2'}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text",templet: '#oe-span3'}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 160, sort: true, edit: "text",templet: '#oe-span4'}
@@ -293,7 +293,7 @@
             cols: [[
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 170, sort: true}
+//                ,{field: 'order_no', title: '订单编号', width: 170, sort: true}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 160, sort: true, edit: "text"}
@@ -373,6 +373,7 @@
                         res.data.error_arr[0].autonum = error_arr.length+1;
                         error_arr.push(res.data.error_arr[0]);
                         table.reload('oerr-main');
+                        table.reload('osucc-main');
                         layer.msg("数据存在错误，已移至数据异常区！",{time: 2000});
 					}else{
                         layer.open({
@@ -419,6 +420,7 @@
                     error_arr.splice(0,error_arr.length);
                     error_arr.push.apply(error_arr,res.data.error_arr);
                     layui.table.reload('oerr-main');
+                    layui.table.reload('osucc-main');
                     layer.msg("数据仍存在错误！",{time: 2000});
                 }
             }else{
