@@ -296,6 +296,24 @@ class Order extends Model {
         return $data_format;
     }
 
+//    获取错误预览数据
+    public function getPreviewErrorData() {
+        $limit = $this->request->param("limit");
+        $page = $this->request->param("page");
+//        $data = json_decode($this->request->param('data'),true);
+//        $data = $data['error_arr'];
+        $data = $this->request->param('data/a');
+        $fin_data = array_slice($data,($page-1)*$limit,$limit);
+        $dataCount = count($data);
+        $data_format = [
+            "code" => 0,
+            "msg" => "success",
+            "count" => $dataCount,
+            "data" => $fin_data,
+        ];
+        return $data_format;
+    }
+
     /**
      * 修改预览数据
      * @return array

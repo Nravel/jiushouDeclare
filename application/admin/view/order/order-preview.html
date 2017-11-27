@@ -136,12 +136,14 @@
     });
     function spliceData(obj) {
         $(error_arr).each(function (i,item) {
-            if (obj.autonum === item.autonum) {
+            if (obj.autonum == item.autonum) {
                 error_arr.splice(i,1);
             }
         });
+
     }
     var preview_data = $.parseJSON($(parent.document).find('#preview-data').html());
+    var data = $(parent.document).find('#preview-data').html();
     var error_arr = preview_data.error_arr;
     var nres = "";
     var e_options = {};
@@ -180,12 +182,17 @@
 		var err_table_options = {
             elem: "#order-err",
             id: "oerr-main",
-            data: error_arr,
-//            url: "{:url('admin/Order/getPreviewData')}",
+//            data: error_arr,
+            url: "{:url('admin/Order/preview')}",
+			method: 'post',
+			where: {
+              req: 'geterr',
+              data: error_arr
+			},
 //			height: 200,
             cellMinWidth: 100,
             cols: [[
-                {checkbox: true} //默认全选
+                {type: 'checkbox'} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
                 ,{field: '', title: '错误数',width: 100,templet: '#err',sort: true}
 //                ,{field: 'order_no', title: '订单编号', width: 170,templet: '#oe-span1', sort: true, edit: "text"}
@@ -233,13 +240,12 @@
             ]],
 //            skin: "row",
             even: true,
-            page: true,
+            page: false,
             limits: [5,10,20,40,80],
             limit: 5,
             done: function (res,curr,count) {
 //                $(".top-total").children("strong").html(error_arr.length);
 //                $("#oe-details .layui-laypage-count").html('共 '+error_arr.length+' 条');
-                $.extend(true,e_options,err_table_options);
                 if (count == 0) {
                     layer.msg("恭喜！所有订单信息都正确！");
                     $('.tb-wrap:first-child').hide();
@@ -271,7 +277,7 @@
                             });
                             layer.msg("数据仍存在错误！",{time: 2000});
                         }
-                        table.init('oerr',test);
+                        table.reload('oerr-main');
                     }else{
                         layer.open({
                             content: res.msg
@@ -282,9 +288,8 @@
                 layer.confirm('确定删除？', function(index){
                     spliceData(obj.data);
 					obj.del();
-//					table.reload('oerr-main',{data: error_arr});
                     layer.close(index);
-                    table.init('oerr',e_options);
+					table.reload('oerr-main',{where:{data: error_arr}});
                 });
             }
         });
