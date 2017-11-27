@@ -378,8 +378,8 @@ class Order extends Model {
      * @return array
      */
     public function getOrderBatch() {
-        $limit = $this->request->get('limit');
-        $page = $this->request->get('page');
+        $limit = $this->request->param('limit');
+        $page = $this->request->param('page');
         //因create_time字段是OrderHead自动生成，故应用OrderHead为主表作查询，否则会报错
         $orderModel = Loader::model("OrderHead");
         $orderBatch = Loader::model("OrderBatch");

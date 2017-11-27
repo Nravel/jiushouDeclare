@@ -551,6 +551,7 @@ class Excel extends Controller
     }
 
     /**
+     * 获取文件路径
      * @return mixed
      */
     public function getFilePath()
@@ -559,6 +560,7 @@ class Excel extends Controller
     }
 
     /**
+     * 设置文件路径
      * @param mixed $filePath
      */
     public function setFilePath($filePath)

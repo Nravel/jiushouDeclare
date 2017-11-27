@@ -123,12 +123,23 @@ class Order extends Common
     /**
      *导出excel数据
      */
+//    public function exportData() {
+//        //获取要导出的类型和批次
+//                $ex_info = explode("|",$this->request->post("ex_info"));
+//                $datatype = $this->request->post("datatype");
+//                $data = $this->request->post("data/a");
+//                Loader::model("OrderBatch")->exportOrders($ex_info,$data,$datatype);
+//    }
+
+    /**
+     *导出Nfexcel数据
+     */
     public function exportData() {
         //获取要导出的类型和批次
-                $ex_info = explode("|",$this->request->post("ex_info"));
-                $datatype = $this->request->post("datatype");
-                $data = $this->request->post("data/a");
-                Loader::model("OrderBatch")->exportOrders($ex_info,$data,$datatype);
+        $ex_info = explode("|",$this->request->post("ex_info"));
+        $datatype = $this->request->post("datatype");
+        $data = $this->request->post("data/a");
+        Loader::model("OrderBatch")->exportOrders($ex_info,$data,$datatype);
     }
 
     /**
