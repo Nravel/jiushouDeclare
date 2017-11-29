@@ -182,11 +182,11 @@ class Excel extends Controller
         $excelObj
             ->getProperties()->setCreator("Admin")
             ->setLastModifiedBy("Admin")
-            ->setTitle("export OrderInfo")
-            ->setSubject("export datas")
-            ->setDescription("backup")
-            ->setKeywords("order")
-            ->setCategory("result file");
+            ->setTitle("JiuShou")
+            ->setSubject("JiuShou")
+            ->setDescription("JiuShou")
+            ->setKeywords("JiuShou")
+            ->setCategory("JiuShou");
 
         //设置sheet标题
         $excelObj->getActiveSheet()->setTitle('JiuShou');
@@ -238,13 +238,30 @@ class Excel extends Controller
                 '代扣税款',
                 '实际支付金额',
                 '币制',
+                '订购人注册号',
                 '订购人姓名',
                 '订购人电话',
                 '订购人证件类型',
                 '订购人证件号码',
+                '支付企业代码',
+                '支付企业名称',
+                '支付交易编号',
                 '收货人姓名',
                 '收货人电话',
                 '收货地址',
+                '物流运单编号',
+                '贸易方式',
+                '账册编号',
+                '许可证件号',
+                '起运国/地区',
+                '运费',
+                '保费',
+                '包装种类',
+                '毛重(公斤)',
+                '净重(公斤)',
+                '提单号',
+                '航班航次号',
+                '件数',
                 '商品序号',
                 '企业商品名称',
                 '数量',
@@ -252,8 +269,8 @@ class Excel extends Controller
                 '法定数量',
                 '法定计量单位',
                 '原产国',
-                '海关商品编码(Hscode)',
-                '国检商品编号',
+                '商品编码',
+//                '国检商品编号',
                 '商品规格型号',
                 '单价',
                 '总价',
@@ -383,7 +400,7 @@ class Excel extends Controller
         $this->setRowsHeight($execelSheetObj,$rowNums,$spec_row_arr,"22.5");
 
         $spec_col_arr = [
-            ["C"=>35,"E"=>35,"T"=>40,"O"=>30,"R"=>70,"Z"=>30,"AB"=>30,],
+            ["C"=>35,"E"=>35,"V"=>70,"Z"=>30,"AK"=>50,],
             ["C"=>35,"E"=>35,"G"=>35,"J"=>35,"V"=>35,"W"=>30,"Y"=>70,"AA"=>35,"AW"=>35,"AY"=>35,"AS"=>35,"BL"=>35,],
             ["G"=>35,"H"=>35,"O"=>35,"M"=>30,"Q"=>30,"T"=>30],
             ["D"=>35,"L"=>35,"N"=>70,"M"=>30,"P"=>35],
@@ -402,19 +419,24 @@ class Excel extends Controller
         $filename = preg_replace("/:/",".",$filenames[$ex_type]);
 
         if ($excelWrite) {  //在本地目录生成文件，以便压缩和导出
-            $dir!=null ? $dir = "downloads/".$dir : $dir = "downloads";
-            $dir = preg_replace("/:/",".",$dir);
+//            $dir!=null ? $dir = "downloads/".$dir : $dir = "downloads";
+//            $dir = preg_replace("/:/",".",$dir);
             if (!is_dir($dir)) {
                 mkdir("./".$dir,0777,true);
             }
+            $filename = $this->filename_arr[0].'_'.$ex_batch;
             $outputFileName= "./".$dir."/".$filename.'.'.$type_exts."x";
             $objWriter = \PHPExcel_IOFactory::createWriter($excelObj, 'Excel2007');
             $objWriter->save($outputFileName);
         }else{      //直接把excel输出到网页端下载
-            $filename = $this->filenameCh($filename,$this->filename_arr);
+//            $filename = $this->filenameCh($filename,$this->filename_arr);
+            if (!is_dir($dir)) {
+                mkdir("./".$dir,0777,true);
+            }
+            $filename = $this->filename_arr[0].'_'.$ex_batch;
             $this->download($filename,$type_exts);
             $objWriter = \PHPExcel_IOFactory::createWriter($excelObj, $type);
-            $objWriter->save('php://output');
+            $objWriter->save($dir.DIRECTORY_SEPARATOR.iconv('utf-8','gb2312',$filename).'.xls');
         }
     }
 
