@@ -434,9 +434,10 @@ class Excel extends Controller
                 mkdir("./".$dir,0777,true);
             }
             $filename = $this->filename_arr[0].'_'.$ex_batch;
-            $this->download($filename,$type_exts);
             $objWriter = \PHPExcel_IOFactory::createWriter($excelObj, $type);
-            $objWriter->save($dir.DIRECTORY_SEPARATOR.iconv('utf-8','gb2312',$filename).'.xls');
+            $objWriter->save("php://output");
+//            $objWriter->save($dir.DIRECTORY_SEPARATOR.iconv('utf-8','gb2312',$filename).'.xls');
+            $this->download($filename,$type_exts);
         }
     }
 

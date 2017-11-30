@@ -9,6 +9,7 @@
 namespace app\admin\service;
 
 use think\Db;
+use app\common\controller\Excel;
 
 class Nfexcel {
 	private $val = [
@@ -117,6 +118,14 @@ class Nfexcel {
 			;
 			$j++;
 		}
+        $rows = count($data)+2;
+        $cols = count($col_name);
+        $this->setSheetStyles($objPHPExcel,"A2:BM2","A2:BM".$rows);
+        $excel = new Excel();
+        $spec_row_arr = [1=>"25"];
+        $spec_col_arr = ["A"=>10,"B"=>10,"C"=>25,"E"=>35,"G"=>35,"J"=>35,"P"=>15,"V"=>25,"Y"=>70,"AA"=>35,"AW"=>50,"AY"=>50];
+        $excel->setRowsHeight($objPHPExcel->getActiveSheet(),$rows,$spec_row_arr,"22.5");
+        $excel->setColsWidth($objPHPExcel->getActiveSheet(),$cols,$spec_col_arr,20);
 		$this->saveExcel($objPHPExcel, $batch, 'QingDan', '清单',$path);
 	}
 
@@ -150,10 +159,17 @@ class Nfexcel {
 				->setCellValue("R{$j}",  $item['gnum']) //序号
 				->setCellValueExplicit("S{$j}",  $item['logistics_no'], \PHPExcel_Cell_DataType::TYPE_STRING) //物流运单编号
 				->setCellValue("T{$j}",  '') //入库明细单表体备注
-
 			;
 			$j++;
 		}
+        $rows = count($data)+2;
+        $cols = count($col_name);
+        $this->setSheetStyles($objPHPExcel,"A2:T2","A2:T".(count($data)+2));
+        $excel = new Excel();
+        $spec_row_arr = [1=>"25"];
+        $spec_col_arr = ["A"=>10,"B"=>10,"G"=>25,"H"=>35,"O"=>35,"T"=>50];
+        $excel->setRowsHeight($objPHPExcel->getActiveSheet(),$rows,$spec_row_arr,"22.5");
+        $excel->setColsWidth($objPHPExcel->getActiveSheet(),$cols,$spec_col_arr,20);
 		$this->saveExcel($objPHPExcel, $batch, 'RuKuDan', '入库单',$path);
 	}
 
@@ -187,10 +203,42 @@ class Nfexcel {
 			;
 			$j++;
 		}
+        $rows = count($data)+2;
+        $cols = count($col_name);
+        $this->setSheetStyles($objPHPExcel,"A2:Q2","A2:Q".(count($data)+2));
+        $excel = new Excel();
+        $spec_row_arr = [1=>"25"];
+        $spec_col_arr = ["A"=>10,"B"=>10,"D"=>35,"L"=>50,"N"=>70];
+        $excel->setRowsHeight($objPHPExcel->getActiveSheet(),$rows,$spec_row_arr,"22.5");
+        $excel->setColsWidth($objPHPExcel->getActiveSheet(),$cols,$spec_col_arr,20);
 		$this->saveExcel($objPHPExcel, $batch, 'YunDan', '运单',$path);
 	}
 
-	public function dowloadZip($batch=null){
+	private function setSheetStyles($objPHPExcel,$TitleRange,$CellRange) {
+        $objStyle = $objPHPExcel->getActiveSheet();
+        //单元格样式数组
+        $all_style = array(
+            'alignment' => array(
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER, //横向居中
+                'vertical'   => \PHPExcel_Style_Alignment::VERTICAL_CENTER, //纵向居中
+//                'wrap'       => true  //自动换行
+            )
+        );
+        $title_style = [
+            "font" => [
+                "bold" => true
+            ] ,
+            "borders" => [
+                "allborders" => [
+                    "style" => \PHPExcel_Style_Border::BORDER_THIN
+                ]
+            ]
+        ];
+        $objStyle->getStyle($TitleRange)->applyFromArray($title_style);
+        $objStyle->getStyle($CellRange)->applyFromArray($all_style);
+    }
+
+	public function dowloadZip($batch=null,$both=false){
 		if ($batch!==null) {
             $data = Db::name('order_head')
                 ->alias('a')
@@ -202,12 +250,22 @@ class Nfexcel {
                 ->where(['a.batch_time' => $batch])
                 ->select();
             if(!$data) return;
-            $this->billExcel($batch, $data);
-            $this->storageExcel($batch, $data);
-            $this->waybillExcel($batch, $data);
-            $path = Excel.$batch;
-        }else{
+            if ($both === true) {
+                $b_path = Excel.'both'.DIRECTORY_SEPARATOR.$batch;
+                $this->billExcel($batch, $data,$b_path);
+                $this->storageExcel($batch, $data,$b_path);
+                $this->waybillExcel($batch, $data,$b_path);
+                return;
+            }else{
+                $this->billExcel($batch, $data);
+                $this->storageExcel($batch, $data);
+                $this->waybillExcel($batch, $data);
+            }
+            $path = $both ? Excel.'both' : Excel.$batch;
+        }else if ($batch === null && $both === false){
             $path = Excel.'batch';
+        }else if ($batch === null && $both === true) {
+            $path = Excel.'both';
         }
 
         $zip=new \ZipArchive();
@@ -280,8 +338,9 @@ class Nfexcel {
                         if (strstr($filename,'_',true) != false) {
                             $nfilename = array_search(strstr($filename,'_',true),$filename_arr).strstr($filename,'_');
                             rename(iconv('utf-8','gb2312',$path.DIRECTORY_SEPARATOR.$filename),$path.DIRECTORY_SEPARATOR.array_search(strstr($filename,'_',true),$filename_arr).strstr($filename,'_'));
-                            $zip->addFile($path.DIRECTORY_SEPARATOR.$nfilename,$nfilename);
-                            $zip->renameName($nfilename,$filename_arr[strstr($nfilename,'_',true)].strstr($nfilename,'_'));
+                            $subdir = strstr($path,DIRECTORY_SEPARATOR.'both') != false ? preg_replace("/_|(\.xls|\.xlsx)$/",'',strstr($filename,'_')).DIRECTORY_SEPARATOR : '';
+                            $zip->addFile($path.DIRECTORY_SEPARATOR.$nfilename,$subdir.$nfilename);
+                            $zip->renameName($subdir.$nfilename,$subdir.$filename_arr[strstr($nfilename,'_',true)].strstr($nfilename,'_'));
                         }else{
                             $nfilename = array_search(str_replace('.xls',"",$filename),$filename_arr).'.xls';
                             rename(iconv('utf-8','gb2312',$path.DIRECTORY_SEPARATOR.$filename),$path.DIRECTORY_SEPARATOR.array_search(str_replace('.xls',"",$filename),$filename_arr).'.xls');

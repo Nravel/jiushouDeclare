@@ -388,34 +388,17 @@ class OrderBatch extends Model
                 $this->download(null,$ex_arr[array_keys($ex_arr)[$datatype]]);
             }else{                      //多批次所有表数据导出
                 foreach ($data as $batch) {
-                    for ($i=0;$i<4;$i++) {
-                        $res = $orderHead
-                            ->alias('a')
-                            ->join($join)
-                            ->field($fields[$i])
-                            ->where(["a.batch_time"=>$batch])
-                            ->select();
-                        $excelObj->exportExcel($res,$i,$batch,true,$batch);
-                    }
+//                    $res = $orderHead
+//                        ->alias('a')
+//                        ->join($join)
+//                        ->field($fields[0])
+//                        ->where(["a.batch_time"=>$batch])
+//                        ->select();
+//                    $excelObj->exportExcel($res,0,$batch,true,Excel.'both'.DIRECTORY_SEPARATOR.$batch);
+                    $this->download($batch,null,true);
                 }
+                $this->download(null,null);
             }
-//            $zip=new \ZipArchive();
-//            if($zip->open('excel.zip', \ZipArchive::CREATE)=== TRUE){
-//                $excelObj->addFileToZip(Excel.'batch', $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
-//                $zip->close(); //关闭处理的zip文件
-////                $excelObj->del_dir(Excel.'batch',1);
-//            }
-//            //导出的文件名
-//            $ex_filenames = [
-//                "批量就手订单",
-//                "批量清单",
-//                "批量入库单",
-//                "批量运单",
-//                "批量一次性导出",
-//            ];
-//            $excelObj->download($ex_filenames[$datatype],'zip');
-//            @readfile("excel.zip");
-//            unlink("excel.zip");
         }else{
             if ($ex_type!=5) {  //导出对应的分表
                 $ex_type == 1 ? $field_temp = $fields[0] : $field_temp = $fields[1] ;
@@ -433,23 +416,13 @@ class OrderBatch extends Model
                     $this->download($ex_batch,$ex_arr[array_keys($ex_arr)[$ex_type-1]]);
                 }
             }else{  //单批次导出四个分表的压缩包
-                $res = $orderHead
-                    ->alias('a')
-                    ->join($join)
-                    ->field($fields[0])
-                    ->where($where)
-                    ->select();
-                $excelObj->exportExcel($res,0,$ex_batch,false,Excel.$ex_batch);
-//                $zip=new \ZipArchive();
-//                if($zip->open('excel.zip', \ZipArchive::CREATE)=== TRUE){
-//                    $excelObj->addFileToZip('downloads', $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
-//                    $zip->close(); //关闭处理的zip文件
-//                    $excelObj->del_dir("downloads");
-//                }
-//                $ex_batch = str_replace(":",".",$ex_batch);
-//                $excelObj->download($ex_batch.' 批次','zip');
-//                @readfile("excel.zip");
-//                unlink("excel.zip");
+//                $res = $orderHead
+//                    ->alias('a')
+//                    ->join($join)
+//                    ->field($fields[0])
+//                    ->where($where)
+//                    ->select();
+//                $excelObj->exportExcel($res,0,$ex_batch,true,Excel.$ex_batch);
                 $this->download($ex_batch,null);
             }
         }
@@ -459,20 +432,30 @@ class OrderBatch extends Model
     /**
      *导出Excel，zip打包下载
      */
-    public function download($batch,$filename) {
-        if ($filename === null) {
+    public function download($batch,$filename,$both=false) {
+        if ($filename === null && $batch !== null) {
             $Nfexcel = new Nfexcel();
-            $Nfexcel->dowloadZip($batch);
-            $filename = Excel.$batch.'.zip';
-            $d_filename = basename($filename);
+            if ($both) {
+                $Nfexcel->dowloadZip($batch,$both);
+                return;
+            }else{
+                $Nfexcel->dowloadZip($batch);
+                $filename = Excel.$batch.'.zip';
+                $d_filename = basename($filename);
+            }
         }else if($batch !== null && $filename !== null) {
             $filename = Excel.$batch.DIRECTORY_SEPARATOR.iconv("utf-8", "gb2312", $filename).'.xls';
             $d_filename = str_replace('.xls',"_$batch.xls",basename($filename));
-        }else if ($batch === null) {
+        }else if ($batch === null && $filename !== null) {
             $Nfexcel = new Nfexcel();
             $Nfexcel->dowloadZip($batch);
+            $d_filename = $filename.'【批量】'.'.zip';
             $filename = Excel.'batch'.'.zip';
-            $d_filename = basename($filename);
+        }else if ($filename === null && $batch === null) {
+            $Nfexcel = new Nfexcel();
+            $Nfexcel->dowloadZip($batch,true);
+            $filename = Excel.'both'.'.zip';
+            $d_filename = '三单【批量】'.'.zip';
         }
         if(!file_exists($filename)){
             exit("无法找到文件"); //即使创建，仍有可能失败。。。。
