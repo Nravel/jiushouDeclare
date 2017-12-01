@@ -81,17 +81,6 @@
 						</span>
 						</li>
 						<li>
-							<button class="btn btn-primary tab">批次备注：</button>
-							<span class="select-ctrl">
-							<select name="batch_note_eq" class="select">
-								<option value="0">等于</option>
-								<option value="3">不等于</option>
-								<option value="4">含有（模糊）</option>
-							</select>
-						</span>
-							<input type="text" name="batch_note" class="input-text main-input">
-						</li>
-						<li>
 							<button class="btn btn-primary tab">批次号：</button>
 							<span class="select-ctrl">
 							<select name="batch_time_eq" class="select">
@@ -105,6 +94,17 @@
 							<input type="text" name="batch_time" class="input-text main-input">
 						</li>
 						<li>
+							<button class="btn btn-primary tab">批次备注：</button>
+							<span class="select-ctrl">
+							<select name="batch_note_eq" class="select">
+								<option value="0">等于</option>
+								<option value="3">不等于</option>
+								<option value="4">含有（模糊）</option>
+							</select>
+						</span>
+							<input type="text" name="batch_note" class="input-text main-input">
+						</li>
+						<li>
 							<button class="btn btn-primary tab">订购人姓名：</button>
 							<span class="select-ctrl">
 							<select name="buyer_name_eq" class="select">
@@ -116,15 +116,17 @@
 							<input type="text" name="buyer_name" class="input-text main-input">
 						</li>
 						<li>
-							<button class="btn btn-primary tab">收货人姓名：</button>
+							<button class="btn btn-primary tab">提单号：</button>
 							<span class="select-ctrl">
-							<select name="consignee_eq" class="select">
+							<select name="bill_no_eq" class="select">
 								<option value="0">等于</option>
+								<option value="1">大于</option>
+								<option value="2">小于</option>
 								<option value="3">不等于</option>
 								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="consignee" class="input-text main-input">
+							<input type="text" name="bill_no" class="input-text main-input">
 						</li>
 						<li>
 							<button class="btn btn-primary tab">物流运单编号：</button>
@@ -140,17 +142,15 @@
 							<input type="text" name="logistics_no" class="input-text main-input">
 						</li>
 						<li>
-							<button class="btn btn-primary tab">提单号：</button>
+							<button class="btn btn-primary tab">收货人姓名：</button>
 							<span class="select-ctrl">
-							<select name="bill_no_eq" class="select">
+							<select name="consignee_eq" class="select">
 								<option value="0">等于</option>
-								<option value="1">大于</option>
-								<option value="2">小于</option>
 								<option value="3">不等于</option>
 								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="bill_no" class="input-text main-input">
+							<input type="text" name="consignee" class="input-text main-input">
 						</li>
 					</ul>
 				</div>
@@ -210,6 +210,9 @@
 	<!--<div class="layui-table-cell laytable-cell-1-consignee_address" title="{{d.consignee_address}}">{{d.consignee_address}}</div>-->
 </script>
 <script type="text/javascript">
+	$('#search-form button').click(function () {
+		return false;
+    });
     layui.config({
         debug : true,
         version : true	 //清除缓存
@@ -278,7 +281,7 @@
                 ,{field: 'bill_no', title: '提单号', width: 160, sort: true}
                 ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true}
                 ,{field: 'pack_no', title: '件数', width: 100, sort: true}
-                ,{field: 'declare_status', title: '报关状态',templet: '#dstatus',fixed: "right", width: 100}
+//                ,{field: 'declare_status', title: '报关状态',templet: '#dstatus',fixed: "right", width: 100}
                 ,{field: 'pay_status', title: '支付状态',templet: '#pstatus',fixed: "right", width: 100}
                 ,{field: 'ctrl', title: '操作', width: 135, toolbar: "#tools", fixed: "right"}
             ]]

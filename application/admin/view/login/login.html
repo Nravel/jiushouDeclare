@@ -37,6 +37,10 @@
       font-family: tahoma,Arial;
       border-bottom: 1px solid #e8e8e8;
     }
+    #kanbuq {
+      display: inline-block;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -61,7 +65,7 @@
       <div class="row cl">
         <div class="formControls col-xs-8 col-xs-offset-3">
           <input class="input-text size-L" type="text" name="captcha" required placeholder="验证码" style="width:150px;">
-          <img id="imgCtl" src="{:captcha_src()}?ran=" alt=""> <a id="kanbuq" href="javascript:;">看不清，换一张</a> </div>
+          <a id="kanbuq" href="javascript:;"><img id="imgCtl" src="{:captcha_src()}?ran=" alt=""> 看不清，换一张</a> </div>
       </div>
       <div class="row cl">
         <div class="formControls col-xs-8 col-xs-offset-3">
