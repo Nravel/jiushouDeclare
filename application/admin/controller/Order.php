@@ -149,4 +149,40 @@ class Order extends Common
         $excelObj = new Excel();
         is_dir("uploads") ? $excelObj->del_dir("uploads",1) : "" ;
     }
+
+    /**
+     * 订单支付
+     * @return array
+     */
+    public function pay() {
+        $orderNo = $this->request->param('order_no');
+
+        /*****************支付业务逻辑*************/
+        $result = true;
+        /*****************支付业务逻辑*************/
+
+        if ($result) {
+            return feedback('0000','支付成功！',null);
+        }else{
+            return feedback('0001','支付失败！',null);
+        }
+    }
+
+    /**
+     * 报关
+     * @return array
+     */
+    public function declaration() {
+        $batch = $this->request->param('batch');
+
+        /*****************支付业务逻辑*************/
+        $result = true;
+        /*****************支付业务逻辑*************/
+
+        if ($result) {
+            return feedback('0000','报关成功！',null);
+        }else{
+            return feedback('0001','报关失败！',null);
+        }
+    }
 }

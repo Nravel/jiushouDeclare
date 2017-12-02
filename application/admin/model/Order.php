@@ -385,7 +385,7 @@ class Order extends Model {
         $orderBatch = Loader::model("OrderBatch");
         $alias = 'a';
         $join = [['ceb_order_batch b','a.batch_time=b.batch_time']];
-        $field = "b.batch_time,b.batch_note,a.create_time";
+        $field = "b.batch_time,b.batch_note,a.create_time,any_value(a.declare_status) as declare_status";
         $group = 'b.batch_time,b.batch_note,a.create_time';
         //数据集序号设定
         $i = 1;

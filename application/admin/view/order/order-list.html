@@ -21,6 +21,13 @@
 			color: #DD514C;
 			line-height: 30px;
 		}
+		.pay:hover {
+			text-decoration: none;
+		}
+		.pay i {
+			font-size: 14px;
+			text-shadow: 1px 1px 1px #888;
+		}
 	</style>
 </head>
 <body>
@@ -200,7 +207,8 @@
 </script>
 <script type="text/html" id="pstatus">
 	{{# if (d.pay_status === '0') { }}
-	<span title="未支付" style="color: #dd514c"><i class="Hui-iconfont">&#xe6dd;</i></span>
+	<!--<span title="未支付" style="color: #dd514c"><i class="Hui-iconfont">&#xe6dd;</i></span>-->
+	<a class="pay" title="支付" lay-event="pay"><i class="Hui-iconfont iconfont icon-zhifu"></i></a>
 	{{# } else { }}
 	<span title="已支付" style="color: #5EB95E"><i class="Hui-iconfont">&#xe6e1;</i></span>
 	{{# } }}
@@ -282,7 +290,7 @@
                 ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true}
                 ,{field: 'pack_no', title: '件数', width: 100, sort: true}
 //                ,{field: 'declare_status', title: '报关状态',templet: '#dstatus',fixed: "right", width: 100}
-                ,{field: 'pay_status', title: '支付状态',templet: '#pstatus',fixed: "right", width: 100}
+                ,{field: 'pay_status', title: '支付栏',templet: '#pstatus',fixed: "right", width: 75}
                 ,{field: 'ctrl', title: '操作', width: 135, toolbar: "#tools", fixed: "right"}
             ]]
             ,skin: 'row' //表格风格
@@ -376,15 +384,15 @@
             var data = obj.data;
             var detailUrl = "{:url('admin/Order/details')}".replace(".html","");
             var editUrl = "{:url('admin/Order/edit')}".replace(".html","");
-            if (obj.event == "details") {
+            if (obj.event === "details") {
                 $('#open-tab').attr("data-href",detailUrl+'/orderNum/'+data.order_no);
                 $('#open-tab').attr("data-title",data.buyer_name+"_订单详情");
                 Hui_admin_tab($('#open-tab'));
-            }else if(obj.event == "edit") {
+            }else if(obj.event === "edit") {
                 $('#open-tab').attr("data-href",editUrl+'/orderNum/'+data.order_no);
                 $('#open-tab').attr("data-title",data.buyer_name+"_订单修改");
                 Hui_admin_tab($('#open-tab'));
-            }else if(obj.event == "del") {
+            }else if(obj.event === "del") {
                 layer.confirm('确定删除？', function(index){
                     $.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no},function (res) {
                         if (res.code == '0000') {
@@ -401,7 +409,25 @@
 						}
                     });
                 });
-            }
+            }else if(obj.event === 'pay') {
+                layer.confirm('确定支付？',function (index) {
+					$.post('{:url("admin/Order/pay")}',{order_no: data.order_no},function (res) {
+                        if (res.code == '0000') {
+                            obj.update({pay_status: 1});
+                            layer.msg(res.msg,{time: 2000});
+                            layer.close(index);
+                        }else{
+                            layer.close(index);
+                            if (typeof res !== 'string') {
+                                layer.open({content: res.msg});
+                            }else{
+                                //无权限时的提示
+                                layer.open({content: res});
+                            }
+                        }
+                    });
+                });
+			}
         });
     });
 

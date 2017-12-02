@@ -10,6 +10,7 @@
 	修改	admin/order/edit
 	删除	admin/order/delOrder
 	导入	admin/order/importData
+	支付	admin/order/pay
 订单导出	admin/order/export
 	导出订单	admin/order/exportData
 

@@ -33,7 +33,8 @@
     -webkit-width: calc(100% / 3 - 6px);
     -o-width: calc(100% / 3 - 6px);
     margin-bottom: 7px;
-    min-width: 336px;
+    /*min-width: 336px;*/
+    min-width: 405px;
 }
 
 .search-ul li .tab {

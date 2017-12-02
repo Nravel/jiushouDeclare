@@ -12,6 +12,18 @@
 		.page-container {
 			padding-top: 10px;
 		}
+		.declare {
+			background: none;
+			color: #333;
+		}
+		.declare:hover {
+			color: #888;
+			text-decoration: none;
+		}
+		.declare i {
+			font-size: 14px;
+			text-shadow: 1.3px 1.3px 1px #888;
+		}
 	</style>
 </head>
 <body>
@@ -46,7 +58,7 @@
 									<option value="4">含有（模糊）</option>
 								</select>
 							</span>
-							<input type="text" name="batch_time" class="input-text main-input">
+							<input style="width: 30%" type="text" name="batch_time" class="input-text main-input">
 						</li>
 						<li>
 							<button class="btn btn-primary tab">导入时间的范围：</button>
@@ -107,18 +119,53 @@
 <script type="text/javascript" src="__PUBLIC__/lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>
+<!--<a class="layui-btn layui-btn-normal layui-btn-mini" lay-event="jiushou_ex">导出就手订单</a>-->
 <script type="text/html" id="exportTools">
-	<!--<a class="layui-btn layui-btn-normal layui-btn-mini" lay-event="jiushou_ex">导出就手订单</a>-->
 	<a class="layui-btn layui-btn-mini" lay-event="list_ex">导出清单</a>
 	<a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="entry_ex">导出入库单</a>
 	<a class="layui-btn layui-btn-warm layui-btn-mini" lay-event="transprot_ex">导出运单</a>
 	<a class="layui-btn layui-btn-primary layui-btn-mini" lay-event="all_ex">导出三单</a>
+</script>
+<script type="text/html" id="declare">
+	{{# if (d.declare_status==='0') { }}
+		<a class="declare" title="报关" lay-event="declare"><i class=" Hui-iconfont iconfont icon-baoguan"></i></a>
+	{{# }else{ }}
+		<span title="已报关" style="color: #5EB95E"><i class="Hui-iconfont">&#xe6e1;</i></span>
+	{{# } }}
 </script>
 <script type="text/javascript">
 	setAlign(['batch_note'],'left');
     $('#search-form button').click(function () {
         return false;
     });
+    $(document).ready(function() {
+        $.get('{:url("admin/order/getLastBatchs")}',function (res) {
+            var html = '<select id="batch-select" style="width: 17%;height: 31px;vertical-align: middle;" class="select">'+
+                '<option value="0">  --请选择--</option>'+
+                '<option value="1">201711271043115167</option>'+
+                '<option value="2">201711301411059593</option>'+
+                '<option value="3">201711301411059455</option>'+
+                '<option value="4">201711334211059593</option>'+
+                '</select>';
+//            var html = '<select style="width: 17%;height: 31px;vertical-align: middle;" class="select"><option value="0">  --请选择--</option>';
+//            if (res.data.length>0) {
+//                $(res.data).each(function (index,item) {
+//					html+= '<option value='+(index+1)+'>'+item+'</option>';
+//                });
+//                html+= '</select>';
+//			}else {
+//                html+= '</select>';
+//			}
+            $('input[name="batch_time"]').parent()[0].insertAdjacentHTML('beforeEnd',html);
+            $('#batch-select').change(function () {
+                if ($(this).val()!=='0') {
+                    $('input[name="batch_time"]').val($(this).find("option:selected").text());
+				}else{
+                    $('input[name="batch_time"]').val("");
+				}
+            });
+        });
+	});
 layui.config({
 	debug : true,
 	version : true	 //清除缓存
@@ -156,10 +203,11 @@ layui.use(['table','layer','upload'],function () {
         ,cols: [[ //标题栏
             {checkbox: true}, //默认全选
 			{field: 'autonum', title: 'No.',filter: 'autonum', width: 80, sort: true}
-            ,{field: 'batch_time', title: '批次号', width: 235, sort: true}
-            ,{field: 'batch_note', title: '备注', width: 570}
+            ,{field: 'batch_time', title: '批次号', width: 230, sort: true}
+            ,{field: 'batch_note', title: '备注', width: 500}
             ,{field: 'create_time', title: '导入时间', width: 230, sort: true}
-            ,{field: 'ctrl', title: '导出操作', width: 510, toolbar: "#exportTools"}
+            ,{field: 'declare_status', title: '报关栏', width: 75, templet: '#declare',fixed: "right"}
+            ,{field: 'ctrl', title: '导出操作', width: 510, toolbar: "#exportTools",fixed: "right"}
         ]]
         ,skin: 'row' //表格风格
         ,even: true
@@ -170,66 +218,6 @@ layui.use(['table','layer','upload'],function () {
             //如果是异步请求数据方式，res即为你接口返回的信息。
             //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
             $(".total").children("strong").html(count);
-        }
-    });
-    //excel上传
-    var uploadInst = upload.render({
-        elem: '#upload_excel' //绑定元素
-        ,url: "{:url('admin/Order/importData')}" //上传接口
-		,accept: "file"
-		,exts: "xls|xlsx"
-		,field: "excelFile"
-		,auto: false
-		,multiple: false
-		,bindAction: "#upcommit"
-		,choose: function (obj) {
-            obj.preview(function(index, file, result){
-                $("#filetips").html(file.name);
-                $("#filetips").show();
-            });
-            var that = this;
-            layer.prompt({
-                formType: "2",
-                value: '',
-                title: '请输入当前数据批次的备注',
-                area: ['500px', '250px'] //自定义文本域宽高
-            }, function(value, index, elem){
-                that.data.note = value;
-                layer.close(index);
-                $("#upcommit").click();
-            });
-            $("#upcommit").show();
-        }
-        , done: function (res) {
-            //上传完毕回调
-            layer.closeAll('loading');
-            $("#filetips").hide();
-            $("#upcommit").hide();
-			if (res.code == 0000) {
-			    layer.open({
-					content: "导入数据成功！",
-					end: function () {
-                        table.reload('main', {
-                            url: '{:url(\'order/getDatas\')}'
-                            ,where: {} //设定异步数据接口的额外参数
-                        });
-                    }
-				});
-			}else{
-                layer.open({
-                    content: "导入数据失败，可能是工作表不合法，请更换表后重试，仍然失败请找管理猿！"
-                });
-                console.log(res.error);
-			}
-        }
-        , error: function () {
-            //请求异常回调
-            layer.closeAll('loading');
-            $("#filetips").hide();
-            $("#upcommit").hide();
-            layer.open({
-                content: "上传失败！"
-            });
         }
     });
 
@@ -253,22 +241,40 @@ layui.use(['table','layer','upload'],function () {
 	//监听导出操作工具条
 	table.on("tool(olist)",function (obj) {
 	    var data = obj.data;
-		if (obj.event == "jiushou_ex") {
+		if (obj.event === "jiushou_ex") {
 		    $("input[name='ex_info']").val(data.batch_time+"|"+1);
             $("#postData").submit();
 		}
-		else if(obj.event == "list_ex") {
+		else if(obj.event === "list_ex") {
             $("input[name='ex_info']").val(data.batch_time+"|"+2);
             $("#postData").submit();
-		}else if(obj.event == "entry_ex") {
+		}else if(obj.event === "entry_ex") {
             $("input[name='ex_info']").val(data.batch_time+"|"+3);
             $("#postData").submit();
-        }else if(obj.event == "transprot_ex") {
+        }else if(obj.event === "transprot_ex") {
             $("input[name='ex_info']").val(data.batch_time+"|"+4);
             $("#postData").submit();
-        }else if(obj.event == "all_ex") {
+        }else if(obj.event === "all_ex") {
             $("input[name='ex_info']").val(data.batch_time+"|"+5);
             $("#postData").submit();
+        }else if(obj.event === "declare") {
+            layer.confirm('确定报关？',function (index) {
+                $.post('{:url("admin/Order/declaration")}',{batch: data.batch_time},function (res) {
+                    if (res.code == '0000') {
+                        obj.update({declare_status: 1});
+                        layer.msg(res.msg,{time: 2000});
+                        layer.close(index);
+                    }else{
+                        layer.close(index);
+                        if (typeof res !== 'string') {
+                            layer.open({content: res.msg});
+                        }else{
+                            //无权限时的提示
+                            layer.open({content: res});
+                        }
+                    }
+                });
+            });
         }
     })
 });
