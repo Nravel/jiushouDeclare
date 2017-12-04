@@ -24,6 +24,7 @@ class Common extends Controller
 //        'admin/index/index',
         'admin/order/preview',
         'admin/order/clearUploads',
+        'admin/order/getlastbatchs',
         'admin/search/searchbymultiple',
 		'admin/admin/search',
 		'admin/admin/getauthgroup'

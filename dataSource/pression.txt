@@ -34,9 +34,9 @@
 	删除	admin/admin/delpermission
 
 /*************************************白名单
-        'admin/order/getorderbatch',
         'admin/order/preview',
         'admin/order/clearUploads',
+        'admin/order/getLastBatchs',
 		'admin/search/searchbymultiple'，
 		'admin/admin/search'，
 		'admin/admin/getauthgroup'

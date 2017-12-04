@@ -26,7 +26,8 @@
 		}
 		.pay i {
 			font-size: 14px;
-			text-shadow: 1px 1px 1px #888;
+			text-shadow: 1px 1px 1px #FFB800;
+			color: #FFB800;
 		}
 	</style>
 </head>
@@ -98,7 +99,7 @@
 								<option value="4">含有（模糊）</option>
 							</select>
 						</span>
-							<input type="text" name="batch_time" class="input-text main-input">
+							<input style="width: 30%" type="text" name="batch_time" class="input-text main-input">
 						</li>
 						<li>
 							<button class="btn btn-primary tab">批次备注：</button>
@@ -434,6 +435,28 @@
     $(document).ready(function () {
         $("#upcommit").hide();
         setAlign(['consignee_address','batch_note'],'left');
+        $.get('{:url("admin/order/getLastBatchs")}',function (res) {
+            console.log(res);
+            var html = '<select  id="batch-select" style="width: 17%;height: 31px;vertical-align: middle;" class="select"><option value="0">&nbsp; 最近十条</option>';
+            if (res.data.length>0) {
+                $(res.data).each(function (index,item) {
+                    html+= '<option value='+(index+1)+'>'+item.batch_time+'</option>';
+                });
+                html+= '</select>';
+            }else {
+                html+= '</select>';
+            }
+            $('input[name="batch_time"]').parent()[0].insertAdjacentHTML('beforeEnd',html);
+            $('#batch-select').change(function () {
+                if ($(this).val()!=='0') {
+                    $(this).css('width','4%');
+                    $('input[name="batch_time"]').css('width','43%')
+                    $('input[name="batch_time"]').val($(this).find("option:selected").text());
+                }else{
+                    $('input[name="batch_time"]').val("");
+                }
+            });
+        });
     });
 
     //批量删除

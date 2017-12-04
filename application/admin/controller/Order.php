@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 
 //use app\admin\model\OrderHead;
+use app\admin\model\OrderBatch;
 use app\admin\model\OrderPreview;
 use app\common\controller\Excel;
 //use think\Db;
@@ -66,6 +67,16 @@ class Order extends Common
         }else{
             return $this->fetch('order-edit',['orderNo'=>$orderNo]);
         }
+    }
+
+    /**
+     * 获取倒数十条批次号
+     * @return array
+     */
+    public function getLastBatchs() {
+        $orderBatch = new OrderBatch();
+        $datas = $orderBatch->field('batch_time')->order('batch_time desc')->limit(0,10)->select();
+        return feedback('0000','success',$datas);
     }
 
     /**

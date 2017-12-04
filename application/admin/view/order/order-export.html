@@ -22,7 +22,8 @@
 		}
 		.declare i {
 			font-size: 14px;
-			text-shadow: 1.3px 1.3px 1px #888;
+			text-shadow: 1px 1px 1px #1E9FFF;
+			color: #1E9FFF;
 		}
 	</style>
 </head>
@@ -140,29 +141,25 @@
     });
     $(document).ready(function() {
         $.get('{:url("admin/order/getLastBatchs")}',function (res) {
-            var html = '<select id="batch-select" style="width: 17%;height: 31px;vertical-align: middle;" class="select">'+
-                '<option value="0">  --请选择--</option>'+
-                '<option value="1">201711271043115167</option>'+
-                '<option value="2">201711301411059593</option>'+
-                '<option value="3">201711301411059455</option>'+
-                '<option value="4">201711334211059593</option>'+
-                '</select>';
-//            var html = '<select style="width: 17%;height: 31px;vertical-align: middle;" class="select"><option value="0">  --请选择--</option>';
-//            if (res.data.length>0) {
-//                $(res.data).each(function (index,item) {
-//					html+= '<option value='+(index+1)+'>'+item+'</option>';
-//                });
-//                html+= '</select>';
-//			}else {
-//                html+= '</select>';
-//			}
+            console.log(res);
+            var html = '<select  id="batch-select" style="width: 17%;height: 31px;vertical-align: middle;" class="select"><option value="0">&nbsp; 最近十条</option>';
+            if (res.data.length>0) {
+                $(res.data).each(function (index,item) {
+                    html+= '<option value='+(index+1)+'>'+item.batch_time+'</option>';
+                });
+                html+= '</select>';
+            }else {
+                html+= '</select>';
+            }
             $('input[name="batch_time"]').parent()[0].insertAdjacentHTML('beforeEnd',html);
             $('#batch-select').change(function () {
                 if ($(this).val()!=='0') {
+                    $(this).css('width','4%');
+                    $('input[name="batch_time"]').css('width','43%')
                     $('input[name="batch_time"]').val($(this).find("option:selected").text());
-				}else{
+                }else{
                     $('input[name="batch_time"]').val("");
-				}
+                }
             });
         });
 	});
