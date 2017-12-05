@@ -126,7 +126,7 @@ $(function(){
                         parent.$('.btn-refresh').click();
                         parent.layer.close(index);
                         parent.layui.table.reload('main');
-                    }else if (data.msg.indexOf('Duplicate')!==-1){
+                    }else if (typeof data.msg === 'string' && data.msg.indexOf('Duplicate')!==-1){
 				        layer.open ({content:'用户组已存在！'});
                     }else{
                         console.log(data.msg);

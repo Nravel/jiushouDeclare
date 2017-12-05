@@ -187,6 +187,8 @@
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
                 ,{field: '', title: '错误数',width: 100,templet: '#err',sort: true}
 //                ,{field: 'order_no', title: '订单编号', width: 170,templet: '#oe-span1', sort: true, edit: "text"}
+                ,{field: 'bill_no', title: '提单号', width: 160, sort: true, edit: "text",templet: '#oe-span23'}
+                ,{field: 'logistics_no', title: '物流运单编号', width: 150, sort: true, edit: "text",templet: '#oe-span15'}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text",templet: '#oe-span2'}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text",templet: '#oe-span3'}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 160, sort: true, edit: "text",templet: '#oe-span4'}
@@ -201,7 +203,6 @@
                 ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text",templet: '#oe-span12'}
                 ,{field: 'consignee_telephone', title: '收货人电话', width: 140, edit: "text",templet: '#oe-span13'}
                 ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text",templet: '#oe-span14'}
-                ,{field: 'logistics_no', title: '物流运单编号', width: 150, sort: true, edit: "text",templet: '#oe-span15'}
                 ,{field: 'trade_mode', title: '贸易方式', width: 120, sort: true, edit: "text",templet: '#oe-span16'}
 //                ,{field: 'books_no', title: '账册编号', width: 120, sort: true}
 //                ,{field: 'license_no', title: '许可证件号', width: 120, sort: true}
@@ -211,7 +212,6 @@
                 ,{field: 'wrap_type', title: '包装种类', width: 120, sort: true, edit: "text",templet: '#oe-span20'}
                 ,{field: 'gross_weight', title: '毛重(公斤)', width: 130, sort: true, edit: "text",templet: '#oe-span21'}
                 ,{field: 'net_weight', title: '净重(公斤)', width: 130, sort: true, edit: "text",templet: '#oe-span22'}
-                ,{field: 'bill_no', title: '提单号', width: 160, sort: true, edit: "text",templet: '#oe-span23'}
                 ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true, edit: "text",templet: '#oe-span24'}
                 ,{field: 'pack_no', title: '件数', width: 100, sort: true, edit: "text",templet: '#oe-span25'},
                 {field: "gnum",title: "商品序号", width: 120, sort: true, edit: "text",templet: '#oe-span26'},
@@ -294,6 +294,8 @@
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
 //                ,{field: 'order_no', title: '订单编号', width: 170, sort: true}
+                ,{field: 'bill_no', title: '提单号', width: 160, sort: true, edit: "text"}
+                ,{field: 'logistics_no', title: '物流运单编号', width: 150, edit: "text", sort: true}
                 ,{field: 'goods_value', title: '商品价格', width: 120, sort: true, edit: "text"}
                 ,{field: 'freight', title: '运杂费', width: 120, sort: true, edit: "text"}
                 ,{field: 'discount', title: '非现金抵扣金额', width: 160, sort: true, edit: "text"}
@@ -308,7 +310,6 @@
                 ,{field: 'consignee', title: '收货人姓名', width: 100, edit: "text"}
                 ,{field: 'consignee_telephone', title: '收货人电话', width: 140, edit: "text"}
                 ,{field: 'consignee_address', title: '收货地址', width: 300, edit: "text"}
-                ,{field: 'logistics_no', title: '物流运单编号', width: 150, edit: "text", sort: true}
                 ,{field: 'trade_mode', title: '贸易方式', width: 120, edit: "text", sort: true}
 //                ,{field: 'books_no', title: '账册编号', width: 120, sort: true, edit: "text"}
 //                ,{field: 'license_no', title: '许可证件号', width: 120, sort: true, edit: "text"}
@@ -318,7 +319,6 @@
                 ,{field: 'wrap_type', title: '包装种类', width: 120, sort: true, edit: "text"}
                 ,{field: 'gross_weight', title: '毛重(公斤)', width: 130, sort: true, edit: "text"}
                 ,{field: 'net_weight', title: '净重(公斤)', width: 130, sort: true, edit: "text"}
-                ,{field: 'bill_no', title: '提单号', width: 160, sort: true, edit: "text"}
                 ,{field: 'voyage_no', title: '航班航次号', width: 130, sort: true, edit: "text"}
                 ,{field: 'pack_no', title: '件数', width: 100, sort: true, edit: "text"},
                 {field: "gnum",title: "商品序号", width: 120, sort: true, edit: "text"},

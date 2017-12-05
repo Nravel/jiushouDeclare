@@ -9,24 +9,24 @@
 <link rel="Bookmark" href="/favicon.ico" >
 <link rel="Shortcut Icon" href="/favicon.ico" />
 	{include file='export-head' /}
-<title>用户组管理</title>
+<title>客户列表</title>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 用户组管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 客户管理 <span class="c-gray en">&gt;</span> 客户列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
-	<span hidden>{$tpl=3}</span>
-	<!--{include file='date-search' /}-->
+	<span hidden>{$tpl=1}</span>
+	{include file='date-search' /}
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="r">
-			<a href="javascript:;" onclick="group_add('添加用户组','{:url(\'groupsAdd\')}','800','450')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户组</a>
+			<a href="javascript:;" onclick="client_add('添加客户','{:url(\'add\')}','800','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加客户</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		</span>
 		<!--<span class="l total mr-10">共有数据：<strong></strong> 条</span>-->
-		<span class="l total mr-10">用户组列表</span>
+		<span class="l total mr-10">客户列表</span>
 	</div>
 	<div class="datas">
-		<table id="groupLists" lay-filter="glist"></table>
+		<table id="clientLists" lay-filter="alist"></table>
 	</div>
 </div>
 {include file='export-footer' /}
@@ -36,10 +36,9 @@
 <!--<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>-->
 <!--<script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>-->
 <script type="text/html" id="exportTools">
-	<a title="修改组信息" class="layui-btn layui-btn-mini" lay-event="edit"><i class="Hui-iconfont">&#xe6df;</i></a>
-	<a title="授权管理" class="layui-btn layui-btn-mini layui-btn-normal" lay-event="authorize"><i class="Hui-iconfont">&#xe63c;</i></a>
-	<a title="组成员管理" class="layui-btn layui-btn-mini layui-btn-warm" lay-event="member"><i class="Hui-iconfont">&#xe62c;</i></a>
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del"><i class="Hui-iconfont">&#xe6e2;</i></a>
+	<a title="查看订单批次" class="layui-btn layui-btn-normal layui-btn-mini" lay-event="detail">查看订单</a>
+	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit">修改</a><!--<i class="Hui-iconfont">&#xe6df;</i>-->
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a><!--<i class="Hui-iconfont">&#xe6e2;</i>-->
 </script>
 <script type="text/html" id="status">
 	{{# if (d.status >= 1) { }}
@@ -48,15 +47,10 @@
 		<span>禁用</span>
 	{{# } }}
 </script>
-<!--<script type="text/html" id="check-date">-->
-	<!--{{# if (d.login_time.indexOf('1970-01-01 08:00:00') !== -1) { }}-->
-	<!--<span>该用户未登录过</span>-->
-	<!--{{# }else{ }}-->
-	<!--<span>{{ d.login_time }}</span>-->
-	<!--{{# } }}-->
-<!--</script>-->
+<script type="text/html" id="client">
+</script>
 <script type="text/javascript">
-	setAlign(['description','username'],'left');
+	setAlign(['client_name','client_email','client_note'],'left');
 	var pdata = null;
     //表格方法式渲染
     layui.use(['table','layer'],function () {
@@ -64,24 +58,26 @@
         var layer = layui.layer;
         var $ = layui.jquery;
         table.render({
-            elem: '#groupLists' //指定原始表格元素选择器（推荐id选择器）
+            elem: '#clientLists' //指定原始表格元素选择器（推荐id选择器）
             ,id: 'main'
 //        ,height: 288 //容器高度
 //        ,data: res.data
-            ,url: '{:url(\'admin/admin/groups\')}'
+            ,url: '{:url(\'admin/client/index\')}'
 //        ,initSort: {
 //            field: 'autonum' //排序字段，对应 cols 设定的各字段名
 //            ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
 //        }
 //		,height: 'full-600'
             ,cols: [[ //标题栏
+//                {checkbox: true}, //默认全选
                 {checkbox: true}, //默认全选
                 {field: 'autonum', title: 'No.', width: 80, sort: true}
-                ,{field: 'title', title: '用户组名', width: 230}
-                ,{field: 'username', title: '组成员',width: 465}   //, templet: '#check-date'
-                ,{field: 'description', title: '描述', width: 450}
-                ,{field: 'status', title: '状态',templet: '#status', width: 230, sort: true}
-                ,{field: 'ctrl', title: '操作', width: 170,fixed:"right", toolbar: "#exportTools"}
+                ,{field: 'client_name', title: '客户名称', width: 330}
+                ,{field: 'client_telephone', title: '客户电话', width: 200}
+                ,{field: 'client_email', title: '客户邮箱', width: 220}
+                ,{field: 'create_time', title: '创建时间', width: 220, sort: true}
+                ,{field: 'client_note', title: '备注', width: 374}
+                ,{field: 'ctrl', title: '操作', width: 200,fixed:"right", toolbar: "#exportTools"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
@@ -97,41 +93,28 @@
         });
 
         //监听操作工具条
-        table.on("tool(glist)",function (obj) {
+        table.on("tool(alist)",function (obj) {
             pdata = obj.data;
             var data = obj.data;
-            var url = "{:url('admin/admin/groupsEdit')}".replace('.html','');
+            var url = "{:url('admin/client/edit')}".replace('.html','');
             if(obj.event == "edit") {
 				layer.open({
 					type: 2,
-					content: "{:url('admin/admin/groupsEdit')}",
-					title: data.title+'_修改页面',
-					area: ['380px','400px'],
-                    maxmin: true
+					content: "{:url('admin/client/edit')}",
+					title: data.client_name+'_客户修改页面',
+                    maxmin: true,
+					area: ['800px','400px']
 				});
-            }else if(obj.event == "authorize") {
-                layer.open({
-                    type: 2,
-                    content: "{:url('admin/admin/groupsAuthorize')}",
-                    title: data.title+'_授权管理',
-                    maxmin: true,
-                    area: ['90%','70%']
-                });
-            }else if(obj.event == "member") {
-                layer.open({
-                    type: 2,
-                    content: "{:url('admin/admin/groupsMember')}",
-                    title: data.title+'_会员管理',
-                    maxmin: true,
-                    area: ['90%','90%']
-                });
+            }else if(obj.event == "detail") {
+                $('#open-tab').attr("data-href",'{:url("admin/order/export")}');
+                $('#open-tab').attr("data-title",data.client_name+"_批次列表");
+                Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "del") {
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/delGroups")}',{id: data.id},function (res) {
+                    $.post('{:url("admin/client/delClients")}',{id: data.id},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
-                            refleshAdminList();
                             table.reload('main');
                         }else{
                             layer.close(index);
@@ -157,19 +140,12 @@
             if (data.length>0) {
                 //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
                 var str = "";
-                var flag = true;
                 $(data).each(function (index,obj) {
-                    if (obj.status ===9) {
-                        layer.open({content:'选项中含有超级管理员，不能进行删除操作！！！'});
-                        flag = false;
-                    }
                     str+= obj.id+"|";
                 });
-                if (!flag) {return};
                 layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/admin/delGroups")}',{data: str.slice(0,-1)},function (res) {
+                    $.post('{:url("admin/client/delClients")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
-                            refleshAdminList();
                             table.reload('main');
                             layer.close(index);
                         }else{
@@ -188,16 +164,28 @@
         });
     }
 
-	/*用户组-增加*/
-    function group_add(title,url,w,h){
+	//用户搜索
+    function searchClients() {
+        layui.table.reload('main', {
+            url: "{:url('admin/client/search')}",
+            method: 'post'
+            ,where: {data:$('#searchClients').serializeArray()}
+        });
+        $('#searchClients').submit(function (e) {
+			return false;
+        });
+    }
+
+	/*客户-增加*/
+    function client_add(title,url,w,h){
         layer_show(title,url,w,h);
     }
 
-    //删除用户组时将刷新管理员列表
-    function refleshAdminList() {
+    //刷新用户组列表
+    function refleshGroupsList() {
         var topWindow = $(window.parent.document),
             iframe = topWindow.find('#iframe_box .show_iframe'),
-            reg = /\/admin\/admin\/index/;
+            reg = /\/admin\/admin\/groups/;
         $(iframe).each(function (i,item) {
             if (reg.test($(item).html())) {
                 var riframe = iframe.eq(i).find('iframe');

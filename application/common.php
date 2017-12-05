@@ -19,3 +19,15 @@ function feedback($code,$msg,$data=null) {
         'data' => $data
     ];
 }
+
+//创建数据集序号
+function createNums($data,$page,$limit) {
+    $i = 1;
+    if ($page>1) {
+        $i = ($page-1)*$limit+1;
+    }
+    foreach ($data as $k => $record) {
+        $data[$k]['autonum'] = $i++;
+    }
+    return $data;
+}

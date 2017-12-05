@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-11-30 14:23:25
+Date: 2017-12-05 17:59:54
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,9 +33,9 @@ CREATE TABLE `ceb_admin` (
 -- ----------------------------
 -- Records of ceb_admin
 -- ----------------------------
-INSERT INTO `ceb_admin` VALUES ('1', 'admin', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '9', '2017-11-30 14:12:55');
-INSERT INTO `ceb_admin` VALUES ('40', 'tom', '21232f297a57a5a743894a0e4a801fc3', '127.0.0.1', '1', '2017-11-30 14:20:58');
-INSERT INTO `ceb_admin` VALUES ('41', 'jack', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '0', '2017-11-08 15:40:40');
+INSERT INTO `ceb_admin` VALUES ('1', 'admin', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '9', '2017-12-05 15:11:48');
+INSERT INTO `ceb_admin` VALUES ('40', 'tom', '21232f297a57a5a743894a0e4a801fc3', '127.0.0.1', '1', '2017-12-04 18:00:52');
+INSERT INTO `ceb_admin` VALUES ('41', 'jack', '21232f297a57a5a743894a0e4a801fc3', '0.0.0.0', '1', '2017-11-08 15:40:40');
 
 -- ----------------------------
 -- Table structure for `ceb_auth_group`
@@ -56,7 +56,7 @@ CREATE TABLE `ceb_auth_group` (
 -- ----------------------------
 -- Records of ceb_auth_group
 -- ----------------------------
-INSERT INTO `ceb_auth_group` VALUES ('1', 'admin', '1', '默认用户组', 'admin', '1', '12,32,20,21,50,52,23,30,24,25,36,26,38,27,31');
+INSERT INTO `ceb_auth_group` VALUES ('1', 'admin', '1', '默认用户组', 'admin', '1', '12,32,20,21,50,52,54,23,30,55,24,25,36,26,38,27,31');
 INSERT INTO `ceb_auth_group` VALUES ('27', 'admin', '1', '超级管理员', '', '1', '12,32,20,21,49,50,51,52,23,30,24,25,35,36,37,26,38,39,40,41,42,27,31,33,34');
 INSERT INTO `ceb_auth_group` VALUES ('19', 'admin', '1', 'root', '', '1', '12,32,20,21,49,50,52,23,30');
 INSERT INTO `ceb_auth_group` VALUES ('7', 'admin', '1', 'admin', 'ffff', '1', '24,25,35,36,37,26,38,39,40,41,42,27,31,33,34');
@@ -76,7 +76,7 @@ CREATE TABLE `ceb_auth_group_access` (
 -- ----------------------------
 -- Records of ceb_auth_group_access
 -- ----------------------------
-INSERT INTO `ceb_auth_group_access` VALUES ('1', '27,7,1');
+INSERT INTO `ceb_auth_group_access` VALUES ('1', '1,27,7');
 INSERT INTO `ceb_auth_group_access` VALUES ('40', '1');
 INSERT INTO `ceb_auth_group_access` VALUES ('41', '');
 
@@ -95,7 +95,7 @@ CREATE TABLE `ceb_auth_rule` (
   `condition` char(100) NOT NULL DEFAULT '' COMMENT '规则表达式，为空表示存在就验证，不为空表示按照条件验证',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COMMENT='规则表';
+) ENGINE=MyISAM AUTO_INCREMENT=56 DEFAULT CHARSET=utf8 COMMENT='规则表';
 
 -- ----------------------------
 -- Records of ceb_auth_rule
@@ -125,6 +125,34 @@ INSERT INTO `ceb_auth_rule` VALUES ('41', '26', 'admin', 'Admin/Admin/Groupsmemb
 INSERT INTO `ceb_auth_rule` VALUES ('42', '26', 'admin', 'Admin/Admin/Delgroups', '删除', '1', '1', '');
 INSERT INTO `ceb_auth_rule` VALUES ('51', '21', 'admin', 'Admin/Order/DelOrder', '删除', '1', '1', '');
 INSERT INTO `ceb_auth_rule` VALUES ('52', '21', 'admin', 'Admin/Order/ImportData', '导入', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('54', '21', 'admin', 'Admin/Order/Pay', '支付', '1', '1', '');
+INSERT INTO `ceb_auth_rule` VALUES ('55', '23', 'admin', 'Admin/Order/Declaration', '报关', '1', '1', '');
+
+-- ----------------------------
+-- Table structure for `ceb_client`
+-- ----------------------------
+DROP TABLE IF EXISTS `ceb_client`;
+CREATE TABLE `ceb_client` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `client_name` varchar(100) NOT NULL COMMENT '需要报关的客户名称',
+  `client_telephone` varchar(50) NOT NULL COMMENT '客户电话',
+  `client_email` varchar(60) DEFAULT NULL COMMENT '客户邮箱',
+  `client_note` varchar(1000) DEFAULT NULL COMMENT '客户备注',
+  `create_time` datetime DEFAULT NULL COMMENT '客户创建时间',
+  `delete_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标识字段',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `client_name` (`client_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of ceb_client
+-- ----------------------------
+INSERT INTO `ceb_client` VALUES ('1', '就手国际', '1367890543', 'dsfsd@qq', '123w', '2017-12-05 10:37:59', '0');
+INSERT INTO `ceb_client` VALUES ('3', '阿里巴巴', '123', '123@2323', '1321323', '2017-12-05 10:55:50', '1');
+INSERT INTO `ceb_client` VALUES ('4', '百度', '134', '123213@qq', 'ssss', '2017-12-05 11:00:52', '1');
+INSERT INTO `ceb_client` VALUES ('5', '腾讯', '656345345', 'sfsfsdfds@fdsff', 'sdasdg', '2017-12-05 11:01:19', '1');
+INSERT INTO `ceb_client` VALUES ('6', '京东', '32434', 'dsffffd@qq', '', '2017-12-05 15:37:30', '1');
+INSERT INTO `ceb_client` VALUES ('7', '美团', '87567', 'fhjj@dfe', '', '2017-12-05 15:37:51', '1');
 
 -- ----------------------------
 -- Table structure for `ceb_order_batch`
@@ -132,6 +160,7 @@ INSERT INTO `ceb_auth_rule` VALUES ('52', '21', 'admin', 'Admin/Order/ImportData
 DROP TABLE IF EXISTS `ceb_order_batch`;
 CREATE TABLE `ceb_order_batch` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `com_id` int(11) DEFAULT NULL COMMENT '该批次所属的公司id',
   `batch_time` varchar(60) NOT NULL COMMENT '批次号',
   `batch_note` varchar(1000) DEFAULT NULL COMMENT '批次注释',
   PRIMARY KEY (`id`)
@@ -140,9 +169,9 @@ CREATE TABLE `ceb_order_batch` (
 -- ----------------------------
 -- Records of ceb_order_batch
 -- ----------------------------
-INSERT INTO `ceb_order_batch` VALUES ('1', '201711241059416201', 'fff');
-INSERT INTO `ceb_order_batch` VALUES ('2', '201711271043115167', 'ss');
-INSERT INTO `ceb_order_batch` VALUES ('3', '201711301411059593', '123');
+INSERT INTO `ceb_order_batch` VALUES ('1', null, '201711241059416201', 'fff');
+INSERT INTO `ceb_order_batch` VALUES ('2', null, '201711271043115167', 'ss');
+INSERT INTO `ceb_order_batch` VALUES ('3', null, '201711301411059593', '123');
 
 -- ----------------------------
 -- Table structure for `ceb_order_goods`
@@ -207,7 +236,7 @@ INSERT INTO `ceb_order_goods` VALUES ('112', '2017113000986336', '1', null, 'APT
 INSERT INTO `ceb_order_goods` VALUES ('113', '2017113000986185', '1', null, 'COW&GATE牛栏婴儿奶粉4段', null, null, '6.00', '4.80', null, '122', '035', null, '303', '1901101000', null, '800g/罐', '72.00', '432.00', '142', null);
 INSERT INTO `ceb_order_goods` VALUES ('114', '2017113000984902', '1', null, 'NESTLE雀巢成人奶粉', null, null, '6.00', '5.40', null, '122', '035', null, '303', '1901101000', null, '900g/罐', '50.00', '300.00', '142', null);
 INSERT INTO `ceb_order_goods` VALUES ('115', '2017113000985346', '1', null, 'COW&GATE牛栏婴儿奶粉4段', null, null, '6.00', '4.80', null, '122', '035', null, '303', '1901101000', null, '800g/罐', '72.00', '432.00', '142', null);
-INSERT INTO `ceb_order_goods` VALUES ('116', '2017113000981487', '1', null, 'NESTLE雀巢成人奶粉', null, null, '6.00', '5.40', null, '122', '035', null, '303', '1901101000', null, '900g/罐', '50.00', '300.00', '142', null);
+INSERT INTO `ceb_order_goods` VALUES ('116', '2017113000981487', '1', '', 'NESTLE雀巢成人奶粉', '', '', '6.00', '5.40', '0.00', '122', '035', '', '303', '1901101000', '', '900g/罐', '50.00', '300.00', '142', '');
 INSERT INTO `ceb_order_goods` VALUES ('117', '2017113000985421', '1', null, 'HIPP喜宝2段婴儿奶粉', null, null, '1.00', '0.80', null, '122', '035', null, '303', '1901101000', null, '800g/罐', '72.00', '72.00', '142', null);
 INSERT INTO `ceb_order_goods` VALUES ('118', '2017113000985421', '2', null, 'HIPP喜宝1段婴儿奶粉', null, null, '5.00', '4.00', null, '122', '035', null, '303', '1901101000', null, '800g/罐', '72.00', '360.00', '142', null);
 INSERT INTO `ceb_order_goods` VALUES ('119', '2017113000986569', '1', null, 'HIPP喜宝1段婴儿奶粉', null, null, '6.00', '4.80', null, '122', '035', null, '303', '1901101000', null, '800g/罐', '72.00', '432.00', '142', null);
@@ -322,7 +351,7 @@ INSERT INTO `ceb_order_head` VALUES ('1520', '2017113000986336', '44079610EA', '
 INSERT INTO `ceb_order_head` VALUES ('1521', '2017113000986185', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '432.00', '0.00', '0.00', '0.00', '432.00', '142', '', '汪静', '18638057988', '1', '412728198710267869', '', '', '', '陈宇', '15674576246', '湖南省怀化市城东广电花园5305室', '9977926773368', '9610', '', '', '303', '0.00', '0.00', '5', '5.70', '4.80', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
 INSERT INTO `ceb_order_head` VALUES ('1522', '2017113000984902', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '300.00', '0.00', '0.00', '0.00', '300.00', '142', '', '王超英', '13960708386', '1', '350181199404191662', '', '', '', '陈宇', '15674576246', '湖南省怀化市城东广电花园5303室', '9977926773369', '9610', '', '', '303', '0.00', '0.00', '5', '6.60', '5.40', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
 INSERT INTO `ceb_order_head` VALUES ('1523', '2017113000985346', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '432.00', '0.00', '0.00', '0.00', '432.00', '142', '', '陈宇', '15674576246', '1', '433024197508180010', '', '', '', '陈宇', '15674576246', '湖南省怀化市城东广电花园5304室', '9977926773370', '9610', '', '', '303', '0.00', '0.00', '5', '5.70', '4.80', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
-INSERT INTO `ceb_order_head` VALUES ('1524', '2017113000981487', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '300.00', '0.00', '0.00', '0.00', '300.00', '142', '', '彭叶辉', '15273278567', '1', '430522197605126376', '', '', '', '彭叶辉', '15273278567', '湖南省湘潭市雨湖区桃园路湖南科技大学', '9977926773371', '9610', '', '', '303', '0.00', '0.00', '5', '6.60', '5.40', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
+INSERT INTO `ceb_order_head` VALUES ('1524', '2017113000981487', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '300.00', '0.00', '0.00', '0.00', '300.00', '142', '', '彭叶辉', '15273278567', '1', '430522197605126376', '', '', '', '彭叶辉', '15273278567', '湖南省湘潭市雨湖区桃园路湖南科技大学', '9977926773371', '9610', '', '', '303', '0.00', '0.00', '5', '6.60', '5.40', '15732773053', 'QR028', '6', null, '1', '1', '2017-11-30 14:11:05', '201711301411059593');
 INSERT INTO `ceb_order_head` VALUES ('1525', '2017113000985421', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '432.00', '0.00', '0.00', '0.00', '432.00', '142', '', '马庆奇', '13512561519', '1', '320826197903030001', '', '', '', '马庆奇', '13512561519', '江苏省徐州市天能家园北1号楼2单元202', '9977926773372', '9610', '', '', '303', '0.00', '0.00', '5', '5.75', '4.80', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
 INSERT INTO `ceb_order_head` VALUES ('1526', '2017113000986569', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '432.00', '0.00', '0.00', '0.00', '432.00', '142', '', '刘曙娥', '17701580058', '1', '220104197710151529', '', '', '', '刘曙娥', '17701580058', '江苏省南京市将军大道33号挪威森林小区11栋405室', '9977926773373', '9610', '', '', '303', '0.00', '0.00', '5', '5.70', '4.80', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
 INSERT INTO `ceb_order_head` VALUES ('1527', '2017113000985841', '44079610EA', '广东就手电子商务有限公司', '44079610EA', '广东就手电子商务有限公司', '432.00', '0.00', '0.00', '0.00', '432.00', '142', '', '王春花', '15883664020', '1', '51060219810114134x', '', '', '', '马庆奇', '13512561519', '江苏省徐州市天能家园北1号楼2单元203', '9977926773374', '9610', '', '', '303', '0.00', '0.00', '5', '5.70', '4.80', '15732773053', 'QR028', '6', null, '0', '0', '2017-11-30 14:11:05', '201711301411059593');
@@ -413,7 +442,7 @@ CREATE TABLE `ceb_order_preview` (
   `goods_note` varchar(1000) DEFAULT NULL COMMENT '促销活动，商品单价偏离市场价格的，可以在此说明。',
   `batch_no` varchar(60) NOT NULL COMMENT '批次号',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ceb_order_preview

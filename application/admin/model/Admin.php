@@ -196,6 +196,8 @@ class Admin extends Model {
      */
     public function search() {
         $conditions = $this->request->post('data/a');
+        $page =  $this->request->post('page');
+        $limit =  $this->request->post('limit');
         $where = [];
         $join = [
             ['ceb_auth_group_access b','a.id=b.uid']
@@ -223,7 +225,7 @@ class Admin extends Model {
         }
         $field = "";
         $admin = new \app\admin\model\Admin();
-        $data = $admin->alias('a')->join($join)->where($where)->field($field)->select();
+        $data = $admin->alias('a')->join($join)->where($where)->page($page,$limit)->field($field)->select();
         $count = $admin->alias('a')->join($join)->where($where)->count();
         if ($count>0) {
             foreach ($data as $k => $record) {

@@ -175,7 +175,7 @@ $(function(){
                         parent.layer.close(index);
                         parent.layui.table.reload('main');
                         parent.refleshGroupsList();
-                    }else if (data.msg.indexOf('Duplicate')!==-1){
+                    }else if (typeof data.msg === 'string' && data.msg.indexOf('Duplicate')!==-1){
 				        layer.open ({content:'用户已存在！'});
                     }else{
                         console.log(data.msg);
