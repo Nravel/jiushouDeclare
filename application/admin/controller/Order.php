@@ -74,8 +74,10 @@ class Order extends Common
      * @return array
      */
     public function getLastBatchs() {
+        $com_id = $this->request->param('com_id');
+        $where = $com_id === null ? [] : ['com_id'=>$com_id];
         $orderBatch = new OrderBatch();
-        $datas = $orderBatch->field('batch_time')->order('batch_time desc')->limit(0,10)->select();
+        $datas = $orderBatch->where($where)->field('batch_time')->order('batch_time desc')->limit(0,10)->select();
         return feedback('0000','success',$datas);
     }
 

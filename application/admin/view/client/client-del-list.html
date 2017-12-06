@@ -9,21 +9,21 @@
 <link rel="Bookmark" href="/favicon.ico" >
 <link rel="Shortcut Icon" href="/favicon.ico" />
 	{include file='export-head' /}
-<title>客户列表</title>
+<title>删除的客户列表</title>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 客户管理 <span class="c-gray en">&gt;</span> 客户列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 客户管理 <span class="c-gray en">&gt;</span> 删除的客户列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<span hidden>{$tpl=1}</span>
 	{include file='date-search' /}
 	<!--数据显示-->
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		<span class="r">
-			<a href="javascript:;" onclick="client_add('添加客户','{:url(\'add\')}','800','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加客户</a>
-			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<!--<a href="javascript:;" onclick="client_add('添加客户','{:url(\'add\')}','800','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加客户</a>-->
+			<a class="btn  btn-primary radius" data-title="批量恢复" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe66b;</i> 批量恢复</a>
 		</span>
 		<!--<span class="l total mr-10">共有数据：<strong></strong> 条</span>-->
-		<span class="l total mr-10">客户列表</span>
+		<span class="l total mr-10">删除的客户列表</span>
 	</div>
 	<div class="datas">
 		<table id="clientLists" lay-filter="alist"></table>
@@ -36,9 +36,9 @@
 <!--<script type="text/javascript" src="__PUBLIC__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>-->
 <!--<script type="text/javascript" src="__PUBLIC__/lib/laypage/1.2/laypage.js"></script>-->
 <script type="text/html" id="exportTools">
-	<a title="查看订单批次" class="layui-btn layui-btn-normal layui-btn-mini" lay-event="edit">查看订单</a>
-	<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit">修改</a><!--<i class="Hui-iconfont">&#xe6df;</i>-->
-	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a><!--<i class="Hui-iconfont">&#xe6e2;</i>-->
+	<!--<a title="查看订单批次" class="layui-btn layui-btn-normal layui-btn-mini" lay-event="edit">查看订单</a>-->
+	<!--<a title="修改" class="layui-btn layui-btn-mini" lay-event="edit">修改</a>&lt;!&ndash;<i class="Hui-iconfont">&#xe6df;</i>&ndash;&gt;-->
+	<a title="恢复客户" class="layui-btn layui-btn-normal layui-btn-mini" lay-event="del">恢复</a><!--<i class="Hui-iconfont">&#xe6e2;</i>-->
 </script>
 <script type="text/html" id="status">
 	{{# if (d.status >= 1) { }}
@@ -74,8 +74,8 @@
                 ,{field: 'client_telephone', title: '客户电话', width: 200}
                 ,{field: 'client_email', title: '客户邮箱', width: 220}
                 ,{field: 'create_time', title: '创建时间', width: 220, sort: true}
-                ,{field: 'client_note', title: '备注', width: 374}
-                ,{field: 'ctrl', title: '操作', width: 200,fixed:"right", toolbar: "#exportTools"}
+                ,{field: 'client_note', title: '备注', width: 474}
+                ,{field: 'ctrl', title: '操作', width: 100,fixed:"right", toolbar: "#exportTools"}
             ]]
             ,skin: 'row' //表格风格
             ,even: true
@@ -104,8 +104,8 @@
 					area: ['800px','400px']
 				});
             }else if(obj.event == "del") {
-                layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/client/delClients")}',{id: data.id},function (res) {
+                layer.confirm('确定恢复？', function(index){
+                    $.post('{:url("admin/client/recover")}',{id: data.id},function (res) {
                         if (res.code == '0000') {
                             obj.del();
                             layer.close(index);
@@ -124,7 +124,7 @@
         });
      });
 
-    //批量删除
+    //批量恢复
     function delBatch() {
         layui.use(['table','layer'],function (table,layer) {
             var $ = layui.jquery;
@@ -137,8 +137,8 @@
                 $(data).each(function (index,obj) {
                     str+= obj.id+"|";
                 });
-                layer.confirm('确定删除？', function(index){
-                    $.post('{:url("admin/client/delClients")}',{data: str.slice(0,-1)},function (res) {
+                layer.confirm('确定恢复？', function(index){
+                    $.post('{:url("admin/client/recover")}',{data: str.slice(0,-1)},function (res) {
                         if (res.code == '0000') {
                             table.reload('main');
                             layer.close(index);
@@ -163,7 +163,7 @@
         layui.table.reload('main', {
             url: "{:url('admin/client/search')}",
             method: 'post'
-            ,where: {data:$('#searchClients').serializeArray()}
+            ,where: {data:$('#searchClients').serializeArray(),del: true}
         });
         $('#searchClients').submit(function (e) {
 			return false;

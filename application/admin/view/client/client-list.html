@@ -28,6 +28,7 @@
 	<div class="datas">
 		<table id="clientLists" lay-filter="alist"></table>
 	</div>
+	<a id="open-tab" hidden data-href="" data-title="" href="javascript:void(0)"></a>
 </div>
 {include file='export-footer' /}
 
@@ -48,6 +49,7 @@
 	{{# } }}
 </script>
 <script type="text/html" id="client">
+	<a title="点击查看订单批次" class="a-underline" href="javascript:void(0)" lay-event="detail">{{ d.client_name }}</a>
 </script>
 <script type="text/javascript">
 	setAlign(['client_name','client_email','client_note'],'left');
@@ -72,7 +74,7 @@
 //                {checkbox: true}, //默认全选
                 {checkbox: true}, //默认全选
                 {field: 'autonum', title: 'No.', width: 80, sort: true}
-                ,{field: 'client_name', title: '客户名称', width: 330}
+                ,{field: 'client_name', title: '客户名称', templet: '#client', width: 330}
                 ,{field: 'client_telephone', title: '客户电话', width: 200}
                 ,{field: 'client_email', title: '客户邮箱', width: 220}
                 ,{field: 'create_time', title: '创建时间', width: 220, sort: true}
@@ -96,7 +98,7 @@
         table.on("tool(alist)",function (obj) {
             pdata = obj.data;
             var data = obj.data;
-            var url = "{:url('admin/client/edit')}".replace('.html','');
+            var batchUrl = "{:url('admin/client/export')}".replace(".html","");
             if(obj.event == "edit") {
 				layer.open({
 					type: 2,
@@ -106,7 +108,7 @@
 					area: ['800px','400px']
 				});
             }else if(obj.event == "detail") {
-                $('#open-tab').attr("data-href",'{:url("admin/order/export")}');
+                $('#open-tab').attr("data-href",batchUrl+'/pid/'+data.id+'/clientname/'+encodeURI(encodeURI(data.client_name)));
                 $('#open-tab').attr("data-title",data.client_name+"_批次列表");
                 Hui_admin_tab($('#open-tab'));
             }else if(obj.event == "del") {

@@ -89,6 +89,8 @@ class Search extends Common {
                 }
             }
         }
+        $extra = $this->request->param('extra/a');
+        isset($extra) ? $where = array_merge($where,$extra) : '';
         $search->where = $where;
         $res = $search->search();
         return $res;

@@ -109,7 +109,7 @@
     		}
 		});
         if (!result.length) {
-            var reg = /(order\/index)/;
+            var reg = /(client\/orderlists)|(order\/index)/;
             if (!(parent.document.querySelector('#iframe_box').lastElementChild.style.display==='none')) {
                 clrefresh(reg,true);
 			}

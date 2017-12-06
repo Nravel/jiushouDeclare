@@ -21,7 +21,7 @@ class Order extends Model {
      * 订单列表页获取数据
      * @return array
      */
-    public function getOrderDatas() {
+    public function getOrderDatas($batch=null) {
         $limit = $this->request->param('limit');
         $page = $this->request->param('page');
         $orderModel = Loader::model("OrderHead");
@@ -34,7 +34,7 @@ class Order extends Model {
             ["OrderBatch b","a.batch_time = b.batch_time"],
 //            ["OrderGoods c","b.order_no = c.order_no"],
         ];
-        $where = [];
+        $where = $batch !== null ? ['b.batch_time'=>$batch] : [];
 //        $where = ['b.batch_time'=>$batch];
 //        $field = "*,@i:=@i+1 as autonum";
         $field = "*";
@@ -377,13 +377,14 @@ class Order extends Model {
      * 导出时显示的批次信息
      * @return array
      */
-    public function getOrderBatch() {
+    public function getOrderBatch($pid=null) {
         $limit = $this->request->param('limit');
         $page = $this->request->param('page');
         //因create_time字段是OrderHead自动生成，故应用OrderHead为主表作查询，否则会报错
         $orderModel = Loader::model("OrderHead");
         $orderBatch = Loader::model("OrderBatch");
         $alias = 'a';
+        $where = $pid === null ? [] : ['com_id'=>$pid];
         $join = [['ceb_order_batch b','a.batch_time=b.batch_time']];
         $field = "b.batch_time,b.batch_note,a.create_time,any_value(a.declare_status) as declare_status";
         $group = 'b.batch_time,b.batch_note,a.create_time';
@@ -393,11 +394,11 @@ class Order extends Model {
             $i = ($page-1)*$limit+1;
         }
         $orderModel->query("set @i=".$i);
-        $data = $orderModel->alias($alias)->join($join)->group($group)->field($field)->page($page,$limit)->select();
+        $data = $orderModel->alias($alias)->join($join)->where($where)->group($group)->field($field)->page($page,$limit)->select();
         foreach ($data as $k => $record) {
             $data[$k]['autonum'] = $i++;
         }
-        $dataCount = $orderModel->alias($alias)->group($group)->join($join)->count();
+        $dataCount = $orderModel->alias($alias)->where($where)->group($group)->join($join)->count();
         $data_format = [
             "code" => 0,
             "msg" => "success",

@@ -145,22 +145,24 @@ class client extends Model {
      * 删除客户
      * @return array
      */
-    public function delClients() {
+    public function delClients($recover=false) {
         $id = $this->request->post('id');
         $data = $this->request->post('data');
         $client = Loader::model('client');
+        $dstatus = $recover ? 0 : 1;
+        $msg_prex = $recover ? '恢复' : '删除';
         $res = false;
         if ($data===null) {
-            $res = $client::update(['id'=>$id,'delete_status'=>1]) or 0;
+            $res = $client::update(['id'=>$id,'delete_status'=>$dstatus]) or 0;
         }else if($data!==null) {
             foreach (explode('|',$data) as $val) {
-                $res = $client::update(['id'=>$val,'delete_status'=>1]) or 0;
+                $res = $client::update(['id'=>$val,'delete_status'=>$dstatus]) or 0;
             }
         }
         if ($res) {
-            return feedback('0000','删除成功！');
+            return feedback('0000',$msg_prex.'成功！');
         }else{
-            return feedback('0001','删除失败！');
+            return feedback('0001',$msg_prex.'失败！');
         }
     }
 
@@ -170,9 +172,10 @@ class client extends Model {
      */
     public function search() {
         $conditions = $this->request->param('data/a');
+        $del = $this->request->param('del');
         $page =  $this->request->post('page');
         $limit =  $this->request->post('limit');
-        $where = ['delete_status'=>0];
+        $where = $del === null ? ['delete_status'=>0] : ['delete_status'=>1];
         $join = [];
 //        $join = [
 //            ['ceb_auth_group_access b','a.id=b.uid']
