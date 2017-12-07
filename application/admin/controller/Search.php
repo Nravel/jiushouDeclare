@@ -16,7 +16,7 @@ class Search extends Common {
         'olist_single' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.order_no'],
         'oexport_single' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'b.batch_note','field' => "b.batch_time,b.batch_note,a.create_time",'group' => 'b.batch_time,b.batch_note,a.create_time'],
         'olist_multiple' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.','whereKey2arr'=>['batch_note'],'whereKey2'=>'b.'],
-        'oexport_multiple' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.','whereKey2arr'=>['batch_note','batch_time'],'whereKey2'=>'b.','field' => "b.batch_time,b.batch_note,a.create_time",'group' => 'b.batch_time,b.batch_note,a.create_time']
+        'oexport_multiple' => ['name'=>'order_head','alias'=>'a','join'=>[['order_batch b','a.batch_time=b.batch_time']],'whereKey'=>'a.','whereKey2arr'=>['batch_note','batch_time'],'whereKey2'=>'b.','field' => "b.batch_time,b.batch_note,a.create_time,any_value(a.declare_status) as declare_status",'group' => 'b.batch_time,b.batch_note,a.create_time']
     ];
 
     /**

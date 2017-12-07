@@ -267,6 +267,23 @@ layui.use(['table','layer','upload'],function () {
                     }
                 });
             });
+        }else if(obj.event === "del") {
+            layer.confirm('确定删除？', function(index){
+                $.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no},function (res) {
+                    if (res.code == '0000') {
+                        obj.del();
+                        layer.close(index);
+                        $('.layui-laypage-count').html('共 '+($('.layui-laypage-count').html().match(/\d+/)-1)+' 条');
+                    }else{
+                        layer.close(index);
+                        if (typeof res !== 'string') {
+                            layer.msg(res.msg,{time: 2000});
+                        }else{
+                            layer.msg(res,{time: 2000});
+                        }
+                    }
+                });
+            });
         }
     })
 });

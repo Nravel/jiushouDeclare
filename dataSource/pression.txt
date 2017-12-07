@@ -13,6 +13,7 @@
 	支付	admin/order/pay
 订单导出	admin/order/export
 	导出订单	admin/order/exportData
+	报关		admin/order/declaration
 
 /*************************************管理员管理
 管理员列表	admin/admin/index
@@ -32,11 +33,24 @@
 	添加	admin/admin/permissionadd
 	修改	admin/admin/permissionedit
 	删除	admin/admin/delpermission
+	
+/*************************************客户管理
+客户列表		admin/client/index
+	添加		admin/client/add
+	删除		admin/client/delClients
+	修改		admin/client/edit
+	查看批次	admin/client/export
+	查看批次	admin/client/orderLists
+删除的客户	admin/client/delList
+	恢复	admin/client/recover
 
 /*************************************白名单
         'admin/order/preview',
-        'admin/order/clearUploads',
+		'admin/order/preview/req/fill',
+        'admin/order/clearuploads',
         'admin/order/getLastBatchs',
+        'admin/client/getclients',
+        'admin/client/search',
 		'admin/search/searchbymultiple'，
 		'admin/admin/search'，
 		'admin/admin/getauthgroup'

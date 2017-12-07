@@ -44,14 +44,8 @@ class Login extends \think\Model {
     }
 
     public function drop() {
-        $res = Admin::update(['status'=>0],['username'=>Session::get('username')]);
-        if ($res) {
-            Session::delete('username');
-            return $this->setData('',0000);
-        }else{
-            $this->setData('退出错误，请联系管理员',1005);
-        }
-
+        Session::delete('username');
+        return $this->setData('',0000);
     }
 
     public function setData($info,$code) {

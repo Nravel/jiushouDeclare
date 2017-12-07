@@ -462,36 +462,44 @@
 
     //提交所有合法信息
     function commitAll() {
-        var url = "{:url('admin/Order/importData')}";
+//        var url = "{:url('admin/Order/importData')}";
+        var url = "{:url('admin/Order/preview')}".replace('.html','');
         var data = {data_batch: preview_data.batch_no};
-        layer.prompt({
-            formType: "2",
-            value: '',
-            title: '请输入当前导入批次的备注',
-            area: ['500px', '250px'] //自定义文本域宽高
-        }, function(value, index, elem){
-            data.note = value;
-            $.ajaxSetup({
-                async : false
-            });
-            $.post(url,data,function (res) {
-                if (res.code == "0000") {
-                    $.post("{:url('admin/Order/preview')}",{delbatch: preview_data.batch_no,req: 'del'},function (res) {
-                    });
-                    layer.open({
-                        content: "导入数据成功！",
-                        end: function () {
-                            layui.table.reload('osucc-main');
-                        }
-                    });
-                }else{
-                    layer.open({
-                        content: res.error
-                    });
-                }
-            });
-            layer.close(index);
-        });
+        layer.open({
+			type: 2,
+			content: url+'/req/fill',
+			title: '导入信息设置',
+			area: ['500px','300px'],
+			maxmin: true
+		});
+//        layer.prompt({
+//            formType: "2",
+//            value: '',
+//            title: '请输入当前导入批次的备注',
+//            area: ['500px', '250px'] //自定义文本域宽高
+//        }, function(value, index, elem){
+//            data.note = value;
+//            $.ajaxSetup({
+//                async : false
+//            });
+//            $.post(url,data,function (res) {
+//                if (res.code == "0000") {
+//                    $.post("{:url('admin/Order/preview')}",{delbatch: preview_data.batch_no,req: 'del'},function (res) {
+//                    });
+//                    layer.open({
+//                        content: "导入数据成功！",
+//                        end: function () {
+//                            layui.table.reload('osucc-main');
+//                        }
+//                    });
+//                }else{
+//                    layer.open({
+//                        content: res.error
+//                    });
+//                }
+//            });
+//            layer.close(index);
+//        });
     }
 
     //批量删除合法信息

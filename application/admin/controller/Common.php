@@ -20,15 +20,24 @@ class Common extends Controller
     protected $request = null;
     protected $username;
     protected $status;
-    protected $allowLists = [
+    private $allowLists = [
 //        'admin/index/index',
         'admin/order/preview',
+        'admin/order/preview/req/fill',
         'admin/order/clearUploads',
         'admin/order/getlastbatchs',
+        'admin/client/getclients',
+        'admin/client/search',
         'admin/search/searchbymultiple',
 		'admin/admin/search',
 		'admin/admin/getauthgroup'
         ];
+
+    private $filter = [
+        '/orderNum'=>'admin/order/details',
+        '/pid'=>'admin/client/export',
+        '/batch'=>'admin/client/orderlists',
+    ];
 
     public function __construct(Request $request = null) {
         parent::__construct($request);
@@ -40,12 +49,15 @@ class Common extends Controller
         }
 //        权限验证
         $auth = new Auth();
-        $rule = substr_replace($request->path(),'',strpos($request->path(),'/orderNum'));
-        $rule = preg_replace('/\/orderNum(.*)$/','',$request->path());
-        if ($request->isAjax()) {array_push($this->allowLists,'admin/order/details');}
+        //过滤含参数的url地址及区分是否异步请求，异步请求均通过
+        $rule = $request->path();
+        foreach ($this->filter as $key => $val) {
+//            $rule = substr_replace($rule,'',strpos($request->path(),$key));
+            $rule = preg_replace('/\\'.$key.'(.*)$/','',$rule);
+            if ($request->isAjax()) {array_push($this->allowLists,$val);}
+        }
         $uid = Session::get('uid');
         if ($uid != SUPER&&!in_array($rule,$this->allowLists)&&!$auth->check($rule,$uid)) {
-//            dump($rule);exit;
             if (!$request->isAjax()) {
                 echo '<script>
                         var navtabs = window.parent.document.getElementById("min_title_list");

@@ -230,6 +230,11 @@ class Order extends Model {
         $rootpath = 'public' . DS . 'uploads';
         $excelObj = new Excel();
         if ($data_batch!=null) {
+            $clientname = $this->request->param('clientname');
+            $clientId = Loader::model('Client')->field('id')->where(['client_name'=>$clientname,'delete_status'=>0])->find();
+            if ($clientId === null) {
+                return feedback('0003','客户不存在或已删除！');
+            }
             $data = collection(Loader::model('OrderPreview')->all(['batch_no'=>$data_batch]))->toArray();
             foreach ($data as $record) {
 //                $record = array_filter($record,function ($val){if ($val !== 'null') return $val;});
@@ -239,13 +244,13 @@ class Order extends Model {
                 $ndata[] = $record;
             }
             $ndata = $excelObj->getSameOrder($ndata,'logistics_no',false);
-            $result = Loader::model("OrderBatch")->saveBatch($ndata, $note);
+            $result = Loader::model("OrderBatch")->saveBatch($ndata, $note,$clientId['id']);
             if ($result["code"] == "0000") {
                 return json($result);
             }else{
                 return json([
                     "code" => $result["code"],
-                    "error" => $result["error"],
+                    "msg" => $result["error"],
                 ]);
             }
         }else{

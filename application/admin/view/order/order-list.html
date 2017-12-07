@@ -210,6 +210,9 @@
 	<div title="{{d.consignee_address}}">{{d.consignee_address}}</div>
 	<!--<div class="layui-table-cell laytable-cell-1-consignee_address" title="{{d.consignee_address}}">{{d.consignee_address}}</div>-->
 </script>
+<script type="text/html" id="order">
+	<a title="点击查看该订单详情" class="a-underline" href="javascript:void(0)" lay-event="details">{{ d.order_no }}</a>
+</script>
 <script type="text/javascript">
 	$('#search-form button').click(function () {
 		return false;
@@ -251,7 +254,7 @@
             ,cols: [[ //标题栏
                 {checkbox: true} //默认全选
                 ,{field: 'autonum', title: 'No.',width: 80, sort: true}
-                ,{field: 'order_no', title: '订单编号', width: 170, sort: true}
+                ,{field: 'order_no', title: '订单编号',templet: '#order', width: 170, sort: true}
                 ,{field: 'batch_time', title: '批次号', width: 180, sort: true}
                 ,{field: 'bill_no', title: '提单号', width: 160, sort: true}
                 ,{field: 'logistics_no', title: '物流运单编号', width: 150, sort: true}

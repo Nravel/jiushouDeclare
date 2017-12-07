@@ -112,10 +112,10 @@ class Order extends Common
             }
         }else if ($this->request->param('req')==='get') {
             return $this->orderModel->getPreviewData();
-        }else if ($this->request->param('req')==='get') {
-            return $this->orderModel->getPreviewData();
         }else if ($this->request->param('req')==='edit') {
             return $this->orderModel->editPreviewOrder();
+        }else if($this->request->param('req')==='fill'){
+            return $this->fetch('order-preview-confirm');
         }else{
             return $this->fetch('order-preview');
         }

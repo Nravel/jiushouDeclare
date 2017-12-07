@@ -136,4 +136,17 @@ class Client extends Common {
     public function recover() {
         return $this->delClients(true);
     }
+
+    /**
+     * 获取所有客户名称
+     * @return array
+     */
+    public function getClients() {
+        $res = $this->clientModel->where(['delete_status'=>0])->field('client_name')->select();
+        if (count($res)>0) {
+            return feedback('0000','success',$res);
+        }else{
+            return feedback('0005','error');
+        }
+    }
 }

@@ -81,12 +81,12 @@ class Admin extends Model {
         $admin = Loader::model('admin');
         $auth_group_access = Db::name('auth_group_access');
         $res = false;
-        if ($data===null && $admin::get($id)['status']!==9) {
+        if ($data===null && $admin::get($id)['status']!=9) {
             $res = $admin::destroy(['id'=>$id]) or 0;
             $res ? $auth_group_access->where('uid='.$id)->delete() : "" ;
         }else if($data!==null) {
             foreach (explode('|',$data) as $val) {
-                if ($admin::get($val)['status']===9) break;
+                if ($admin::get($val)['status']==9) break;
                 $res = $admin::destroy(['id'=>$val]) or 0;
                 $res ? $auth_group_access->where('uid='.$val)->delete() : "" ;
             }
@@ -169,7 +169,7 @@ class Admin extends Model {
         try{
             $res = $admin::get($uid);
             $admin->noUpdate();
-            if ($res['status'] === 9) {
+            if ($res['status'] == 9) {
                 $admin->isUpdate(true)->save(['username'=>$username],['id'=>$uid]);
                 Session::set('username',$username);
             }else{
