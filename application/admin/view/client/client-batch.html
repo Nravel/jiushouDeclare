@@ -85,6 +85,7 @@
 			<a class="btn  btn-success radius" data-title="批量导出入库单" onclick="exportTable(2)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出入库单</a>
 			<a class="btn  btn-success radius" data-title="批量导出运单" onclick="exportTable(3)" href="javascript:;"><i class="Hui-iconfont">&#xe644;</i> 批量导出运单</a>
 			<a class="btn  btn-success radius" data-title="批量一次性导出" onclick="exportTable(4)" href="javascript:;"><i class="Hui-iconfont">&#xe641;</i> 批量导出三单</a>
+			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 			<!--<a id="upload_excel" class="btn  btn-danger radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入Excel文件</a>-->
 			<!--<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>-->
 			<!--<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>-->
@@ -115,6 +116,7 @@
 	<a class="layui-btn layui-btn-mini" lay-event="entry_ex">导出入库单</a>
 	<a class="layui-btn layui-btn-mini" lay-event="transprot_ex">导出运单</a>
 	<a class="layui-btn layui-btn-mini" lay-event="all_ex">导出三单</a>
+	<a title="删除" class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
 </script>
 <script type="text/html" id="declare">
 	{{# if (d.declare_status==='0') { }}
@@ -269,7 +271,7 @@ layui.use(['table','layer','upload'],function () {
             });
         }else if(obj.event === "del") {
             layer.confirm('确定删除？', function(index){
-                $.post('{:url("admin/Order/delOrder")}',{order_no: data.order_no},function (res) {
+                $.post('{:url("admin/Client/delBatch")}',{batch: data.batch_time},function (res) {
                     if (res.code == '0000') {
                         obj.del();
                         layer.close(index);
@@ -334,6 +336,40 @@ function exportTable(num) {
 		}
     });
 }
+
+    //批量删除
+    function delBatch() {
+        layui.use(['table','layer'],function (table,layer) {
+            var $ = layui.jquery;
+            var checkStatus = table.checkStatus('main');
+            var data = checkStatus.data;
+
+            if (data.length>0) {
+                //将被选中的数据对象转换成字符串，后通过表单向后台提交并获取导出的文件
+                var str = "";
+                $(data).each(function (index,obj) {
+                    str+= obj.batch_time+"|";
+                });
+                layer.confirm('确定删除？', function(index){
+                    $.post('{:url("admin/Client/delBatch")}',{data: str.slice(0,-1)},function (res) {
+                        if (res.code == '0000') {
+                            table.reload('main');
+                            layer.close(index);
+                        }else{
+                            layer.close(index);
+                            if (typeof res !== 'string') {
+                                layer.msg(res.msg,{time: 2000});
+                            }else{
+                                layer.msg(res,{time: 2000});
+                            }
+                        }
+                    });
+                });
+            }else{
+                layer.msg("没选择数据呀",{'time':"1000"});
+            }
+        });
+    }
 
 //搜索处理函数
 function searchFun(type) {

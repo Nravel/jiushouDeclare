@@ -40,7 +40,8 @@
 	删除		admin/client/delClients
 	修改		admin/client/edit
 	查看批次	admin/client/export
-	查看批次	admin/client/orderLists
+	删除批次	admin/client/delBatch
+	查看订单	admin/client/orderLists
 删除的客户	admin/client/delList
 	恢复	admin/client/recover
 

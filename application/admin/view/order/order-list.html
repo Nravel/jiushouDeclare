@@ -163,7 +163,8 @@
 		<span class="r">
 			<a href="javascript:;" onclick="searchAdv()" class="btn btn-primary radius"><i class="layui-icon">&#xe615;</i> 高级查询</a>
 			<a class="btn  btn-danger radius" data-title="批量删除" onclick="delBatch()" href="javascript:;"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-			<a id="upload_excel" class="btn  btn-success radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入订单</a>
+			<a onclick="fillPopover()" class="btn  btn-success radius" data-title="导入Excel文件" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> 导入订单</a>
+			<a id="upload_excel" hidden data-title="导入中转按钮" href="javascript:;"><i class="Hui-iconfont">&#xe642;</i> </a>
 			<span id="filetips" hidden style="padding: 0 10px;color: #999;vertical-align: middle"></span>
 			<a id="upcommit" class="btn  btn-secondary radius" onclick="uploading(this)" data-title="开始导入" href="javascript:;"><i class="Hui-iconfont">&#xe645;</i> 开始导入</a>
 			<a id="open-tab" hidden data-href="" data-title="" href="javascript:void(0)"></a>
@@ -234,6 +235,7 @@
     //    }
     //});
 	var currpage = "";
+	var pdata = {};
     //表格方法式渲染
     layui.use(['table','layer','upload'],function () {
         var table = layui.table;
@@ -509,6 +511,19 @@
                 layui.layer.msg("请输入正确的数据！",{time:1000});
             }
         }
+    }
+
+    //导入前弹出填写信息框
+	function fillPopover() {
+        var url = "{:url('admin/Order/preview')}".replace('.html','');
+//        var data = {data_batch: preview_data.batch_no};
+        layer.open({
+            type: 2,
+            content: url+'/req/fill',
+            title: '导入信息设置',
+            area: ['500px','300px'],
+            maxmin: true
+        });
     }
 
     //上传请求时的动画

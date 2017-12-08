@@ -75,6 +75,36 @@
 	</dl>
 	{{# }); }}
 </script>
+<!--<script type="text/html" id="list">-->
+	<!--{{# var checkList = d.checkList.split(','),-->
+		<!--chk='';-->
+		<!--function isChecked(id) {-->
+			<!--if (checkList.indexOf(id)!==-1) {-->
+				<!--return 'checked';-->
+			<!--}else{-->
+				<!--return '';-->
+			<!--}-->
+		<!--}-->
+		<!--function addChild(item,indent) {-->
+			<!--if (item._data === null) return;-->
+			<!--layui.each(item._data,function(index,item) { }}-->
+			<!--<dd><dl class="cl permission-list2"><dt><label class=""><input type="checkbox" value="{{ item.id }}" name="rules[]"  {{# chk=isChecked(item.id.toString()); }} {{ chk }}>{{ item.title }}</label></dt>{{# addChild(item,true); }}</dl></dd>-->
+		<!--{{#	});-->
+		<!--}-->
+	<!--}}-->
+
+	<!--{{# layui.each(d,function(index,item) {-->
+	<!--if (index === 'checkList') {return;} }}-->
+	<!--<dl class="permission-list">-->
+		<!--<dt class="mb-5">-->
+			<!--<label>-->
+				<!--<input type="checkbox" value="{{ item.id }}" name="rules[]" {{# chk=isChecked(item.id.toString()); }} {{ chk }}>-->
+				<!--{{ item.title }}</label>-->
+		<!--</dt>-->
+		<!--{{# addChild(item); }}-->
+	<!--</dl>-->
+	<!--{{# }); }}-->
+<!--</script>-->
 <script type="text/javascript">
 $(function(){
     var data = null;

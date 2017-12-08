@@ -224,4 +224,24 @@ class client extends Model {
             ];
         }
     }
+
+    public function delBatch() {
+        $batchNo = $this->request->param('batch');
+        $data = $this->request->post('data');
+        $sql = 'DELETE a,b,c FROM `ceb_order_batch` `a` INNER JOIN `ceb_order_head` `b` ON `a`.`batch_time`=`b`.`batch_time` INNER JOIN `ceb_order_goods` `c` ON `b`.`order_no`=`c`.`order_no` WHERE `a`.`batch_time` = ';
+        $orderBatch = new OrderBatch();
+        $res = false;
+        if ($data===null) {
+            $res = $orderBatch->query($sql.$batchNo);
+        }else if($data!==null) {
+            foreach (explode('|',$data) as $val) {
+                $res = $orderBatch->query($sql.$val);
+            }
+        }
+        if (is_array($res)) {
+            return feedback('0000','删除成功！');
+        }else{
+            return feedback('0001','删除失败！');
+        }
+    }
 }

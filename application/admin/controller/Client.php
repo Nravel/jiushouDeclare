@@ -149,4 +149,11 @@ class Client extends Common {
             return feedback('0005','error');
         }
     }
+
+    /**
+     *删除批次
+     */
+    public function delBatch() {
+        return $this->clientModel->delBatch();
+    }
 }
