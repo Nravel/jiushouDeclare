@@ -1,0 +1,9 @@
+<templateSet group="user">
+  <template name="block" value="{block name=&quot;$blockname$&quot;}&#10;$text$&#10;{/block}" description="tp5 block" toReformat="false" toShortenFQNames="true">
+    <variable name="blockname" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="text" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+</templateSet>
