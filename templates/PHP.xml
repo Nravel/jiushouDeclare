@@ -1,0 +1,12 @@
+<templateSet group="PHP">
+  <template name="eq" value="{eq name=&quot;$name$&quot; value=&quot;$value$&quot;}$content${/eq}" description="tp5 eq标签" toReformat="false" toShortenFQNames="true">
+    <variable name="name" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="value" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="content" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="HTML" value="true" />
+      <option name="JAVA_SCRIPT" value="true" />
+      <option name="PHP" value="true" />
+    </context>
+  </template>
+</templateSet>
